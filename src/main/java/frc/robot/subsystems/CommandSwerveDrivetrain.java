@@ -261,10 +261,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
     public Rotation2d getHubAngle() {
+        //if you change the pose, also change it for get Distance
             return this.getState().Pose.getTranslation().minus(FieldConstants.redAllianceHub).getAngle();
         }
     public Rotation2d getHubAngleError() {
             return getHubAngle().minus(getState().Pose.getRotation());
+        }
+    public double getHubDistance() {
+            return this.getState().Pose.getTranslation().getDistance(FieldConstants.redAllianceHub);
         }
     /**
      * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate

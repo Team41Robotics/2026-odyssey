@@ -8,19 +8,26 @@ import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Util.InterpTables;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class ShooterSubsystem extends SubsystemBase {
 
+        public final CommandSwerveDrivetrain drive;
         public TalonFX flywheelMotor;
         public TalonFX flywheelFollowerMotor;
+        public InterpTables tables = new InterpTables();
     
         public TalonFX elevatorMotor;
         public double tuningVel = 100.0; // RPS, adjust as necessary for tuning
-    public ShooterSubsystem() {
+        public double testVel = 50.0; // RPS, adjust as necessary for testing
+    public ShooterSubsystem(CommandSwerveDrivetrain drive) {
+        this.drive = drive;
         flywheelMotor = new TalonFX(ShooterConstants.FLYWHEEL_MOTOR_ID); // Replace with actual CAN ID
         flywheelFollowerMotor = new TalonFX(ShooterConstants.FLYWHEEL_FOLLOWER_MOTOR_ID); // Replace with actual CAN ID
         elevatorMotor = new TalonFX(ShooterConstants.ELEVATOR_MOTOR_ID);
@@ -45,8 +52,12 @@ public class ShooterSubsystem extends SubsystemBase {
         pidConfig.Slot0.kP = 0.0; // Proportional gain
         pidConfig.Slot0.kI = 0.000; // Integral gain
         pidConfig.Slot0.kD = 0.0; // Derivative gain
-        //once you have it tuned to a good set, test it out by setting tuning vel to differenbt velocities, then its time to begin getting 
+        //once you have it tuned to a good set, test it out by setting tuning vel to differenbt velocities, then its time to begin getting the interp setting. Uncomment lines 
         flywheelMotor.getConfigurator().apply(pidConfig);
+
+
+
+        //to tune shooter table, uncomment lines 134-145 in robotContainer, and use it to test shots at different distances, recording the optimal flywheel velocity for each distance. Press y to print out a line of code, put tat exact line of code into the InterpTables constructor, and repeat until you have a full table. Then you can use the getOptimalFlywheelSpeed method to get the optimal flywheel speed for any distance within the range of your table!
     }
     @Override
     public void periodic() {
@@ -54,6 +65,17 @@ public class ShooterSubsystem extends SubsystemBase {
         //flywheelMotor.setControl( new VelocityDutyCycle((tuningVel)));
     }
 
+    public double getOptimalFlywheelSpeed(double distanceToHub) {
+        return tables.flywheelSpeed.get(distanceToHub);
+    }
+
+    public Command shootCommand(double distanceToHub) {
+        return this.run(() -> {
+            double targetVel = tables.flywheelSpeed.get(distanceToHub);
+            setShooterSpeed(targetVel); // Convert RPS to percentage output
+        });
+    }
+    
     public void logTuning(){
         double velocity = flywheelMotor.getVelocity().getValueAsDouble();
         double output = tuningVel;

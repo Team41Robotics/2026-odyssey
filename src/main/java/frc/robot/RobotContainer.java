@@ -33,8 +33,7 @@ public class RobotContainer {
         private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per
                                                                                           // second
                                                                                           // max angular velocity
-        private ShooterSubsystem shooter = new ShooterSubsystem();
-        private IntakeSubsystem intake = new IntakeSubsystem();
+
         /* Setting up bindings for necessary control of the swerve drive platform */
         private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
                         .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -42,7 +41,7 @@ public class RobotContainer {
                                                                                  // motors
         private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
         private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-        private final SwerveRequest.RobotCentricFacingAngle aimbot= new SwerveRequest.RobotCentricFacingAngle()
+        private final SwerveRequest.RobotCentricFacingAngle aimbot = new SwerveRequest.RobotCentricFacingAngle()
                         .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
                                                                                  // motors
@@ -52,16 +51,19 @@ public class RobotContainer {
 
         public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
         public final VisionSubsystem vision = new VisionSubsystem(drivetrain);
+        private ShooterSubsystem shooter = new ShooterSubsystem(drivetrain);
+        private IntakeSubsystem intake = new IntakeSubsystem();
+
         public RobotContainer() {
                 configureBindings();
         }
-        private Command aimbotCommand() {
-                return 
-                        drivetrain.applyRequest(() -> aimbot.withVelocityX(-joystick.getLeftY() * MaxSpeed)
-                        .withVelocityY(-joystick.getLeftX() * MaxSpeed));
 
-        
+        private Command aimbotCommand() {
+                return drivetrain.applyRequest(() -> aimbot.withVelocityX(-joystick.getLeftY() * MaxSpeed)
+                                .withVelocityY(-joystick.getLeftX() * MaxSpeed));
+
         }
+
         private void configureBindings() {
                 // Note that X is defined as forward according to WPILib convention,
                 // and Y is defined as to the left according to WPILib convention.
@@ -81,31 +83,32 @@ public class RobotContainer {
                                                                                                             // negative
                                                                                                             // X (left)
                                 ));
-                //Drives Robot With heading locked to hub
-                //joystick.rightTrigger().whileTrue(aimbotCommand());
+                // Drives Robot With heading locked to hub
+                // joystick.rightTrigger().whileTrue(aimbotCommand());
 
                 // Idle while the robot is disabled. This ensures the configured
                 // neutral mode is applied to the drive motors while disabled.
                 final var idle = new SwerveRequest.Idle();
                 RobotModeTriggers.disabled().whileTrue(
                                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
-                //joystick.rightTrigger().whileTrue(new RunCommand(() -> shooter.setShooterSpeed(0.4375), shooter)
-                 //               .finallyDo(() -> shooter.setShooterSpeed(0)));
+                // joystick.rightTrigger().whileTrue(new RunCommand(() ->
+                // shooter.setShooterSpeed(0.4375), shooter)
+                // .finallyDo(() -> shooter.setShooterSpeed(0)));
                 joystick.y().whileTrue(new RunCommand(() -> shooter.setElevatorSpeed(-0.7), shooter)
                                 .finallyDo(() -> shooter.setElevatorSpeed(0.0)));
                 joystick.leftTrigger().whileTrue(new RunCommand(() -> intake.setIntakeSpeed(0.8), intake)
                                 .finallyDo(() -> intake.stopIntake()));
                 // joystick.rightBumper().whileTrue(new InstantCommand(() -> {
-                //         shooter.setShooterSpeed(0.4375);
+                // shooter.setShooterSpeed(0.4375);
                 // }).andThen(new WaitCommand(1)).andThen(new RunCommand(() -> {
-                //         shooter.setElevatorSpeed(-0.7);
-                //         shooter.setShooterSpeed(0.4375);
-                //         intake.setFeederSpeed(0.5);
+                // shooter.setElevatorSpeed(-0.7);
+                // shooter.setShooterSpeed(0.4375);
+                // intake.setFeederSpeed(0.5);
 
                 // }).finallyDo(() -> {
-                //         shooter.setElevatorSpeed(0);
-                //         shooter.setShooterSpeed(0);
-                //         intake.setFeederSpeed(0);
+                // shooter.setElevatorSpeed(0);
+                // shooter.setShooterSpeed(0);
+                // intake.setFeederSpeed(0);
                 // })));
 
                 // joystick.rightBumper().whileTrue(new RunCommand(() ->
@@ -129,8 +132,39 @@ public class RobotContainer {
                 joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
                 joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
+                // dpad up and down adjust testvel, dpad right sets testvel to the assumed
+                // optimal flywheel speed for the current distance to the hub, and right trigger
+                // runs the shooter at testvel. Use these to tune your shooter, then once you
+                // have it tuned, you can use the getOptimalFlywheelSpeed method in
+                // shooterSubsystem to get the optimal flywheel speed for any distance within
+                // the range of your table
+                // start close up and then far, then go to points inbetween, see what it thinks
+                // is optimal, and adjust as needed till youre happy with results. Then,
+                // uncomment liune 147 for autoshoot0
+                // joystick.povDown().onTrue(new InstantCommand(() -> shooter.testVel+=5));
+                // joystick.povUp().onTrue(new InstantCommand(() -> shooter.testVel-=5));
+                // joystick.povRight().onTrue(new InstantCommand(() ->
+                // shooter.tuningVel=shooter.getOptimalFlywheelSpeed(drivetrain.getHubDistance())));
+                // joystick.rightTrigger().whileTrue(new RunCommand(() ->
+                // shooter.setShooterSpeed(shooter.testVel), shooter)
+                // .finallyDo(() -> shooter.setShooterSpeed(0)));
+                // joystick.a().whileTrue(new RunCommand(() -> {
+                // shooter.setElevatorSpeed(-0.7);
+                // intake.setFeederSpeed(0.5);
+                // }, intake).finallyDo(() -> {
+                // shooter.setElevatorSpeed(0);
+                // intake.setFeederSpeed(0);
+                // }));
+                // joystick.rightBumper().whileTrue(shooter.shootCommand(drivetrain.getHubDistance())
+                //                 .alongWith(new WaitCommand(1).andThen(new RunCommand(() -> {
+                //                         shooter.setElevatorSpeed(-0.7);
+                //                         intake.setFeederSpeed(0.5);
+                //                 }).finallyDo(() -> {
+                //                         shooter.setElevatorSpeed(0);
+                //                         intake.setFeederSpeed(0);
+                //                 }))));
                 // Reset the field-centric heading on left bumper press.
-                //joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+                // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
                 drivetrain.registerTelemetry(logger::telemeterize);
         }

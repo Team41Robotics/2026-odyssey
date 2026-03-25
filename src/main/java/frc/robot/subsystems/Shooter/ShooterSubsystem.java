@@ -75,7 +75,10 @@ public class ShooterSubsystem extends SubsystemBase {
             setShooterSpeed(targetVel); // Convert RPS to percentage output
         });
     }
-    
+    public void printTableEntry(){
+        double velocity = flywheelMotor.getVelocity().getValueAsDouble();
+        System.out.println("flywheelSpeed.put(" + drive.getHubDistance() + ", " + velocity + ");");
+    }
     public void logTuning(){
         double velocity = flywheelMotor.getVelocity().getValueAsDouble();
         double output = tuningVel;

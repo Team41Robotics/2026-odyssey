@@ -134,7 +134,8 @@ public class RobotContainer {
 
                 // dpad up and down adjust testvel, dpad right sets testvel to the assumed
                 // optimal flywheel speed for the current distance to the hub, and right trigger
-                // runs the shooter at testvel. Use these to tune your shooter, then once you
+                // runs the shooter at testvel.                 left with print out a line of code to add to the interp table with the current distance and flywheel velocity.
+                //Use these to tune your shooter, then once you
                 // have it tuned, you can use the getOptimalFlywheelSpeed method in
                 // shooterSubsystem to get the optimal flywheel speed for any distance within
                 // the range of your table
@@ -145,6 +146,7 @@ public class RobotContainer {
                 // joystick.povUp().onTrue(new InstantCommand(() -> shooter.testVel-=5));
                 // joystick.povRight().onTrue(new InstantCommand(() ->
                 // shooter.tuningVel=shooter.getOptimalFlywheelSpeed(drivetrain.getHubDistance())));
+                //joystick.povLeft().onTrue(new InstantCommand(() -> shooter.printTableEntry()));
                 // joystick.rightTrigger().whileTrue(new RunCommand(() ->
                 // shooter.setShooterSpeed(shooter.testVel), shooter)
                 // .finallyDo(() -> shooter.setShooterSpeed(0)));

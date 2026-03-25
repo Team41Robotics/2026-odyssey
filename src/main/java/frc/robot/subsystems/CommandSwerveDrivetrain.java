@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
+import frc.robot.FieldConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -239,6 +239,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+        System.out.print("Point Robot at Hub, this should get smaller as you get closer: ");
+        System.out.println(getHubAngleError().getDegrees());
+        System.out.println("If it doesn,t change line 262 to be blue allinance hub");
+        System.out.println("Once working, uncomment line 81 to enable aimbot with right trigger, and comment out lines 242-245 to disable this tuning point");
     }
 
     private void startSimThread() {
@@ -255,7 +259,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
-
+    public Rotation2d getHubAngle() {
+            return this.getState().Pose.getTranslation().minus(FieldConstants.redAllianceHub).getAngle();
+        }
+    public Rotation2d getHubAngleError() {
+            return getHubAngle().minus(getState().Pose.getRotation());
+        }
     /**
      * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
      * while still accounting for measurement noise.
@@ -300,4 +309,5 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public Optional<Pose2d> samplePoseAt(double timestampSeconds) {
         return super.samplePoseAt(Utils.fpgaToCurrentTime(timestampSeconds));
     }
+
 }

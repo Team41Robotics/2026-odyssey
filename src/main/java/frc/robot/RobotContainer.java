@@ -42,7 +42,10 @@ public class RobotContainer {
                                                                                  // motors
         private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
         private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-
+        private final SwerveRequest.RobotCentricFacingAngle aimbot= new SwerveRequest.RobotCentricFacingAngle()
+                        .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
+                                                                                 // motors
         private final Telemetry logger = new Telemetry(MaxSpeed);
 
         private final CommandXboxController joystick = new CommandXboxController(0);
@@ -52,7 +55,13 @@ public class RobotContainer {
         public RobotContainer() {
                 configureBindings();
         }
+        private Command aimbotCommand() {
+                return 
+                        drivetrain.applyRequest(() -> aimbot.withVelocityX(-joystick.getLeftY() * MaxSpeed)
+                        .withVelocityY(-joystick.getLeftX() * MaxSpeed));
 
+        
+        }
         private void configureBindings() {
                 // Note that X is defined as forward according to WPILib convention,
                 // and Y is defined as to the left according to WPILib convention.
@@ -72,14 +81,16 @@ public class RobotContainer {
                                                                                                             // negative
                                                                                                             // X (left)
                                 ));
+                //Drives Robot With heading locked to hub
+                //joystick.rightTrigger().whileTrue(aimbotCommand());
 
                 // Idle while the robot is disabled. This ensures the configured
                 // neutral mode is applied to the drive motors while disabled.
                 final var idle = new SwerveRequest.Idle();
                 RobotModeTriggers.disabled().whileTrue(
                                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
-                joystick.rightTrigger().whileTrue(new RunCommand(() -> shooter.setShooterSpeed(0.4375), shooter)
-                                .finallyDo(() -> shooter.setShooterSpeed(0)));
+                //joystick.rightTrigger().whileTrue(new RunCommand(() -> shooter.setShooterSpeed(0.4375), shooter)
+                 //               .finallyDo(() -> shooter.setShooterSpeed(0)));
                 joystick.y().whileTrue(new RunCommand(() -> shooter.setElevatorSpeed(-0.7), shooter)
                                 .finallyDo(() -> shooter.setElevatorSpeed(0.0)));
                 joystick.leftTrigger().whileTrue(new RunCommand(() -> intake.setIntakeSpeed(0.8), intake)

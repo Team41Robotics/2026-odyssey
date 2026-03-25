@@ -15,7 +15,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         public TalonFX flywheelMotor;
         public TalonFX flywheelFollowerMotor;
-
+    
         public TalonFX elevatorMotor;
     public ShooterSubsystem() {
         flywheelMotor = new TalonFX(ShooterConstants.FLYWHEEL_MOTOR_ID); // Replace with actual CAN ID

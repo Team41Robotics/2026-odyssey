@@ -95,18 +95,19 @@ public class RobotContainer {
                                 .finallyDo(() -> shooter.setElevatorSpeed(0.0)));
                 joystick.leftTrigger().whileTrue(new RunCommand(() -> intake.setIntakeSpeed(0.8), intake)
                                 .finallyDo(() -> intake.stopIntake()));
-                joystick.rightBumper().whileTrue(new InstantCommand(() -> {
-                        shooter.setShooterSpeed(0.4375);
-                }).andThen(new WaitCommand(1)).andThen(new RunCommand(() -> {
-                        shooter.setElevatorSpeed(-0.7);
-                        shooter.setShooterSpeed(0.4375);
-                        intake.setFeederSpeed(0.5);
+                // joystick.rightBumper().whileTrue(new InstantCommand(() -> {
+                //         shooter.setShooterSpeed(0.4375);
+                // }).andThen(new WaitCommand(1)).andThen(new RunCommand(() -> {
+                //         shooter.setElevatorSpeed(-0.7);
+                //         shooter.setShooterSpeed(0.4375);
+                //         intake.setFeederSpeed(0.5);
 
-                }).finallyDo(() -> {
-                        shooter.setElevatorSpeed(0);
-                        shooter.setShooterSpeed(0);
-                        intake.setFeederSpeed(0);
-                })));
+                // }).finallyDo(() -> {
+                //         shooter.setElevatorSpeed(0);
+                //         shooter.setShooterSpeed(0);
+                //         intake.setFeederSpeed(0);
+                // })));
+
                 // joystick.rightBumper().whileTrue(new RunCommand(() ->
                 // intake.setExtensionSpeed(0.2), intake)
                 // .finallyDo(() -> intake.setExtensionSpeed(0.0)));
@@ -129,7 +130,7 @@ public class RobotContainer {
                 joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
                 // Reset the field-centric heading on left bumper press.
-                joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+                //joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
                 drivetrain.registerTelemetry(logger::telemeterize);
         }

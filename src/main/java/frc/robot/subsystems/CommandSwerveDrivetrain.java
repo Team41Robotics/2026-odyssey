@@ -243,6 +243,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         System.out.println(getHubAngleError().getDegrees());
         System.out.println("If it doesn,t change line 262 to be blue allinance hub");
         System.out.println("Once working, uncomment line 81 to enable aimbot with right trigger, and comment out lines 242-245 to disable this tuning point");
+        System.out.println("then head over to shooterSubsytem and uncomment line 52-53 to begin tuning the shooter");
     }
 
     private void startSimThread() {

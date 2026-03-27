@@ -46,12 +46,12 @@ public class ShooterSubsystem extends SubsystemBase {
         
         // config lead motors pid slots for velocity control
         TalonFXConfiguration pidConfig = new TalonFXConfiguration();
-        pidConfig.Slot0.kS = 0.00; // Static Feedforward. Increase until motor begins moving the slightest bit when at above 0 vel setpoint (step around 0.05)
-        pidConfig.Slot0.kV = 0.0; // Velocity Feedforward. Increase until you reach the max velocity of the flywheel at tuning vel = 100% output. Then repeat process at tuningVel = 20% output and make sure kV is still correct. Adjust kV as necessary.
+        pidConfig.Slot0.kS = 0.05; // Static Feedforward. Increase until motor begins moving the slightest bit when at above 0 vel setpoint (step around 0.05)
+        pidConfig.Slot0.kV = 2.0; // Velocity Feedforward. Increase until you reach the max velocity of the flywheel at tuning vel = 100% output. Then repeat process at tuningVel = 20% output and make sure kV is still correct. Adjust kV as necessary.
 
         pidConfig.Slot0.kP = 0.0; // Proportional gain
-        pidConfig.Slot0.kI = 0.000; // Integral gain
-        pidConfig.Slot0.kD = 0.0; // Derivative gain
+        pidConfig.Slot0.kI = 0.00; // Integral gain
+        pidConfig.Slot0.kD = 0.000; // Derivative gain
         //once you have it tuned to a good set, test it out by setting tuning vel to differenbt velocities, then its time to begin getting the interp setting. Uncomment lines 
         flywheelMotor.getConfigurator().apply(pidConfig);
 

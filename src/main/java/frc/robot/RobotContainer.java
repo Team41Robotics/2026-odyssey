@@ -58,11 +58,11 @@ public class RobotContainer {
                 configureBindings();
         }
 
-        private Command aimbotCommand() {
-                return drivetrain.applyRequest(() -> aimbot.withVelocityX(-joystick.getLeftY() * MaxSpeed)
-                                .withVelocityY(-joystick.getLeftX() * MaxSpeed));
+        //private Command aimbotCommand() {
+         //       return drivetrain.applyRequest(() -> aimbot.withVelocityX(-joystick.getLeftY() * MaxSpeed)
+           //                     .withVelocityY(-joystick.getLeftX() * MaxSpeed));
 
-        }
+       // }
 
         private void configureBindings() {
                 // Note that X is defined as forward according to WPILib convention,
@@ -91,25 +91,25 @@ public class RobotContainer {
                 final var idle = new SwerveRequest.Idle();
                 RobotModeTriggers.disabled().whileTrue(
                                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
-                // joystick.rightTrigger().whileTrue(new RunCommand(() ->
-                // shooter.setShooterSpeed(0.4375), shooter)
-                // .finallyDo(() -> shooter.setShooterSpeed(0)));
+                 joystick.rightTrigger().whileTrue(new RunCommand(() ->
+                 shooter.setShooterSpeed(0.4375), shooter)
+                 .finallyDo(() -> shooter.setShooterSpeed(0)));
                 joystick.y().whileTrue(new RunCommand(() -> shooter.setElevatorSpeed(-0.7), shooter)
                                 .finallyDo(() -> shooter.setElevatorSpeed(0.0)));
-                joystick.leftTrigger().whileTrue(new RunCommand(() -> intake.setIntakeSpeed(0.8), intake)
+                joystick.leftTrigger().whileTrue(new RunCommand(() -> intake.setIntakeSpeed(1.0), intake)
                                 .finallyDo(() -> intake.stopIntake()));
-                // joystick.rightBumper().whileTrue(new InstantCommand(() -> {
-                // shooter.setShooterSpeed(0.4375);
-                // }).andThen(new WaitCommand(1)).andThen(new RunCommand(() -> {
-                // shooter.setElevatorSpeed(-0.7);
-                // shooter.setShooterSpeed(0.4375);
-                // intake.setFeederSpeed(0.5);
+                joystick.rightBumper().whileTrue(new InstantCommand(() -> {
+                shooter.setShooterSpeed(0.4375);
+                }).andThen(new WaitCommand(1)).andThen(new RunCommand(() -> {
+                shooter.setElevatorSpeed(-0.7);
+                shooter.setShooterSpeed(0.4375);
+                intake.setFeederSpeed(0.8);
 
-                // }).finallyDo(() -> {
-                // shooter.setElevatorSpeed(0);
-                // shooter.setShooterSpeed(0);
-                // intake.setFeederSpeed(0);
-                // })));
+                }).finallyDo(() -> {
+                 shooter.setElevatorSpeed(0);
+                 shooter.setShooterSpeed(0);
+                 intake.setFeederSpeed(0);
+                 })));
 
                 // joystick.rightBumper().whileTrue(new RunCommand(() ->
                 // intake.setExtensionSpeed(0.2), intake)

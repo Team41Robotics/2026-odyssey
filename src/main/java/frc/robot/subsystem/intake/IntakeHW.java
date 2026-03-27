@@ -1,18 +1,13 @@
 package frc.robot.subsystem.intake;
 
-import static java.lang.Math.*;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -22,28 +17,23 @@ import frc.robot.Robot;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeHW {
-	public static final double EXTEND_kS = 0.1; // FIXME.
-	public static final double EXTEND_kV = 0.5; // FIXME.
-	public static final double EXTEND_kP = 15.0; // FIXME.
-	public static final double EXTEND_RATIO = 1.0 / 12.0; // FIXME. motor rotations → mechanism rotations
-	public static final double EXTEND_OUT_POS = 10.0; // FIXME. mechanism rotations extended
-	public static final double EXTEND_IN_POS = 0.0; // FIXME. mechanism rotations retracted
-	public static final TrapezoidProfile.Constraints EXTEND_CONSTRAINTS =
-			new TrapezoidProfile.Constraints(12, 30); // FIXME. (rot/s, rot/s²)
-	public static final SimpleMotorFeedforward EXTEND_FF = new SimpleMotorFeedforward(EXTEND_kS, EXTEND_kV);
+	public static final double EXTEND_OUT_VOLTAGE = 7.0;
+	public static final double EXTEND_IN_VOLTAGE = -7.0;
 
-	public static final double INTAKE_SPEED = 1.0; // FIXME. duty cycle when deployed
-	public static final double INTAKE_REVERSE_SPEED = -0.5; // FIXME. duty cycle during deploy reverse
-	public static final double INTAKE_REVERSE_DURATION = 0.5; // seconds
+	public static final double INTAKE_VOLTAGE = 12.0; // FIXME.
+	public static final double INTAKE_REVERSE_VOLTAGE = -6.0; // FIXME. during deploy
+
+	public static final double EXTENSION_SUPPLY_CURRENT = 60.0;
+	public static final double EXTENSION_STATOR_CURRENT = 80.0;
+	public static final double INTAKE_SUPPLY_CURRENT = 40.0;
+	public static final double INTAKE_STATOR_CURRENT = 60.0;
 
 	public TalonFX intakeTalonFX;
 	public TalonFX extensionTalonFX;
 	public TalonFX extensionFollowerTalonFX;
-	public TalonFX feederTalonFX;
 
-	public PositionVoltage extendRequest = new PositionVoltage(0).withSlot(0);
-	public DutyCycleOut intakeDuty = new DutyCycleOut(0);
-	public DutyCycleOut feederDuty = new DutyCycleOut(0);
+	public VoltageOut extendVoltageRequest = new VoltageOut(0);
+	public VoltageOut intakeVoltageRequest = new VoltageOut(0);
 
 	// Cached StatusSignals — extension
 	public StatusSignal<Angle> extensionPosition;
@@ -53,42 +43,47 @@ public class IntakeHW {
 	public StatusSignal<Voltage> extensionSupplyVoltage;
 	public StatusSignal<Current> extensionSupplyCurrent;
 
-	// Cached StatusSignals — intake + feeder (voltage/current only)
+	// Cached StatusSignals — intake (voltage/current only)
 	public StatusSignal<Voltage> intakeMotorVoltage;
 	public StatusSignal<Current> intakeStatorCurrent;
-	public StatusSignal<Voltage> feederMotorVoltage;
-	public StatusSignal<Current> feederStatorCurrent;
 
 	public void init() {
 		if (!Robot.isReal()) return;
 
 		// --- Extension leader ---
 		extensionTalonFX = new TalonFX(IntakeConstants.EXTENSION_MOTOR_ID);
-		TalonFXConfiguration extendConfig = new TalonFXConfiguration();
-		extendConfig.Slot0.kP = EXTEND_kP * EXTEND_RATIO * 2 * PI;
-		extensionTalonFX.getConfigurator().apply(extendConfig);
+		TalonFXConfiguration extensionConfig = new TalonFXConfiguration();
+		extensionConfig.CurrentLimits.SupplyCurrentLimit = EXTENSION_SUPPLY_CURRENT;
+		extensionConfig.CurrentLimits.StatorCurrentLimit = EXTENSION_STATOR_CURRENT;
+		extensionConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+		extensionConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+		extensionTalonFX.getConfigurator().apply(extensionConfig);
 		extensionTalonFX.clearStickyFaults();
 		extensionTalonFX.setNeutralMode(NeutralModeValue.Brake);
-		extensionTalonFX.setPosition(0); // FIXME. seed to absolute position if encoder available
+		extensionTalonFX.setPosition(0);
 
 		// --- Extension follower ---
 		extensionFollowerTalonFX = new TalonFX(IntakeConstants.EXTENSION_FOLLOWER_MOTOR_ID);
-		extensionFollowerTalonFX.getConfigurator().apply(new TalonFXConfiguration());
+		TalonFXConfiguration extensionFollowerConfig = new TalonFXConfiguration();
+		extensionFollowerConfig.CurrentLimits.SupplyCurrentLimit = EXTENSION_SUPPLY_CURRENT;
+		extensionFollowerConfig.CurrentLimits.StatorCurrentLimit = EXTENSION_STATOR_CURRENT;
+		extensionFollowerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+		extensionFollowerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+		extensionFollowerTalonFX.getConfigurator().apply(extensionFollowerConfig);
 		extensionFollowerTalonFX.clearStickyFaults();
 		extensionFollowerTalonFX.setControl(
 				new Follower(IntakeConstants.EXTENSION_MOTOR_ID, MotorAlignmentValue.Opposed));
 
 		// --- Intake roller ---
 		intakeTalonFX = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
-		intakeTalonFX.getConfigurator().apply(new TalonFXConfiguration());
+		TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
+		intakeConfig.CurrentLimits.SupplyCurrentLimit = INTAKE_SUPPLY_CURRENT;
+		intakeConfig.CurrentLimits.StatorCurrentLimit = INTAKE_STATOR_CURRENT;
+		intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+		intakeConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+		intakeTalonFX.getConfigurator().apply(intakeConfig);
 		intakeTalonFX.clearStickyFaults();
 		intakeTalonFX.setNeutralMode(NeutralModeValue.Coast);
-
-		// --- Feeder ---
-		feederTalonFX = new TalonFX(IntakeConstants.FEEDER_MOTOR_ID);
-		feederTalonFX.getConfigurator().apply(new TalonFXConfiguration());
-		feederTalonFX.clearStickyFaults();
-		feederTalonFX.setNeutralMode(NeutralModeValue.Coast);
 
 		// --- Cache StatusSignals ---
 		extensionPosition = extensionTalonFX.getPosition(false);
@@ -100,8 +95,6 @@ public class IntakeHW {
 
 		intakeMotorVoltage = intakeTalonFX.getMotorVoltage(false);
 		intakeStatorCurrent = intakeTalonFX.getStatorCurrent(false);
-		feederMotorVoltage = feederTalonFX.getMotorVoltage(false);
-		feederStatorCurrent = feederTalonFX.getStatorCurrent(false);
 
 		// --- Update frequencies ---
 		extensionPosition.setUpdateFrequency(50);
@@ -113,13 +106,10 @@ public class IntakeHW {
 
 		intakeMotorVoltage.setUpdateFrequency(50);
 		intakeStatorCurrent.setUpdateFrequency(50);
-		feederMotorVoltage.setUpdateFrequency(50);
-		feederStatorCurrent.setUpdateFrequency(50);
 
 		extensionTalonFX.optimizeBusUtilization();
 		extensionFollowerTalonFX.optimizeBusUtilization();
 		intakeTalonFX.optimizeBusUtilization();
-		feederTalonFX.optimizeBusUtilization();
 	}
 
 	public void sense(IntakeInputs inputs) {
@@ -133,12 +123,10 @@ public class IntakeHW {
 				extensionSupplyVoltage,
 				extensionSupplyCurrent,
 				intakeMotorVoltage,
-				intakeStatorCurrent,
-				feederMotorVoltage,
-				feederStatorCurrent);
+				intakeStatorCurrent);
 
-		inputs.extensionPosRadians = extensionPosition.getValueAsDouble() * EXTEND_RATIO * 2 * PI;
-		inputs.extensionVelRadiansPerSec = extensionVelocity.getValueAsDouble() * EXTEND_RATIO * 2 * PI;
+		inputs.extensionPosRadians = extensionPosition.getValueAsDouble();
+		inputs.extensionVelRadiansPerSec = extensionVelocity.getValueAsDouble();
 		inputs.extensionVoltageVolts = extensionMotorVoltage.getValueAsDouble();
 		inputs.extensionCurrentAmps = extensionStatorCurrent.getValueAsDouble();
 		inputs.extensionBusVoltageVolts = extensionSupplyVoltage.getValueAsDouble();
@@ -147,25 +135,14 @@ public class IntakeHW {
 
 		inputs.intakeVoltageVolts = intakeMotorVoltage.getValueAsDouble();
 		inputs.intakeCurrentAmps = intakeStatorCurrent.getValueAsDouble();
-		inputs.feederVoltageVolts = feederMotorVoltage.getValueAsDouble();
-		inputs.feederCurrentAmps = feederStatorCurrent.getValueAsDouble();
 	}
 
-	/** Drive all intake motors. extensionSetpointRad is in mechanism radians. */
-	public void actuate(
-			IntakeInputs inputs,
-			double extensionSetpointRad,
-			double extensionFF,
-			double intakeSpeed,
-			double feederSpeed) {
-		Logger.recordOutput("/Intake/extensionErrorRad", inputs.extensionPosRadians - extensionSetpointRad);
+	public void actuate(IntakeInputs inputs, double extendVoltage, double intakeVoltage) {
+		Logger.recordOutput("/Intake/targetExtendVoltage", extendVoltage);
 
 		if (!Robot.isReal()) return;
 
-		extensionTalonFX.setControl(extendRequest
-				.withPosition(extensionSetpointRad / (EXTEND_RATIO * 2 * PI))
-				.withFeedForward(extensionFF));
-		intakeTalonFX.setControl(intakeDuty.withOutput(intakeSpeed));
-		feederTalonFX.setControl(feederDuty.withOutput(feederSpeed));
+		extensionTalonFX.setControl(extendVoltageRequest.withOutput(extendVoltage));
+		intakeTalonFX.setControl(intakeVoltageRequest.withOutput(intakeVoltage));
 	}
 }

@@ -12,13 +12,18 @@ public class ExtendIn extends Command {
 	}
 
 	@Override
-	public void initialize() {
-		intake.extendTarget = IntakeHW.EXTEND_IN_POS;
-		intake.targetIntakeSpeed = 0;
+	public void execute() {
+		intake.targetExtendVoltage = IntakeHW.EXTEND_IN_VOLTAGE;
+		intake.targetIntakeVoltage = 0;
+	}
+
+	@Override
+	public void end(boolean interrupted) {
+		intake.targetExtendVoltage = 0;
 	}
 
 	@Override
 	public boolean isFinished() {
-		return true;
+		return false;
 	}
 }

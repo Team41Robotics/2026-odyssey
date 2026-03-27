@@ -10,12 +10,4 @@ public class ShooterInputs {
 	public double flywheelBusVoltageVolts;
 	public double flywheelBusCurrentAmps;
 	public double flywheelTsSec;
-
-	public double elevatorPosRotations;
-	public double elevatorVelRotationsPerSec;
-	public double elevatorVoltageVolts;
-	public double elevatorCurrentAmps;
-	public double elevatorBusVoltageVolts;
-	public double elevatorBusCurrentAmps;
-	public double elevatorTsSec;
 }

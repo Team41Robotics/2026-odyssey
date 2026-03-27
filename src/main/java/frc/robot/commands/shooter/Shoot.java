@@ -14,10 +14,10 @@ import org.littletonrobotics.junction.Logger;
 
 @SuppressWarnings("static-access")
 public class Shoot extends Command {
-	public static final double AIM_kP = 5.0; // FIXME.
-	public static final double AIM_kI = 0.0; // FIXME.
-	public static final double AIM_kD = 0.0; // FIXME.
-	public static final double FEEDER_SPEED = 0.8; // FIXME.
+	public static final double AIM_kP = 5.0;
+	public static final double AIM_kI = 0.0;
+	public static final double AIM_kD = 0.0;
+	public static final double FEEDER_VOLTAGE = 9.6; // FIXME.
 
 	public final PIDController headingController = new PIDController(AIM_kP, AIM_kI, AIM_kD);
 
@@ -38,7 +38,6 @@ public class Shoot extends Command {
 		Targetting.ShotParameters params = Targetting.shotSpeeds(dist);
 
 		shooter.targetFlywheelRPM = params.flywheelRPM();
-		shooter.targetElevatorPos = params.elevatorPos();
 
 		double mag = hypot(controls.leftY(), controls.leftX());
 		double v = Util.squareCurve(Util.deadband(mag, FieldOrientedDrive.DEADBAND));
@@ -53,7 +52,7 @@ public class Shoot extends Command {
 				omega,
 				drive.getRotation()));
 
-		intake.setFeederSpeed(shooter.onTarget ? FEEDER_SPEED : 0.0);
+		indexer.setRollerVoltage(shooter.onTarget ? FEEDER_VOLTAGE : 0.0);
 
 		Logger.recordOutput(
 				"/Shoot/virtualTarget", new edu.wpi.first.math.geometry.Pose2d(virtualTarget, Rotation2d.kZero));
@@ -66,6 +65,6 @@ public class Shoot extends Command {
 
 	@Override
 	public void end(boolean interrupted) {
-		intake.setFeederSpeed(0);
+		indexer.setRollerVoltage(0);
 	}
 }

@@ -4,8 +4,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class JoystickControls implements Controls {
-	public static CommandJoystick left = new CommandJoystick(1); // FIXME: controller ports
+	public static CommandJoystick left = new CommandJoystick(1);
 	public static CommandJoystick right = new CommandJoystick(2);
+	public static CommandJoystick ds = new CommandJoystick(5);
 
 	public Trigger shootTrigger() {
 		return right.trigger();
@@ -28,15 +29,15 @@ public class JoystickControls implements Controls {
 	}
 
 	public Trigger extendOut() {
-		return left.button(3);
+		return ds.button(12);
 	}
 
 	public Trigger extendIn() {
-		return left.button(4);
+		return ds.button(11);
 	}
 
 	public Trigger xLock() {
-		return left.button(5);
+		return left.button(2);
 	}
 
 	public Trigger sysidQuasiForward() {
@@ -56,7 +57,7 @@ public class JoystickControls implements Controls {
 	}
 
 	public double leftX() {
-		return left.getX();
+		return -left.getX();
 	}
 
 	public double leftY() {
@@ -64,7 +65,7 @@ public class JoystickControls implements Controls {
 	}
 
 	public double rightX() {
-		return right.getX();
+		return -right.getX();
 	}
 
 	public double rightY() {

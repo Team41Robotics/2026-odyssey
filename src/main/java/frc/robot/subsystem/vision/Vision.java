@@ -29,16 +29,11 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 @SuppressWarnings("static-access")
 public class Vision extends SubsystemBase {
-	public static final double ROBOT_LEN = 0.71; // FIXME. robot length (m)
-	public static final double ROBOT_WID = 0.69; // FIXME. robot width (m)
-
 	public VisionHW[] cameras = new VisionHW[] {
 		new VisionHW(
-				"TODO", // FIXME. camera name
-				new Transform3d(
-						new Translation3d(0, -ROBOT_WID / 2, 0.17), // FIXME. camera transform
-						new Rotation3d(0, -20. / 180. * PI, -PI / 2)),
-				"TODO.json"), // FIXME. calibration file in src/main/deploy/
+				"KimmySE", // FIXME. camera name
+				new Transform3d(new Translation3d(-0.30, 0, 0), new Rotation3d(0, -20. / 180. * PI, PI)),
+				"Kimmy.json"), // FIXME. calibration file in src/main/deploy/
 	};
 	public VisionInputsAutoLogged[] inputs = new VisionInputsAutoLogged[cameras.length];
 	public PhotonPoseEstimator[] poseEsts = new PhotonPoseEstimator[cameras.length];

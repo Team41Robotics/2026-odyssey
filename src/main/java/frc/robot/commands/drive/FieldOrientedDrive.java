@@ -6,16 +6,15 @@ import static java.lang.Math.*;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystem.drive.TunerConstants;
 
 @SuppressWarnings("static-access")
 public class FieldOrientedDrive extends Command {
-	public static final double MAX_SPEED = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // FIXME.
-	public static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // FIXME.
-	public static final double DEADBAND = 0.10; // FIXME.
-	public static final double TURN_DEADBAND = 0.10; // FIXME.
-	public static final double SPEED_MUL = 1.0; // FIXME.
-	public static final double W_MUL = 1.0; // FIXME.
+	public static final double MAX_SPEED = drive.getMaxLinearSpeedMetersPerSec();
+	public static final double MAX_ANGULAR_RATE = drive.getMaxAngularSpeedRadPerSec();
+	public static final double DEADBAND = 0.10;
+	public static final double TURN_DEADBAND = 0.10;
+	public static final double SPEED_MUL = 1.0;
+	public static final double W_MUL = 1.0;
 
 	public FieldOrientedDrive() {
 		addRequirements(drive);

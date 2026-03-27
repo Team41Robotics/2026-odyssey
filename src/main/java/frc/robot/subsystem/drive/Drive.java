@@ -112,6 +112,7 @@ public class Drive extends SubsystemBase {
 
 	/** Commands robot-relative chassis speeds (discretized). */
 	public void runVelocity(ChassisSpeeds speeds) {
+		Logger.recordOutput("SwerveChassisSpeeds/Target", speeds);
 		ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
 		SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
 		SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));

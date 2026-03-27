@@ -14,7 +14,4 @@ public class IntakeInputs {
 
 	public double intakeVoltageVolts;
 	public double intakeCurrentAmps;
-
-	public double feederVoltageVolts;
-	public double feederCurrentAmps;
 }

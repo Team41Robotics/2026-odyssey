@@ -23,11 +23,9 @@ public class ShooterTrack extends Command {
 		Targetting.ShotParameters params = Targetting.shotSpeeds(dist);
 
 		shooter.targetFlywheelRPM = params.flywheelRPM();
-		shooter.targetElevatorPos = params.elevatorPos();
 
 		Logger.recordOutput("/ShooterTrack/dist", dist);
 		Logger.recordOutput("/ShooterTrack/targetRPM", params.flywheelRPM());
-		Logger.recordOutput("/ShooterTrack/targetElevatorPos", params.elevatorPos());
 	}
 
 	@Override

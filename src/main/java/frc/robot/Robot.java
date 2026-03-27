@@ -38,7 +38,7 @@ public class Robot extends LoggedRobot {
 			Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
 		}
 
-		LoggedPowerDistribution.getInstance(1, ModuleType.kRev); // FIXME. PDH CAN ID
+		LoggedPowerDistribution.getInstance(1, ModuleType.kRev);
 
 		Logger.start();
 

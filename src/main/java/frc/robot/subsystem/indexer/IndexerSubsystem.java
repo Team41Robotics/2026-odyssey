@@ -7,6 +7,7 @@ public class IndexerSubsystem extends SubsystemBase {
 	public IndexerHW hw = new IndexerHW();
 	public IndexerInputsAutoLogged inputs = new IndexerInputsAutoLogged();
 
+	public double targetRollerVoltage = 0;
 	public double targetIndexerVoltage = 0;
 
 	public void init() {
@@ -22,10 +23,6 @@ public class IndexerSubsystem extends SubsystemBase {
 	}
 
 	public void actuate() {
-		hw.actuate(inputs, targetIndexerVoltage);
-	}
-
-	public void setIndexerVoltage(double voltage) {
-		targetIndexerVoltage = voltage;
+		hw.actuate(inputs, targetRollerVoltage, targetIndexerVoltage);
 	}
 }

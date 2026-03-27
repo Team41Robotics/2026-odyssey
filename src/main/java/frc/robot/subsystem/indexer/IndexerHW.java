@@ -16,9 +16,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class IndexerHW {
 	public static final double ROLLER_SUPPLY_CURRENT = 40.0;
-	public static final double ROLLER_STATOR_CURRENT = 60.0;
+	public static final double ROLLER_STATOR_CURRENT = 80.0;
 
-	public static final double ROLLER_VOLTAGE = 6.0;
 
 	public TalonFX rollerTalonFX;
 	public TalonFX indexerTalonFX;
@@ -87,13 +86,13 @@ public class IndexerHW {
 		inputs.indexerCurrentAmps = indexerStatorCurrent.getValueAsDouble();
 	}
 
-	public void actuate(IndexerInputs inputs, double indexerVoltage) {
-		Logger.recordOutput("/Indexer/commandedRollerVoltage", ROLLER_VOLTAGE);
+	public void actuate(IndexerInputs inputs, double rollerVoltage, double indexerVoltage) {
+		Logger.recordOutput("/Indexer/commandedRollerVoltage", rollerVoltage);
 		Logger.recordOutput("/Indexer/commandedIndexerVoltage", indexerVoltage);
 
 		if (!Robot.isReal()) return;
 
-		rollerTalonFX.setControl(rollerVoltageRequest.withOutput(ROLLER_VOLTAGE));
+		rollerTalonFX.setControl(rollerVoltageRequest.withOutput(rollerVoltage));
 		indexerTalonFX.setControl(indexerVoltageRequest.withOutput(indexerVoltage));
 	}
 }

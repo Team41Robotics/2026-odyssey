@@ -19,10 +19,10 @@ import org.littletonrobotics.junction.Logger;
 public class ShooterHW {
 	public static final double FLYWHEEL_kS = 0.24333;
 	public static final double FLYWHEEL_kV = 0.11494;
-	public static final double FLYWHEEL_kP = 0.17662;
+	public static final double FLYWHEEL_kP = 0.17662*2;
 	public static final double FLYWHEEL_kD = 0.0;
 	public static final double FLYWHEEL_SUPPLY_CURRENT = 60.0;
-	public static final double FLYWHEEL_STATOR_CURRENT = 120.0;
+	public static final double FLYWHEEL_STATOR_CURRENT = 100.0;
 
 	public TalonFX flywheelTalonFX;
 	public TalonFX flywheelFollowerTalonFX;

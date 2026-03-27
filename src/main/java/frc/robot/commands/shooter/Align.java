@@ -4,6 +4,7 @@ import static frc.robot.RobotContainer.*;
 import static java.lang.Math.*;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -48,7 +49,7 @@ public class Align extends Command {
 				drive.getRotation()));
 
 		Logger.recordOutput(
-				"/Align/virtualTarget", new edu.wpi.first.math.geometry.Pose2d(virtualTarget, Rotation2d.kZero));
+				"/Align/virtualTarget", new Pose2d(virtualTarget, Rotation2d.kZero));
 		Logger.recordOutput("/Align/targetAngle", targetAngle);
 		Logger.recordOutput("/Align/headingError", headingController.getError());
 	}

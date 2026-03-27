@@ -19,7 +19,8 @@ public class Shoot extends Command {
 		Targetting.ShotParameters params = Targetting.shotSpeeds(dist);
 
 		shooter.targetFlywheelRPM = params.flywheelRPM();
-		indexer.setIndexerVoltage(shooter.onTarget ? FEEDER_VOLTAGE : 0.0);
+		indexer.targetIndexerVoltage = shooter.onTarget ? FEEDER_VOLTAGE : 0.0;
+		indexer.targetRollerVoltage = shooter.onTarget ? 3 : 0;
 
 		Logger.recordOutput("/Shoot/dist", dist);
 		Logger.recordOutput("/Shoot/targetRPM", params.flywheelRPM());
@@ -28,6 +29,7 @@ public class Shoot extends Command {
 
 	@Override
 	public void end(boolean interrupted) {
-		indexer.setIndexerVoltage(0);
+		indexer.targetIndexerVoltage = 0;
+		indexer.targetRollerVoltage = 0;
 	}
 }

@@ -8,26 +8,13 @@ public class JoystickControls implements Controls {
 	public static CommandJoystick right = new CommandJoystick(2);
 	public static CommandJoystick ds = new CommandJoystick(5);
 
-	public Trigger shootTrigger() {
-		return right.trigger();
-	}
-
-	public Trigger elevatorUp() {
-		return right.button(3);
-	}
-
-	public Trigger intakeTrigger() {
-		return left.trigger();
-	}
-
-	public Trigger fullShootBumper() {
+	public Trigger align() {
 		return right.button(2);
 	}
 
-	public Trigger feederButton() {
-		return left.button(2);
+	public Trigger shoot() {
+		return right.button(1);
 	}
-
 	public Trigger extendOut() {
 		return ds.button(12);
 	}
@@ -57,11 +44,11 @@ public class JoystickControls implements Controls {
 	}
 
 	public double leftX() {
-		return -left.getX();
+		return left.getX();
 	}
 
 	public double leftY() {
-		return -left.getY();
+		return left.getY();
 	}
 
 	public double rightX() {

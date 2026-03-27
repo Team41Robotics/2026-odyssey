@@ -31,9 +31,9 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class Vision extends SubsystemBase {
 	public VisionHW[] cameras = new VisionHW[] {
 		new VisionHW(
-				"KimmySE", // FIXME. camera name
-				new Transform3d(new Translation3d(-0.30, 0, 0), new Rotation3d(0, -20. / 180. * PI, PI)),
-				"Kimmy.json"), // FIXME. calibration file in src/main/deploy/
+				"KimmySE",
+				new Transform3d(new Translation3d(0.30, 0, 0), new Rotation3d(0, -20. / 180. * PI, 0)),
+				"Kimmy.json"),
 	};
 	public VisionInputsAutoLogged[] inputs = new VisionInputsAutoLogged[cameras.length];
 	public PhotonPoseEstimator[] poseEsts = new PhotonPoseEstimator[cameras.length];
@@ -96,8 +96,15 @@ public class Vision extends SubsystemBase {
 
 			poseEsts[i].addHeadingData(Timer.getTimestamp(), drive.getRotation());
 
+			Logger.recordOutput("/Vision/" + cam.name + "/nResults", results.size());
+
+			int camFusionCount = 0;
+			int camRejectedCount = 0;
 			for (int j = 0; j < results.size(); j++) {
 				PhotonPipelineResult result = results.get(j);
+
+				double latencyMs = (Timer.getTimestamp() - result.getTimestampSeconds()) * 1000.0;
+				Logger.recordOutput("/Vision/" + cam.name + "/latencyMs", latencyMs);
 
 				Pose3d[] seenTagPoses3d = result.targets.stream()
 						.map(t -> TAG_LAYOUT.getTagPose(t.fiducialId))
@@ -184,6 +191,9 @@ public class Vision extends SubsystemBase {
 					Logger.recordOutput(prefix + "/pnpDistTrig/thetaStd", thetaStd);
 					Logger.recordOutput(prefix + "/pnpDistTrig/trigCount", trigSuccessCount);
 					Logger.recordOutput(prefix + "/pnpDistTrig/weightSum", fusedTrigWeightSum);
+					camFusionCount++;
+				} else if (!sane(pnpDistTrigPose) && trigSuccessCount > 0) {
+					camRejectedCount++;
 				}
 
 				// multiTag: heading correction only — loose XY, tight theta
@@ -207,10 +217,15 @@ public class Vision extends SubsystemBase {
 					Logger.recordOutput(prefix + "/multiTag/pose", pose);
 					Logger.recordOutput(prefix + "/multiTag/xyStd", xyStd);
 					Logger.recordOutput(prefix + "/multiTag/thetaStd", thetaStd);
+					camFusionCount++;
+				} else if (!sane(coprocPnPpose) && result.targets.size() >= 2) {
+					camRejectedCount++;
 				}
 
 				Logger.recordOutput(prefix + "/methods", methods.isEmpty() ? "none" : String.join("+", methods));
 			}
+			Logger.recordOutput("/Vision/" + cam.name + "/fusionCount", camFusionCount);
+			Logger.recordOutput("/Vision/" + cam.name + "/rejectedCount", camRejectedCount);
 		}
 	}
 }

@@ -3,15 +3,9 @@ package frc.robot.subsystem.controls;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public interface Controls {
-	Trigger shootTrigger();
+	Trigger align();
 
-	Trigger elevatorUp();
-
-	Trigger intakeTrigger();
-
-	Trigger fullShootBumper();
-
-	Trigger feederButton();
+	Trigger shoot();
 
 	Trigger extendOut();
 

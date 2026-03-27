@@ -23,10 +23,13 @@ public class ShooterSubsystem extends SubsystemBase {
 		hw.sense(inputs);
 		Logger.processInputs("/Shooter", inputs);
 
-		onTarget = Math.abs(inputs.flywheelVelocityRPM - targetFlywheelRPM) < FLYWHEEL_THRES;
+		double flywheelRPMError = inputs.flywheelVelocityRPM - targetFlywheelRPM;
+		onTarget = Math.abs(flywheelRPMError) < FLYWHEEL_THRES;
 
 		Logger.recordOutput("/Shooter/targetFlywheelRPM", targetFlywheelRPM);
+		Logger.recordOutput("/Shooter/flywheelRPMError", flywheelRPMError);
 		Logger.recordOutput("/Shooter/onTarget", onTarget);
+		Logger.recordOutput("/Shooter/flywheelSpinningUp", targetFlywheelRPM > 0 && !onTarget);
 	}
 
 	public void actuate() {

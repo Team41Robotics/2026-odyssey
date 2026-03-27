@@ -34,4 +34,6 @@ public interface ModuleIO {
 	public default void setDriveVelocity(double velocityRadPerSec) {}
 
 	public default void setTurnPosition(Rotation2d rotation) {}
+
+	public default void setDriveBrakeMode(boolean enabled) {}
 }

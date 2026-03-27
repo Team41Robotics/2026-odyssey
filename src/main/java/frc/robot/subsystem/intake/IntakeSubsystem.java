@@ -20,6 +20,9 @@ public class IntakeSubsystem extends SubsystemBase {
 		Logger.processInputs("/Intake", inputs);
 
 		Logger.recordOutput("/Intake/targetIntakeVoltage", targetIntakeVoltage);
+		Logger.recordOutput("/Intake/targetExtendVoltage", targetExtendVoltage);
+		Logger.recordOutput("/Intake/extendVoltageError", inputs.extensionVoltageVolts - targetExtendVoltage);
+		Logger.recordOutput("/Intake/intakeVoltageError", inputs.intakeVoltageVolts - targetIntakeVoltage);
 	}
 
 	public void actuate() {

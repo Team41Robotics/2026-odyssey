@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
@@ -17,8 +18,8 @@ import frc.robot.Robot;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeHW {
-	public static final double EXTEND_OUT_VOLTAGE = 7.0;
-	public static final double EXTEND_IN_VOLTAGE = -7.0;
+	public static final double EXTEND_OUT_VOLTAGE = 3.0;
+	public static final double EXTEND_IN_VOLTAGE = -3.0;
 
 	public static final double INTAKE_VOLTAGE = 12.0; // FIXME.
 	public static final double INTAKE_REVERSE_VOLTAGE = -6.0; // FIXME. during deploy
@@ -57,6 +58,7 @@ public class IntakeHW {
 		extensionConfig.CurrentLimits.StatorCurrentLimit = EXTENSION_STATOR_CURRENT;
 		extensionConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 		extensionConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+		extensionConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 		extensionTalonFX.getConfigurator().apply(extensionConfig);
 		extensionTalonFX.clearStickyFaults();
 		extensionTalonFX.setNeutralMode(NeutralModeValue.Brake);
@@ -71,6 +73,7 @@ public class IntakeHW {
 		extensionFollowerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 		extensionFollowerTalonFX.getConfigurator().apply(extensionFollowerConfig);
 		extensionFollowerTalonFX.clearStickyFaults();
+		extensionFollowerTalonFX.setNeutralMode(NeutralModeValue.Brake);
 		extensionFollowerTalonFX.setControl(
 				new Follower(IntakeConstants.EXTENSION_MOTOR_ID, MotorAlignmentValue.Opposed));
 
@@ -139,6 +142,7 @@ public class IntakeHW {
 
 	public void actuate(IntakeInputs inputs, double extendVoltage, double intakeVoltage) {
 		Logger.recordOutput("/Intake/targetExtendVoltage", extendVoltage);
+		Logger.recordOutput("/Intake/targetIntakeVoltage", intakeVoltage);
 
 		if (!Robot.isReal()) return;
 

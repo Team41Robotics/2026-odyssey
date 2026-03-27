@@ -11,6 +11,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
@@ -58,6 +59,8 @@ public class ModuleIOTalonFX implements ModuleIO {
 	private final StatusSignal<Voltage> turnAppliedVolts;
 	private final StatusSignal<Current> turnCurrent;
 
+	private final MotorOutputConfigs driveOutputConfigs = new MotorOutputConfigs();
+
 	private final Debouncer driveConnectedDebounce = new Debouncer(0.5, Debouncer.DebounceType.kFalling);
 	private final Debouncer turnConnectedDebounce = new Debouncer(0.5, Debouncer.DebounceType.kFalling);
 	private final Debouncer turnEncoderConnectedDebounce = new Debouncer(0.5, Debouncer.DebounceType.kFalling);
@@ -70,7 +73,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 		cancoder = new CANcoder(constants.EncoderId, TunerConstants.kCANBus);
 
 		var driveConfig = constants.DriveMotorInitialConfigs;
-		driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+		driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 		driveConfig.Slot0 = constants.DriveMotorGains;
 		driveConfig.Feedback.SensorToMechanismRatio = constants.DriveMotorGearRatio;
 		driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = constants.SlipCurrent;
@@ -81,6 +84,8 @@ public class ModuleIOTalonFX implements ModuleIO {
 				? InvertedValue.Clockwise_Positive
 				: InvertedValue.CounterClockwise_Positive;
 		tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
+		driveOutputConfigs.NeutralMode = NeutralModeValue.Coast;
+		driveOutputConfigs.Inverted = driveConfig.MotorOutput.Inverted;
 		tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
 
 		var turnConfig = new TalonFXConfiguration();
@@ -206,5 +211,11 @@ public class ModuleIOTalonFX implements ModuleIO {
 					case Voltage -> positionVoltageRequest.withPosition(rotation.getRotations());
 					case TorqueCurrentFOC -> positionTorqueCurrentRequest.withPosition(rotation.getRotations());
 				});
+	}
+
+	@Override
+	public void setDriveBrakeMode(boolean enabled) {
+		driveOutputConfigs.NeutralMode = enabled ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+		driveTalon.getConfigurator().apply(driveOutputConfigs);
 	}
 }

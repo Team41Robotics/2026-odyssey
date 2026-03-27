@@ -6,24 +6,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class XboxControls implements Controls {
 	public static CommandXboxController xbox = new CommandXboxController(0); // FIXME. controller port
 
-	public Trigger shootTrigger() {
-		return xbox.rightTrigger();
-	}
-
-	public Trigger elevatorUp() {
-		return xbox.y();
-	}
-
-	public Trigger intakeTrigger() {
-		return xbox.leftTrigger();
-	}
-
-	public Trigger fullShootBumper() {
+	public Trigger align() {
 		return xbox.rightBumper();
 	}
 
-	public Trigger feederButton() {
-		return xbox.a();
+	public Trigger shoot() {
+		return xbox.rightTrigger();
 	}
 
 	public Trigger extendOut() {

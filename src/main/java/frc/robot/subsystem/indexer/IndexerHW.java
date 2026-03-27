@@ -3,25 +3,28 @@ package frc.robot.subsystem.indexer;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Robot;
+import org.littletonrobotics.junction.Logger;
 
 public class IndexerHW {
 	public static final double ROLLER_SUPPLY_CURRENT = 40.0;
 	public static final double ROLLER_STATOR_CURRENT = 60.0;
 
+	public static final double ROLLER_VOLTAGE = 6.0;
+
 	public TalonFX rollerTalonFX;
 	public TalonFX indexerTalonFX;
 
 	public VoltageOut rollerVoltageRequest = new VoltageOut(0);
+	public VoltageOut indexerVoltageRequest = new VoltageOut(0);
 
 	// Cached StatusSignals — roller
 	public StatusSignal<Voltage> rollerMotorVoltage;
@@ -52,10 +55,10 @@ public class IndexerHW {
 		indexerConfig.CurrentLimits.StatorCurrentLimit = ROLLER_STATOR_CURRENT;
 		indexerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 		indexerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+		indexerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 		indexerTalonFX.getConfigurator().apply(indexerConfig);
 		indexerTalonFX.clearStickyFaults();
 		indexerTalonFX.setNeutralMode(NeutralModeValue.Coast);
-		indexerTalonFX.setControl(new Follower(IntakeConstants.FEEDER_MOTOR_ID, MotorAlignmentValue.Aligned));
 
 		// --- Cache StatusSignals ---
 		rollerMotorVoltage = rollerTalonFX.getMotorVoltage(false);
@@ -84,9 +87,13 @@ public class IndexerHW {
 		inputs.indexerCurrentAmps = indexerStatorCurrent.getValueAsDouble();
 	}
 
-	public void actuate(IndexerInputs inputs, double rollerVoltage) {
+	public void actuate(IndexerInputs inputs, double indexerVoltage) {
+		Logger.recordOutput("/Indexer/commandedRollerVoltage", ROLLER_VOLTAGE);
+		Logger.recordOutput("/Indexer/commandedIndexerVoltage", indexerVoltage);
+
 		if (!Robot.isReal()) return;
 
-		rollerTalonFX.setControl(rollerVoltageRequest.withOutput(rollerVoltage));
+		rollerTalonFX.setControl(rollerVoltageRequest.withOutput(ROLLER_VOLTAGE));
+		indexerTalonFX.setControl(indexerVoltageRequest.withOutput(indexerVoltage));
 	}
 }

@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
@@ -43,6 +42,8 @@ public class Drive extends SubsystemBase {
 	private final SysIdRoutine sysId;
 	private final Alert gyroDisconnectedAlert =
 			new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
+
+	private boolean brakeMode = false;
 
 	private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
 	private Rotation2d rawGyroRotation = Rotation2d.kZero;
@@ -108,6 +109,12 @@ public class Drive extends SubsystemBase {
 		}
 
 		gyroDisconnectedAlert.set(!gyroInputs.connected);
+		Logger.recordOutput("Odometry/Robot", getPose());
+		Logger.recordOutput("Odometry/RawGyro", rawGyroRotation);
+		Logger.recordOutput("SwerveStates/Measured", getModuleStates());
+		Logger.recordOutput("SwerveChassisSpeeds/Measured", getChassisSpeeds());
+		Logger.recordOutput("Odometry/SampleCount", sampleCount);
+		Logger.recordOutput("Odometry/GyroConnected", gyroInputs.connected);
 	}
 
 	/** Commands robot-relative chassis speeds (discretized). */
@@ -144,6 +151,14 @@ public class Drive extends SubsystemBase {
 		stop();
 	}
 
+	public void setBrakeMode(boolean brake) {
+		if (brake == brakeMode) return;
+		brakeMode = brake;
+		for (var module : modules) {
+			module.setBrakeMode(brake);
+		}
+	}
+
 	/** Resets the odometry heading to zero while preserving the current field position. */
 	public void zeroHeading() {
 		setPose(new Pose2d(getPose().getTranslation(), Rotation2d.kZero));
@@ -157,7 +172,6 @@ public class Drive extends SubsystemBase {
 		return run(() -> runCharacterization(0.0)).withTimeout(1.0).andThen(sysId.dynamic(direction));
 	}
 
-	@AutoLogOutput(key = "SwerveStates/Measured")
 	private SwerveModuleState[] getModuleStates() {
 		SwerveModuleState[] states = new SwerveModuleState[4];
 		for (int i = 0; i < 4; i++) {
@@ -174,12 +188,10 @@ public class Drive extends SubsystemBase {
 		return positions;
 	}
 
-	@AutoLogOutput(key = "SwerveChassisSpeeds/Measured")
 	public ChassisSpeeds getChassisSpeeds() {
 		return kinematics.toChassisSpeeds(getModuleStates());
 	}
 
-	@AutoLogOutput(key = "Odometry/Robot")
 	public Pose2d getPose() {
 		return poseEstimator.getEstimatedPosition();
 	}

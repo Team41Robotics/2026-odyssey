@@ -71,6 +71,10 @@ public class Module {
 		io.setTurnOpenLoop(0.0);
 	}
 
+	public void setBrakeMode(boolean enabled) {
+		io.setDriveBrakeMode(enabled);
+	}
+
 	public Rotation2d getAngle() {
 		return inputs.turnPosition;
 	}

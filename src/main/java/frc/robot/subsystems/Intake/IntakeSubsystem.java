@@ -47,7 +47,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
         public void extendStop(){
         extensionMotor.setControl(new DutyCycleOut(0));
-        extensionMotorFollower.setControl(new DutyCycleOut(0));
+        // extensionMotorFollower.setControl(new DutyCycleOut(0));
 
     }
 }

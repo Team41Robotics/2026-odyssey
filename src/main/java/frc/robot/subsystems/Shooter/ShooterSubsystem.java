@@ -77,12 +77,12 @@ public class ShooterSubsystem extends SubsystemBase {
     }
     public void printTableEntry(){
         double velocity = flywheelMotor.getVelocity().getValueAsDouble();
-        System.out.println("flywheelSpeed.put(" + drive.getHubDistance() + ", " + velocity + ");");
+        // System.out.println("flywheelSpeed.put(" + drive.getHubDistance() + ", " + velocity + ");");
     }
     public void logTuning(){
         double velocity = flywheelMotor.getVelocity().getValueAsDouble();
         double output = tuningVel;
-        System.out.println("Flywheel Velocity: " + velocity + " RPS, Target Vel: " + output);
+        // System.out.println("Flywheel Velocity: " + velocity + " RPS, Target Vel: " + output);
     }
     public void setShooterSpeed(double speed) {
         flywheelMotor.setControl(new VelocityDutyCycle(speed));

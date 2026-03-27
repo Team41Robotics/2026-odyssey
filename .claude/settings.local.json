@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Read(//c/Users/Robotics41/**)"
+      "Bash(*)",
+      "WebFetch(*)",
+      "Bash(DEST=\"C:/Users/Robotics41/Desktop/2026 Oddessy/2026-odyssey/src/main/java/frc/robot/subsystem/vision/Vision.java\")",
+      "Bash(cp \"C:/Users/Robotics41/Desktop/2026-robot-code-new/src/main/java/frc/robot/subsystem/vision/Vision.java\" \"$DEST\")",
+      "Bash(xargs grep:*)",
+      "WebSearch"
     ]
   }
 }

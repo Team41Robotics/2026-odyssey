@@ -1,189 +1,110 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
-import edu.wpi.first.math.geometry.Rotation2d;
+import choreo.auto.AutoChooser;
+import choreo.auto.AutoFactory;
+import choreo.trajectory.SwerveSample;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Intake.IntakeSubsystem;
-import frc.robot.subsystems.Shooter.ShooterSubsystem;
-import frc.robot.subsystems.Vision.VisionSubsystem;
+import frc.robot.commands.drive.FieldOrientedDrive;
+import frc.robot.commands.intake.ExtendIn;
+import frc.robot.commands.intake.ExtendOut;
+import frc.robot.commands.shooter.Shoot;
+import frc.robot.commands.shooter.ShooterTrack;
+import frc.robot.subsystem.controls.Controls;
+import frc.robot.subsystem.controls.XboxControls;
+import frc.robot.subsystem.drive.Drive;
+import frc.robot.subsystem.drive.GyroIOPigeon2;
+import frc.robot.subsystem.drive.ModuleIOTalonFX;
+import frc.robot.subsystem.drive.TunerConstants;
+import frc.robot.subsystem.intake.IntakeSubsystem;
+import frc.robot.subsystem.shooter.ShooterSubsystem;
+import frc.robot.subsystem.vision.Vision;
 
 public class RobotContainer {
-        private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired
-                                                                                            // top
-                                                                                            // speed
-        private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per
-                                                                                          // second
-                                                                                          // max angular velocity
+	public static final double LOOP_PERIOD = 0.020;
 
-        /* Setting up bindings for necessary control of the swerve drive platform */
-        private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-                        .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
-                                                                                 // motors
-        private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-        private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-        private final SwerveRequest.RobotCentricFacingAngle aimbot = new SwerveRequest.RobotCentricFacingAngle()
-                        .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
-                                                                                 // motors
-        private final Telemetry logger = new Telemetry(MaxSpeed);
+	public static Controls controls = new XboxControls();
+	public static Robot robot;
 
-        private final CommandXboxController joystick = new CommandXboxController(0);
+	public static Drive drive = new Drive(
+			new GyroIOPigeon2(),
+			new ModuleIOTalonFX(TunerConstants.FrontLeft),
+			new ModuleIOTalonFX(TunerConstants.FrontRight),
+			new ModuleIOTalonFX(TunerConstants.BackLeft),
+			new ModuleIOTalonFX(TunerConstants.BackRight));
+	public static IntakeSubsystem intake = new IntakeSubsystem();
+	public static ShooterSubsystem shooter = new ShooterSubsystem();
+	public static Vision vision = new Vision();
 
-        public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-        public final VisionSubsystem vision = new VisionSubsystem(drivetrain);
-        private ShooterSubsystem shooter = new ShooterSubsystem(drivetrain);
-        private IntakeSubsystem intake = new IntakeSubsystem();
+	public static AutoFactory autoFactory;
+	public static AutoChooser autoChooser;
+	public static Command autonomousCommand = null;
 
-        public RobotContainer() {
-                configureBindings();
-        }
+	public static void init() {
+		intake.init();
+		shooter.init();
+		vision.init();
 
-        //private Command aimbotCommand() {
-         //       return drivetrain.applyRequest(() -> aimbot.withVelocityX(-joystick.getLeftY() * MaxSpeed)
-           //                     .withVelocityY(-joystick.getLeftX() * MaxSpeed));
+		drive.setDefaultCommand(new FieldOrientedDrive());
+		shooter.setDefaultCommand(new ShooterTrack());
 
-       // }
+		autoFactory = new AutoFactory(
+				drive::getPose,
+				drive::setPose,
+				(SwerveSample sample) -> drive.runVelocity(sample.getChassisSpeeds()),
+				RobotContainer.isRed(),
+				drive);
+		autoChooser = new AutoChooser();
+		// Register Choreo routines here, e.g.:
+		// autoChooser.addRoutine("MyAuto", () -> autoFactory.newRoutine("myTrajectory"));
+		SmartDashboard.putData("Auto Chooser", autoChooser);
+		autonomousCommand = autoChooser.selectedCommandScheduler();
 
-        private void configureBindings() {
-                // Note that X is defined as forward according to WPILib convention,
-                // and Y is defined as to the left according to WPILib convention.
-                drivetrain.setDefaultCommand(
-                                // Drivetrain will execute this command periodically
-                                drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive
-                                                                                                                   // forward
-                                                                                                                   // with
-                                                                                                                   // negative
-                                                                                                                   // Y
-                                                                                                                   // (forward)
-                                                .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with
-                                                                                                // negative X (left)
-                                                .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive
-                                                                                                            // counterclockwise
-                                                                                                            // with
-                                                                                                            // negative
-                                                                                                            // X (left)
-                                ));
-                // Drives Robot With heading locked to hub
-                // joystick.rightTrigger().whileTrue(aimbotCommand());
+		configureBindings();
+	}
 
-                // Idle while the robot is disabled. This ensures the configured
-                // neutral mode is applied to the drive motors while disabled.
-                final var idle = new SwerveRequest.Idle();
-                RobotModeTriggers.disabled().whileTrue(
-                                drivetrain.applyRequest(() -> idle).ignoringDisable(true));
-                 joystick.rightTrigger().whileTrue(new RunCommand(() ->
-                 shooter.setShooterSpeed(0.4375), shooter)
-                 .finallyDo(() -> shooter.setShooterSpeed(0)));
-                joystick.y().whileTrue(new RunCommand(() -> shooter.setElevatorSpeed(-0.7), shooter)
-                                .finallyDo(() -> shooter.setElevatorSpeed(0.0)));
-                joystick.leftTrigger().whileTrue(new RunCommand(() -> intake.setIntakeSpeed(1.0), intake)
-                                .finallyDo(() -> intake.stopIntake()));
-                joystick.rightBumper().whileTrue(new InstantCommand(() -> {
-                shooter.setShooterSpeed(0.4375);
-                }).andThen(new WaitCommand(1)).andThen(new RunCommand(() -> {
-                shooter.setElevatorSpeed(-0.7);
-                shooter.setShooterSpeed(0.4375);
-                intake.setFeederSpeed(0.8);
+	public static void periodic() {
+		intake.sense();
+		shooter.sense();
+		vision.sense();
 
-                }).finallyDo(() -> {
-                 shooter.setElevatorSpeed(0);
-                 shooter.setShooterSpeed(0);
-                 intake.setFeederSpeed(0);
-                 })));
+		CommandScheduler.getInstance().run();
 
-                // joystick.rightBumper().whileTrue(new RunCommand(() ->
-                // intake.setExtensionSpeed(0.2), intake)
-                // .finallyDo(() -> intake.setExtensionSpeed(0.0)));
-                // joystick.leftBumper().whileTrue(new RunCommand(() ->
-                // intake.setExtensionSpeed(-0.2), intake)
-                // .finallyDo(() -> intake.setExtensionSpeed(0.0)));
-                joystick.a().whileTrue(new RunCommand(() -> intake.setFeederSpeed(0.5))
-                                .finallyDo(() -> intake.setFeederSpeed(0)));
-                joystick.b().whileTrue(drivetrain.applyRequest(
-                                () -> point.withModuleDirection(
-                                                new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
+		intake.actuate();
+		shooter.actuate();
+	}
 
-                joystick.x().whileTrue(new RunCommand(intake::extendOut, intake).finallyDo(intake::extendStop));
-                joystick.b().whileTrue(new RunCommand(intake::extendIn, intake).finallyDo(intake::extendStop));
-                // Run SysId routines when holding back/start and X/Y.
-                // Note that each routine should be run exactly once in a single log.
-                joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-                joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-                joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-                joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+	private static void configureBindings() {
+		// X-lock: point all wheels inward to resist pushing
+		controls.xLock().whileTrue(new RunCommand(drive::stopWithX, drive));
 
-                // dpad up and down adjust testvel, dpad right sets testvel to the assumed
-                // optimal flywheel speed for the current distance to the hub, and right trigger
-                // runs the shooter at testvel.                 left with print out a line of code to add to the interp table with the current distance and flywheel velocity.
-                //Use these to tune your shooter, then once you
-                // have it tuned, you can use the getOptimalFlywheelSpeed method in
-                // shooterSubsystem to get the optimal flywheel speed for any distance within
-                // the range of your table
-                // start close up and then far, then go to points inbetween, see what it thinks
-                // is optimal, and adjust as needed till youre happy with results. Then,
-                // uncomment liune 147 for autoshoot0
-                // joystick.povDown().onTrue(new InstantCommand(() -> shooter.testVel+=5));
-                // joystick.povUp().onTrue(new InstantCommand(() -> shooter.testVel-=5));
-                // joystick.povRight().onTrue(new InstantCommand(() ->
-                // shooter.tuningVel=shooter.getOptimalFlywheelSpeed(drivetrain.getHubDistance())));
-                //joystick.povLeft().onTrue(new InstantCommand(() -> shooter.printTableEntry()));
-                // joystick.rightTrigger().whileTrue(new RunCommand(() ->
-                // shooter.setShooterSpeed(shooter.testVel), shooter)
-                // .finallyDo(() -> shooter.setShooterSpeed(0)));
-                // joystick.a().whileTrue(new RunCommand(() -> {
-                // shooter.setElevatorSpeed(-0.7);
-                // intake.setFeederSpeed(0.5);
-                // }, intake).finallyDo(() -> {
-                // shooter.setElevatorSpeed(0);
-                // intake.setFeederSpeed(0);
-                // }));
-                // joystick.rightBumper().whileTrue(shooter.shootCommand(drivetrain.getHubDistance())
-                //                 .alongWith(new WaitCommand(1).andThen(new RunCommand(() -> {
-                //                         shooter.setElevatorSpeed(-0.7);
-                //                         intake.setFeederSpeed(0.5);
-                //                 }).finallyDo(() -> {
-                //                         shooter.setElevatorSpeed(0);
-                //                         intake.setFeederSpeed(0);
-                //                 }))));
-                // Reset the field-centric heading on left bumper press.
-                // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+		// Shoot on the fly: auto-aim + fire feeder when onTarget
+		controls.fullShootBumper().whileTrue(new Shoot());
 
-                drivetrain.registerTelemetry(logger::telemeterize);
-        }
+		// Manual elevator adjustment
+		controls.elevatorUp()
+				.whileTrue(new RunCommand(() -> shooter.setElevatorSpeed(-0.7), shooter)
+						.finallyDo(() -> shooter.setElevatorSpeed(0.0)));
 
-        public Command getAutonomousCommand() {
-                // Simple drive forward auton
-                final var idle = new SwerveRequest.Idle();
-                return Commands.sequence(
-                                // Reset our field centric heading to match the robot
-                                // facing away from our alliance station wall (0 deg).
-                                drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-                                // Then slowly drive forward (away from us) for 5 seconds.
-                                drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
-                                                .withVelocityY(0)
-                                                .withRotationalRate(0))
-                                                .withTimeout(5.0),
-                                // Finally idle for the rest of auton
-                                drivetrain.applyRequest(() -> idle));
-        }
+		controls.extendOut().onTrue(new ExtendOut());
+		controls.extendIn().onTrue(new ExtendIn());
+
+		// Manual feeder override
+		controls.feederButton()
+				.whileTrue(new RunCommand(() -> intake.setFeederSpeed(0.5)).finallyDo(() -> intake.setFeederSpeed(0)));
+
+		controls.sysidQuasiForward().whileTrue(drive.sysIdQuasistatic(Direction.kForward));
+		controls.sysidQuasiBackward().whileTrue(drive.sysIdQuasistatic(Direction.kReverse));
+		controls.sysidDynaForward().whileTrue(drive.sysIdDynamic(Direction.kForward));
+		controls.sysidDynaBackward().whileTrue(drive.sysIdDynamic(Direction.kReverse));
+	}
+
+	public static boolean isRed() {
+		return DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
+	}
 }

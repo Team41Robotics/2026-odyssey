@@ -1,83 +1,134 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
-import com.ctre.phoenix6.HootAutoReplay;
-
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
+import java.util.List;
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedPowerDistribution;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-public class Robot extends TimedRobot {
-    private Command m_autonomousCommand;
+public class Robot extends LoggedRobot {
+	public final MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+	public final List<GarbageCollectorMXBean> gcBeans = ManagementFactory.getGarbageCollectorMXBeans();
+	public long prevGcCount = 0;
+	public long prevGcTime = 0;
 
-    private final RobotContainer m_robotContainer;
+	public Robot() {
+		super();
+		RobotContainer.robot = this;
+	}
 
-    /* log and replay timestamp and joystick data */
-    private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
-        .withTimestampReplay()
-        .withJoystickReplay();
+	@Override
+	public void robotInit() {
+		if (isReal()) {
+			Logger.addDataReceiver(new NT4Publisher());
+			Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
+		} else {
+			setUseTiming(false);
+			String logPath = LogFileUtil.findReplayLog();
+			Logger.setReplaySource(new WPILOGReader(logPath));
+			Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+		}
 
-    public Robot() {
-        m_robotContainer = new RobotContainer();
-    }
+		LoggedPowerDistribution.getInstance(1, ModuleType.kRev); // FIXME. PDH CAN ID
 
-    @Override
-    public void robotPeriodic() {
-        m_timeAndJoystickReplay.update();
-        CommandScheduler.getInstance().run(); 
-    }
+		Logger.start();
 
-    @Override
-    public void disabledInit() {}
+		RobotContainer.init();
 
-    @Override
-    public void disabledPeriodic() {}
+		enableLiveWindowInTest(false);
+	}
 
-    @Override
-    public void disabledExit() {}
+	@Override
+	public void robotPeriodic() {
+		RobotContainer.periodic();
 
-    @Override
-    public void autonomousInit() {
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+		logGCStatistics();
+	}
 
-        if (m_autonomousCommand != null) {
-            CommandScheduler.getInstance().schedule(m_autonomousCommand);
-        }
-    }
+	public void logGCStatistics() {
+		MemoryUsage heapUsage = memoryBean.getHeapMemoryUsage();
+		Logger.recordOutput("/GC/HeapUsedMB", heapUsage.getUsed() / 1_048_576.0);
+		Logger.recordOutput("/GC/HeapCommittedMB", heapUsage.getCommitted() / 1_048_576.0);
+		Logger.recordOutput("/GC/HeapMaxMB", heapUsage.getMax() / 1_048_576.0);
+		Logger.recordOutput("/GC/HeapUsedPercent", 100.0 * heapUsage.getUsed() / heapUsage.getMax());
 
-    @Override
-    public void autonomousPeriodic() {}
+		MemoryUsage nonHeapUsage = memoryBean.getNonHeapMemoryUsage();
+		Logger.recordOutput("/GC/NonHeapUsedMB", nonHeapUsage.getUsed() / 1_048_576.0);
 
-    @Override
-    public void autonomousExit() {}
+		long totalGcCount = 0;
+		long totalGcTime = 0;
+		for (GarbageCollectorMXBean gcBean : gcBeans) {
+			long count = gcBean.getCollectionCount();
+			long time = gcBean.getCollectionTime();
+			if (count >= 0) totalGcCount += count;
+			if (time >= 0) totalGcTime += time;
 
-    @Override
-    public void teleopInit() {
-        if (m_autonomousCommand != null) {
-            CommandScheduler.getInstance().cancel(m_autonomousCommand);
-        }
-    }
+			String name = gcBean.getName().replace(" ", "");
+			Logger.recordOutput("/GC/Collector/" + name + "/Count", count);
+			Logger.recordOutput("/GC/Collector/" + name + "/TimeMS", time);
+		}
 
-    @Override
-    public void teleopPeriodic() {}
+		Logger.recordOutput("/GC/TotalCollections", totalGcCount);
+		Logger.recordOutput("/GC/TotalCollectionTimeMS", totalGcTime);
+		Logger.recordOutput("/GC/CollectionsSinceLast", totalGcCount - prevGcCount);
+		Logger.recordOutput("/GC/CollectionTimeMSSinceLast", totalGcTime - prevGcTime);
 
-    @Override
-    public void teleopExit() {}
+		prevGcCount = totalGcCount;
+		prevGcTime = totalGcTime;
+	}
 
-    @Override
-    public void testInit() {
-        CommandScheduler.getInstance().cancelAll();
-    }
+	@Override
+	public void disabledInit() {}
 
-    @Override
-    public void testPeriodic() {}
+	@Override
+	public void disabledPeriodic() {}
 
-    @Override
-    public void testExit() {}
+	@Override
+	public void disabledExit() {}
 
-    @Override
-    public void simulationPeriodic() {}
+	@Override
+	public void autonomousInit() {
+		if (RobotContainer.autonomousCommand != null) {
+			CommandScheduler.getInstance().schedule(RobotContainer.autonomousCommand);
+		}
+	}
+
+	@Override
+	public void autonomousPeriodic() {}
+
+	@Override
+	public void autonomousExit() {}
+
+	@Override
+	public void teleopInit() {
+		if (RobotContainer.autonomousCommand != null) {
+			RobotContainer.autonomousCommand.cancel();
+		}
+	}
+
+	@Override
+	public void teleopPeriodic() {}
+
+	@Override
+	public void teleopExit() {}
+
+	@Override
+	public void testInit() {
+		CommandScheduler.getInstance().cancelAll();
+	}
+
+	@Override
+	public void testPeriodic() {}
+
+	@Override
+	public void testExit() {}
 }

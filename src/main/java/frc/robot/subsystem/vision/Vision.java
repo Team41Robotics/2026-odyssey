@@ -32,7 +32,7 @@ public class Vision extends SubsystemBase {
 	public VisionHW[] cameras = new VisionHW[] {
 		new VisionHW(
 				"KimmySE",
-				new Transform3d(new Translation3d(0.30, 0, 0), new Rotation3d(0, -20. / 180. * PI, 0)),
+				new Transform3d(new Translation3d(0.30, 0.0508, 0), new Rotation3d(0, -20. / 180. * PI, 0)),
 				"Kimmy.json"),
 	};
 	public VisionInputsAutoLogged[] inputs = new VisionInputsAutoLogged[cameras.length];

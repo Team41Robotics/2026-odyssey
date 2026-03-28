@@ -48,8 +48,7 @@ public class Align extends Command {
 				omega,
 				drive.getRotation()));
 
-		Logger.recordOutput(
-				"/Align/virtualTarget", new Pose2d(virtualTarget, Rotation2d.kZero));
+		Logger.recordOutput("/Align/virtualTarget", new Pose2d(virtualTarget, Rotation2d.kZero));
 		Logger.recordOutput("/Align/targetAngle", targetAngle);
 		Logger.recordOutput("/Align/headingError", headingController.getError());
 	}

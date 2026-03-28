@@ -27,9 +27,9 @@ public record ChoreoTraj(
     public static final ChoreoTraj TrenchAuto = new ChoreoTraj(
 	    "TrenchAuto",
 	    OptionalInt.empty(),
-	    6.35319,
-	    new Pose2d(3.623, 7.204, Rotation2d.fromRadians(-1.425)),
-	    new Pose2d(2.114, 7.375, Rotation2d.fromRadians(0.024))
+	    10.97158,
+	    new Pose2d(3.588, 7.412, Rotation2d.fromRadians(-1.268)),
+	    new Pose2d(2.814, 6.716, Rotation2d.fromRadians(-0.973))
 	);
 
     /**

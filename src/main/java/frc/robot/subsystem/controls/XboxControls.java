@@ -26,6 +26,14 @@ public class XboxControls implements Controls {
 		return xbox.leftBumper();
 	}
 
+	public Trigger intakeReverse() {
+		return xbox.y();
+	}
+
+	public Trigger invertToggle() {
+		return xbox.leftStick();
+	}
+
 	public Trigger sysidQuasiForward() {
 		return xbox.back().and(xbox.y());
 	}

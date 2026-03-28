@@ -13,6 +13,10 @@ public interface Controls {
 
 	Trigger xLock();
 
+	Trigger intakeReverse();
+
+	Trigger invertToggle();
+
 	Trigger sysidQuasiForward();
 
 	Trigger sysidQuasiBackward();

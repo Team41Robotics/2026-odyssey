@@ -15,7 +15,8 @@ public class Shoot extends Command {
 
 	@Override
 	public void execute() {
-		double dist = Targetting.targetRelative(Targetting.shootOnTheFly(Targetting.hubTarget())).getNorm();
+		double dist = Targetting.targetRelative(Targetting.shootOnTheFly(Targetting.hubTarget()))
+				.getNorm();
 		Targetting.ShotParameters params = Targetting.shotSpeeds(dist);
 
 		shooter.targetFlywheelRPM = params.flywheelRPM();

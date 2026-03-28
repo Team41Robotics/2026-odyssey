@@ -8,6 +8,8 @@ public class JoystickControls implements Controls {
 	public static CommandJoystick right = new CommandJoystick(2);
 	public static CommandJoystick ds = new CommandJoystick(5);
 
+	public static boolean inverted = false;
+
 	public Trigger align() {
 		return right.button(2);
 	}
@@ -15,6 +17,7 @@ public class JoystickControls implements Controls {
 	public Trigger shoot() {
 		return right.button(1);
 	}
+
 	public Trigger extendOut() {
 		return ds.button(12);
 	}
@@ -25,6 +28,10 @@ public class JoystickControls implements Controls {
 
 	public Trigger xLock() {
 		return left.button(2);
+	}
+
+	public Trigger intakeReverse() {
+		return ds.button(6);
 	}
 
 	public Trigger sysidQuasiForward() {
@@ -43,12 +50,18 @@ public class JoystickControls implements Controls {
 		return left.button(10).and(right.button(10));
 	}
 
+	public Trigger invertToggle() {
+		return ds.button(2);
+	}
+
 	public double leftX() {
-		return left.getX();
+		double mul = inverted ? 1 : -1;
+		return mul * left.getX();
 	}
 
 	public double leftY() {
-		return left.getY();
+		double mul = inverted ? 1 : -1;
+		return mul * left.getY();
 	}
 
 	public double rightX() {

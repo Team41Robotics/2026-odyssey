@@ -20,7 +20,7 @@ public class Autos {
 	// FIXME: tune trajectory tracking PID gains
 	public static PIDController xController = new PIDController(10.0, 0, 0);
 	public static PIDController yController = new PIDController(10.0, 0, 0);
-	public static PIDController thetaController = new PIDController(25.0, 0, 0);
+	public static PIDController thetaController = new PIDController(10, 0, 0);
 
 	public static void init() {
 		thetaController.enableContinuousInput(-PI, PI);

@@ -57,10 +57,8 @@ public class Autos {
 		routine.active()
 				.onTrue(Commands.sequence(
 						new ExtendOut().withTimeout(0.5),
-						traj.cmd(),
 						new Align().withTimeout(3.0),
 						new Shoot().withTimeout(6.0),
-						new ExtendOut().withTimeout(0.5),
 						traj.cmd(),
 						new Align().withTimeout(3.0),
 						new Shoot().withTimeout(6.0)));

@@ -15,7 +15,7 @@ import org.littletonrobotics.junction.Logger;
 
 @SuppressWarnings("static-access")
 public class Align extends Command {
-	public static final double AIM_kP = 50.0;
+	public static final double AIM_kP = 10.0;
 	public static final double AIM_kI = 0.0;
 	public static final double AIM_kD = 0.0;
 

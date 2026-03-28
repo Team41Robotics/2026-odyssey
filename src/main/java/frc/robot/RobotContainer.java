@@ -14,6 +14,7 @@ import frc.robot.commands.drive.FieldOrientedDrive;
 import frc.robot.commands.intake.ExtendIn;
 import frc.robot.commands.intake.ExtendOut;
 import frc.robot.commands.intake.ReverseIntake;
+import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.shooter.Align;
 import frc.robot.commands.shooter.Shoot;
 import frc.robot.commands.shooter.ShooterTrack;
@@ -63,6 +64,7 @@ public class RobotContainer {
 
 		drive.setDefaultCommand(new FieldOrientedDrive());
 		shooter.setDefaultCommand(new ShooterTrack());
+		intake.setDefaultCommand(new RunIntake());
 
 		Autos.init();
 		autoFactory =
@@ -71,6 +73,7 @@ public class RobotContainer {
 		// Register Choreo routines here, e.g.:
 		// autoChooser.addRoutine("MyAuto", () -> autoFactory.newRoutine("myTrajectory"));
 		autoChooser.addRoutine("TrenchAuto", Autos::trenchAuto);
+		autoChooser.addRoutine("ShootAuto", Autos::shootAuto);
 		SmartDashboard.putData("Auto Chooser", autoChooser);
 		autonomousCommand = autoChooser.selectedCommandScheduler();
 

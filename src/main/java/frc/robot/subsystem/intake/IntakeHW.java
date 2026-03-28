@@ -18,15 +18,15 @@ import frc.robot.Robot;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeHW {
-	public static final double EXTEND_OUT_VOLTAGE = 1.0;
+	public static final double EXTEND_OUT_VOLTAGE = 3.0;
 	public static final double EXTEND_IN_VOLTAGE = -1.0;
 
-	public static final double INTAKE_VOLTAGE = 12.0; // FIXME.
+	public static final double INTAKE_VOLTAGE = 5.0; // FIXME.
 	public static final double INTAKE_REVERSE_VOLTAGE = -6.0; // FIXME. during deploy
 
 	public static final double EXTENSION_SUPPLY_CURRENT = 60.0;
 	public static final double EXTENSION_STATOR_CURRENT = 80.0;
-	public static final double INTAKE_SUPPLY_CURRENT = 40.0;
+	public static final double INTAKE_SUPPLY_CURRENT = 30.0;
 	public static final double INTAKE_STATOR_CURRENT = 60.0;
 
 	public TalonFX intakeTalonFX;

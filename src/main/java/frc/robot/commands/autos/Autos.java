@@ -65,4 +65,13 @@ public class Autos {
 
 		return routine;
 	}
+	public static AutoRoutine shootAuto(){
+		AutoRoutine rountine = autoFactory.newRoutine("ShootAuto");
+		rountine.active()
+				.onTrue(Commands.sequence(
+					new Align().withTimeout(3),
+					new Shoot().withTimeout(6)
+				));
+		return rountine;
+	}
 }

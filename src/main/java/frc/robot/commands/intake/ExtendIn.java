@@ -14,7 +14,6 @@ public class ExtendIn extends Command {
 	@Override
 	public void execute() {
 		intake.targetExtendVoltage = IntakeHW.EXTEND_IN_VOLTAGE;
-		intake.targetIntakeVoltage = 0;
 	}
 
 	@Override

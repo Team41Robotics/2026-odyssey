@@ -15,7 +15,7 @@ import frc.robot.Robot;
 import org.littletonrobotics.junction.Logger;
 
 public class IndexerHW {
-	public static final double ROLLER_SUPPLY_CURRENT = 40.0;
+	public static final double ROLLER_SUPPLY_CURRENT = 30.0;
 	public static final double ROLLER_STATOR_CURRENT = 80.0;
 
 	public TalonFX rollerTalonFX;

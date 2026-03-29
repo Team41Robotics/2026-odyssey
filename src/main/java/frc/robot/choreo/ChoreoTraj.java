@@ -34,7 +34,7 @@ public record ChoreoTraj(
 	public static final ChoreoTraj TrenchAuto = new ChoreoTraj(
 	    "TrenchAuto",
 	    OptionalInt.empty(),
-	    5.86583,
+	    12.90238,
 	    new Pose2d(3.582, 7.287, Rotation2d.fromRadians(-1.256)),
 	    new Pose2d(1.801, 7.37, Rotation2d.fromRadians(0))
 	);

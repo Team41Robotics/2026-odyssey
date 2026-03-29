@@ -55,12 +55,12 @@ public class JoystickControls implements Controls {
 	}
 
 	public double leftX() {
-		double mul = inverted ? 1 : -1;
+		double mul = inverted ? -1 : 1;
 		return mul * left.getX();
 	}
 
 	public double leftY() {
-		double mul = inverted ? 1 : -1;
+		double mul = inverted ? -1 : 1;
 		return mul * left.getY();
 	}
 

@@ -10,6 +10,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.choreo.ChoreoTraj;
 import frc.robot.commands.intake.ExtendOut;
 import frc.robot.commands.shooter.Align;
@@ -20,7 +22,7 @@ public class Autos {
 	// FIXME: tune trajectory tracking PID gains
 	public static PIDController xController = new PIDController(10.0, 0, 0);
 	public static PIDController yController = new PIDController(10.0, 0, 0);
-	public static PIDController thetaController = new PIDController(10, 0, 0);
+	public static PIDController thetaController = new PIDController(7, 0, 0);
 
 	public static void init() {
 		thetaController.enableContinuousInput(-PI, PI);
@@ -51,27 +53,35 @@ public class Autos {
 	}
 
 	public static AutoRoutine trenchAuto() {
-		AutoRoutine routine = autoFactory.newRoutine("TrenchAuto");
-		AutoTrajectory traj = ChoreoTraj.TrenchAuto.asAutoTraj(routine);
+		AutoRoutine routine = autoFactory.newRoutine("Bad");
+		// AutoTrajectory traj = ChoreoTraj.TrenchAuto.asAutoTraj(routine);
+		AutoTrajectory traj2 = ChoreoTraj.Bad.asAutoTraj(routine);
 
-		routine.active()
-				.onTrue(Commands.sequence(
-						new ExtendOut().withTimeout(0.5),
-						new Align().withTimeout(3.0),
-						new Shoot().withTimeout(6.0),
-						traj.cmd(),
-						new Align().withTimeout(3.0),
-						new Shoot().withTimeout(6.0)));
+		routine.active().onTrue(Commands.sequence(
+			new Align().withTimeout(1.5),
+			new Shoot().withTimeout(3),
+			Commands.deadline(traj2.cmd(), new WaitCommand(2).andThen(new ExtendOut())),
+			new Align().withTimeout(1.5),
+			new Shoot().withTimeout(3)
+		));
+
+		// routine.active()
+		// 		.onTrue(//Commands.parallel(
+		// 				Commands.sequence(
+		// 					traj.cmd(),traj2.cmd()));
+		// 						// new Align().withTimeout(3.0),
+		// 						// new Shoot().withTimeout(6.0),
+		// 						// traj.cmd()
+		// 						//new Align().withTimeout(3.0),
+		// 						//new Shoot().withTimeout(6.0)));
+		// 				//Commands.sequence(new WaitCommand(10), new ExtendOut().withTimeout(3))));
 
 		return routine;
 	}
-	public static AutoRoutine shootAuto(){
+
+	public static AutoRoutine shootAuto() {
 		AutoRoutine rountine = autoFactory.newRoutine("ShootAuto");
-		rountine.active()
-				.onTrue(Commands.sequence(
-					new Align().withTimeout(3),
-					new Shoot().withTimeout(6)
-				));
+		rountine.active().onTrue(Commands.sequence(new Align().withTimeout(3), new Shoot().withTimeout(6)));
 		return rountine;
 	}
 }

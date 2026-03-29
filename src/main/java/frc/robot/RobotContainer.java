@@ -72,7 +72,7 @@ public class RobotContainer {
 		autoChooser = new AutoChooser();
 		// Register Choreo routines here, e.g.:
 		// autoChooser.addRoutine("MyAuto", () -> autoFactory.newRoutine("myTrajectory"));
-		autoChooser.addRoutine("TrenchAuto", Autos::trenchAuto);
+		autoChooser.addRoutine("Bad", Autos::trenchAuto);
 		autoChooser.addRoutine("ShootAuto", Autos::shootAuto);
 		SmartDashboard.putData("Auto Chooser", autoChooser);
 		autonomousCommand = autoChooser.selectedCommandScheduler();

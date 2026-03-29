@@ -3,6 +3,7 @@ package frc.robot.commands.drive;
 import static frc.robot.RobotContainer.*;
 import static java.lang.Math.*;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -34,7 +35,7 @@ public class FieldOrientedDrive extends Command {
 				v * cos(theta) * MAX_SPEED * SPEED_MUL,
 				v * sin(theta) * MAX_SPEED * SPEED_MUL,
 				wc * MAX_ANGULAR_RATE * W_MUL,
-				drive.getRotation()));
+				drive.getRotation().rotateBy(isRed() ? Rotation2d.k180deg : Rotation2d.kZero)));
 	}
 
 	@Override

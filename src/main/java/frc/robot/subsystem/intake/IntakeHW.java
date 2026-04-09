@@ -18,64 +18,51 @@ import frc.robot.Robot;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeHW {
-	public static final double EXTEND_OUT_VOLTAGE = 3.0;
-	public static final double EXTEND_IN_VOLTAGE = -1.0;
+	public static final double INTAKE_VOLTAGE = 6.0; // FIXME
+	public static final double INTAKE_REVERSE_VOLTAGE = -6.0; // FIXME
 
-	public static final double INTAKE_VOLTAGE = 12.0; // FIXME.
-	public static final double INTAKE_REVERSE_VOLTAGE = -6.0; // FIXME. during deploy
+	public static final double PIVOT_VOLTAGE = 6.0; // FIXME.
+	public static final double PIVOT_REVERSE_VOLTAGE = -6.0; // FIXME
 
-	public static final double EXTENSION_SUPPLY_CURRENT = 60.0;
-	public static final double EXTENSION_STATOR_CURRENT = 80.0;
 	public static final double INTAKE_SUPPLY_CURRENT = 40.0;
 	public static final double INTAKE_STATOR_CURRENT = 100.0;
 
-	public TalonFX intakeTalonFX;
-	public TalonFX extensionTalonFX;
-	public TalonFX extensionFollowerTalonFX;
+	public static final double PIVOT_SUPPLY_CURRENT = 20.0;
+	public static final double PIVOT_STATOR_CURRENT = 40.0;	
 
-	public VoltageOut extendVoltageRequest = new VoltageOut(0);
+	public TalonFX intakeTalonFX;
+	public TalonFX pivotTalonFX;
+
+	public VoltageOut pivotVoltageRequest = new VoltageOut(0);
 	public VoltageOut intakeVoltageRequest = new VoltageOut(0);
 
-	// Cached StatusSignals — extension
-	public StatusSignal<Angle> extensionPosition;
-	public StatusSignal<AngularVelocity> extensionVelocity;
-	public StatusSignal<Voltage> extensionMotorVoltage;
-	public StatusSignal<Current> extensionStatorCurrent;
-	public StatusSignal<Voltage> extensionSupplyVoltage;
-	public StatusSignal<Current> extensionSupplyCurrent;
+	// Cached StatusSignals — pivot
+	public StatusSignal<Angle> pivotPosition;
+	public StatusSignal<AngularVelocity> pivotVelocity;
+	public StatusSignal<Voltage> pivotMotorVoltage;
+	public StatusSignal<Current> pivotStatorCurrent;
+	public StatusSignal<Voltage> pivotSupplyVoltage;
+	public StatusSignal<Current> pivotSupplyCurrent;
 
-	// Cached StatusSignals — intake (voltage/current only)
+	// Cached StatusSignals — intake 
 	public StatusSignal<Voltage> intakeMotorVoltage;
 	public StatusSignal<Current> intakeStatorCurrent;
 
 	public void init() {
 		if (!Robot.isReal()) return;
 
-		// --- Extension leader ---
-		extensionTalonFX = new TalonFX(IntakeConstants.EXTENSION_MOTOR_ID);
-		TalonFXConfiguration extensionConfig = new TalonFXConfiguration();
-		extensionConfig.CurrentLimits.SupplyCurrentLimit = EXTENSION_SUPPLY_CURRENT;
-		extensionConfig.CurrentLimits.StatorCurrentLimit = EXTENSION_STATOR_CURRENT;
-		extensionConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-		extensionConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-		extensionConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-		extensionTalonFX.getConfigurator().apply(extensionConfig);
-		extensionTalonFX.clearStickyFaults();
-		extensionTalonFX.setNeutralMode(NeutralModeValue.Brake);
-		extensionTalonFX.setPosition(0);
+		// --- Pivot ---
+		pivotTalonFX = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID);
+		TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
+		pivotConfig.CurrentLimits.SupplyCurrentLimit = PIVOT_SUPPLY_CURRENT;
+		pivotConfig.CurrentLimits.StatorCurrentLimit = PIVOT_STATOR_CURRENT;
+		pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+		pivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+		pivotTalonFX.getConfigurator().apply(pivotConfig);
+		pivotTalonFX.clearStickyFaults();
+		pivotTalonFX.setNeutralMode(NeutralModeValue.Brake);
+		pivotTalonFX.setPosition(0);
 
-		// --- Extension follower ---
-		extensionFollowerTalonFX = new TalonFX(IntakeConstants.EXTENSION_FOLLOWER_MOTOR_ID);
-		TalonFXConfiguration extensionFollowerConfig = new TalonFXConfiguration();
-		extensionFollowerConfig.CurrentLimits.SupplyCurrentLimit = EXTENSION_SUPPLY_CURRENT;
-		extensionFollowerConfig.CurrentLimits.StatorCurrentLimit = EXTENSION_STATOR_CURRENT;
-		extensionFollowerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-		extensionFollowerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-		extensionFollowerTalonFX.getConfigurator().apply(extensionFollowerConfig);
-		extensionFollowerTalonFX.clearStickyFaults();
-		extensionFollowerTalonFX.setNeutralMode(NeutralModeValue.Brake);
-		extensionFollowerTalonFX.setControl(
-				new Follower(IntakeConstants.EXTENSION_MOTOR_ID, MotorAlignmentValue.Opposed));
 
 		// --- Intake roller ---
 		intakeTalonFX = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
@@ -89,29 +76,28 @@ public class IntakeHW {
 		intakeTalonFX.setNeutralMode(NeutralModeValue.Coast);
 
 		// --- Cache StatusSignals ---
-		extensionPosition = extensionTalonFX.getPosition(false);
-		extensionVelocity = extensionTalonFX.getVelocity(false);
-		extensionMotorVoltage = extensionTalonFX.getMotorVoltage(false);
-		extensionStatorCurrent = extensionTalonFX.getStatorCurrent(false);
-		extensionSupplyVoltage = extensionTalonFX.getSupplyVoltage(false);
-		extensionSupplyCurrent = extensionTalonFX.getSupplyCurrent(false);
+		pivotPosition = pivotTalonFX.getPosition(false);
+		pivotVelocity = pivotTalonFX.getVelocity(false);
+		pivotMotorVoltage = pivotTalonFX.getMotorVoltage(false);
+		pivotStatorCurrent = pivotTalonFX.getStatorCurrent(false);
+		pivotSupplyVoltage = pivotTalonFX.getSupplyVoltage(false);
+		pivotSupplyCurrent = pivotTalonFX.getSupplyCurrent(false);
 
 		intakeMotorVoltage = intakeTalonFX.getMotorVoltage(false);
 		intakeStatorCurrent = intakeTalonFX.getStatorCurrent(false);
 
 		// --- Update frequencies ---
-		extensionPosition.setUpdateFrequency(50);
-		extensionVelocity.setUpdateFrequency(50);
-		extensionMotorVoltage.setUpdateFrequency(50);
-		extensionStatorCurrent.setUpdateFrequency(50);
-		extensionSupplyVoltage.setUpdateFrequency(10);
-		extensionSupplyCurrent.setUpdateFrequency(10);
+		pivotPosition.setUpdateFrequency(50);
+		pivotVelocity.setUpdateFrequency(50);
+		pivotMotorVoltage.setUpdateFrequency(50);
+		pivotStatorCurrent.setUpdateFrequency(50);
+		pivotSupplyVoltage.setUpdateFrequency(10);
+		pivotSupplyCurrent.setUpdateFrequency(10);
 
 		intakeMotorVoltage.setUpdateFrequency(50);
 		intakeStatorCurrent.setUpdateFrequency(50);
 
-		extensionTalonFX.optimizeBusUtilization();
-		extensionFollowerTalonFX.optimizeBusUtilization();
+		pivotTalonFX.optimizeBusUtilization();
 		intakeTalonFX.optimizeBusUtilization();
 	}
 
@@ -119,34 +105,33 @@ public class IntakeHW {
 		if (!Robot.isReal()) return;
 
 		BaseStatusSignal.refreshAll(
-				extensionPosition,
-				extensionVelocity,
-				extensionMotorVoltage,
-				extensionStatorCurrent,
-				extensionSupplyVoltage,
-				extensionSupplyCurrent,
+				pivotPosition,
+				pivotVelocity,
+				pivotMotorVoltage,
+				pivotStatorCurrent,
+				pivotSupplyVoltage,
+				pivotSupplyCurrent,
 				intakeMotorVoltage,
 				intakeStatorCurrent);
 
-		inputs.extensionPosRadians = extensionPosition.getValueAsDouble();
-		inputs.extensionVelRadiansPerSec = extensionVelocity.getValueAsDouble();
-		inputs.extensionVoltageVolts = extensionMotorVoltage.getValueAsDouble();
-		inputs.extensionCurrentAmps = extensionStatorCurrent.getValueAsDouble();
-		inputs.extensionBusVoltageVolts = extensionSupplyVoltage.getValueAsDouble();
-		inputs.extensionBusCurrentAmps = extensionSupplyCurrent.getValueAsDouble();
-		inputs.extensionTsSec = extensionPosition.getTimestamp().getTime();
+		inputs.pivotPosRadians = pivotPosition.getValueAsDouble();
+		inputs.pivotVelRadiansPerSec = pivotVelocity.getValueAsDouble();
+		inputs.pivotVoltageVolts = pivotMotorVoltage.getValueAsDouble();
+		inputs.pivotCurrentAmps = pivotStatorCurrent.getValueAsDouble();
+		inputs.pivotBusVoltageVolts = pivotSupplyVoltage.getValueAsDouble();
+		inputs.pivotBusCurrentAmps = pivotSupplyCurrent.getValueAsDouble();
 
 		inputs.intakeVoltageVolts = intakeMotorVoltage.getValueAsDouble();
 		inputs.intakeCurrentAmps = intakeStatorCurrent.getValueAsDouble();
 	}
 
-	public void actuate(IntakeInputs inputs, double extendVoltage, double intakeVoltage) {
-		Logger.recordOutput("/Intake/targetExtendVoltage", extendVoltage);
+	public void actuate(IntakeInputs inputs, double pivotVoltage, double intakeVoltage) {
+		Logger.recordOutput("/Intake/targetPivotVoltage", pivotVoltage);
 		Logger.recordOutput("/Intake/targetIntakeVoltage", intakeVoltage);
 
 		if (!Robot.isReal()) return;
 
-		extensionTalonFX.setControl(extendVoltageRequest.withOutput(extendVoltage));
+		pivotTalonFX.setControl(pivotVoltageRequest.withOutput(pivotVoltage));
 		intakeTalonFX.setControl(intakeVoltageRequest.withOutput(intakeVoltage));
 	}
 }

@@ -8,7 +8,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	public IntakeInputsAutoLogged inputs = new IntakeInputsAutoLogged();
 
 	// Per-loop actuator targets written by commands before actuate()
-	public double targetExtendVoltage = 0;
+	public double targetPivotVoltage = 0;
 	public double targetIntakeVoltage = 0;
 
 	public void init() {
@@ -19,13 +19,11 @@ public class IntakeSubsystem extends SubsystemBase {
 		hw.sense(inputs);
 		Logger.processInputs("/Intake", inputs);
 
-		Logger.recordOutput("/Intake/targetIntakeVoltage", targetIntakeVoltage);
-		Logger.recordOutput("/Intake/targetExtendVoltage", targetExtendVoltage);
-		Logger.recordOutput("/Intake/extendVoltageError", inputs.extensionVoltageVolts - targetExtendVoltage);
+		Logger.recordOutput("/Intake/pivotVoltageError", inputs.pivotVoltageVolts - targetPivotVoltage);
 		Logger.recordOutput("/Intake/intakeVoltageError", inputs.intakeVoltageVolts - targetIntakeVoltage);
 	}
 
 	public void actuate() {
-		hw.actuate(inputs, targetExtendVoltage, targetIntakeVoltage);
+		hw.actuate(inputs, targetPivotVoltage, targetIntakeVoltage);
 	}
 }

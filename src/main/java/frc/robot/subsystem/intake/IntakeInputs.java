@@ -4,13 +4,12 @@ import org.littletonrobotics.junction.AutoLog;
 
 @AutoLog
 public class IntakeInputs {
-	public double extensionPosRadians;
-	public double extensionVelRadiansPerSec;
-	public double extensionVoltageVolts;
-	public double extensionCurrentAmps;
-	public double extensionBusVoltageVolts;
-	public double extensionBusCurrentAmps;
-	public double extensionTsSec;
+	public double pivotPosRadians;
+	public double pivotVelRadiansPerSec;
+	public double pivotVoltageVolts;
+	public double pivotCurrentAmps;
+	public double pivotBusVoltageVolts;
+	public double pivotBusCurrentAmps;
 
 	public double intakeVoltageVolts;
 	public double intakeCurrentAmps;

@@ -13,12 +13,12 @@ public class ExtendIn extends Command {
 
 	@Override
 	public void execute() {
-		intake.targetExtendVoltage = IntakeHW.EXTEND_IN_VOLTAGE;
+		intake.targetPivotVoltage = IntakeHW.PIVOT_REVERSE_VOLTAGE;
 	}
 
 	@Override
 	public void end(boolean interrupted) {
-		intake.targetExtendVoltage = 0;
+		intake.targetPivotVoltage = 0;
 	}
 
 	@Override

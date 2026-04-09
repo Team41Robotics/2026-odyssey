@@ -3,11 +3,8 @@ package frc.robot.subsystem.intake;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -16,6 +13,8 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Robot;
 import org.littletonrobotics.junction.Logger;
+import static java.lang.Math.PI;
+
 
 public class IntakeHW {
 	public static final double INTAKE_VOLTAGE = 6.0; // FIXME
@@ -24,8 +23,12 @@ public class IntakeHW {
 	public static final double PIVOT_VOLTAGE = 6.0; // FIXME.
 	public static final double PIVOT_REVERSE_VOLTAGE = -6.0; // FIXME
 
+	public static final double PIVOT_GEAR_RATIO = 27.0; // FIXME
+
+
 	public static final double INTAKE_SUPPLY_CURRENT = 40.0;
 	public static final double INTAKE_STATOR_CURRENT = 100.0;
+
 
 	public static final double PIVOT_SUPPLY_CURRENT = 20.0;
 	public static final double PIVOT_STATOR_CURRENT = 40.0;	
@@ -58,6 +61,7 @@ public class IntakeHW {
 		pivotConfig.CurrentLimits.StatorCurrentLimit = PIVOT_STATOR_CURRENT;
 		pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 		pivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+		pivotConfig.Feedback.SensorToMechanismRatio = PIVOT_GEAR_RATIO;
 		pivotTalonFX.getConfigurator().apply(pivotConfig);
 		pivotTalonFX.clearStickyFaults();
 		pivotTalonFX.setNeutralMode(NeutralModeValue.Brake);
@@ -91,8 +95,8 @@ public class IntakeHW {
 		pivotVelocity.setUpdateFrequency(50);
 		pivotMotorVoltage.setUpdateFrequency(50);
 		pivotStatorCurrent.setUpdateFrequency(50);
-		pivotSupplyVoltage.setUpdateFrequency(10);
-		pivotSupplyCurrent.setUpdateFrequency(10);
+		pivotSupplyVoltage.setUpdateFrequency(50);
+		pivotSupplyCurrent.setUpdateFrequency(50);
 
 		intakeMotorVoltage.setUpdateFrequency(50);
 		intakeStatorCurrent.setUpdateFrequency(50);
@@ -114,8 +118,8 @@ public class IntakeHW {
 				intakeMotorVoltage,
 				intakeStatorCurrent);
 
-		inputs.pivotPosRadians = pivotPosition.getValueAsDouble();
-		inputs.pivotVelRadiansPerSec = pivotVelocity.getValueAsDouble();
+		inputs.pivotPosRadians = pivotPosition.getValueAsDouble() * 2.0 * PI;
+		inputs.pivotVelRadiansPerSec = pivotVelocity.getValueAsDouble() * 2.0 * PI;
 		inputs.pivotVoltageVolts = pivotMotorVoltage.getValueAsDouble();
 		inputs.pivotCurrentAmps = pivotStatorCurrent.getValueAsDouble();
 		inputs.pivotBusVoltageVolts = pivotSupplyVoltage.getValueAsDouble();

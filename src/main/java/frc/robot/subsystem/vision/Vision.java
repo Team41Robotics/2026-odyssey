@@ -31,9 +31,9 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class Vision extends SubsystemBase {
 	public VisionHW[] cameras = new VisionHW[] {
 		new VisionHW(
-				"KimmySE",
+				"DuckyN",
 				new Transform3d(new Translation3d(0.30, 0, 0.0508), new Rotation3d(0, -20. / 180. * PI, 0)),
-				"Kimmy.json"),
+				"Ducky.json"),
 	};
 	public VisionInputsAutoLogged[] inputs = new VisionInputsAutoLogged[cameras.length];
 	public PhotonPoseEstimator[] poseEsts = new PhotonPoseEstimator[cameras.length];

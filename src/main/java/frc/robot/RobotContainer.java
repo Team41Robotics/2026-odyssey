@@ -11,10 +11,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.autos.Autos;
 import frc.robot.commands.drive.FieldOrientedDrive;
-import frc.robot.commands.intake.ExtendIn;
-import frc.robot.commands.intake.ExtendOut;
-import frc.robot.commands.intake.ReverseIntake;
-import frc.robot.commands.intake.RunIntake;
+import frc.robot.commands.intake.IntakeDown;
+import frc.robot.commands.intake.IntakeUp;
 import frc.robot.commands.shooter.Align;
 import frc.robot.commands.shooter.Shoot;
 import frc.robot.commands.shooter.ShooterTrack;
@@ -64,7 +62,7 @@ public class RobotContainer {
 
 		drive.setDefaultCommand(new FieldOrientedDrive());
 		shooter.setDefaultCommand(new ShooterTrack());
-		intake.setDefaultCommand(new RunIntake());
+		intake.setDefaultCommand(new IntakeDown());
 
 		Autos.init();
 		autoFactory =
@@ -111,10 +109,8 @@ public class RobotContainer {
 		controls.align().whileTrue(new Align()); // button 2: auto-aim heading
 		controls.shoot().whileTrue(new Shoot()); // button 1: flywheel + feeder
 
-		controls.extendOut().whileTrue(new ExtendOut());
-		controls.extendIn().whileTrue(new ExtendIn());
-
-		controls.intakeReverse().whileTrue(new ReverseIntake());
+		controls.extendOut().whileTrue(new IntakeDown());
+		controls.extendIn().whileTrue(new IntakeUp());
 
 		controls.invertToggle().onTrue(Commands.runOnce(() -> {
 			JoystickControls.inverted = !JoystickControls.inverted;

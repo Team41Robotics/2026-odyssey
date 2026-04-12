@@ -10,10 +10,9 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.choreo.ChoreoTraj;
-import frc.robot.commands.intake.ExtendOut;
+import frc.robot.commands.intake.IntakeDown;
 import frc.robot.commands.shooter.Align;
 import frc.robot.commands.shooter.Shoot;
 import org.littletonrobotics.junction.Logger;
@@ -57,13 +56,13 @@ public class Autos {
 		// AutoTrajectory traj = ChoreoTraj.TrenchAuto.asAutoTraj(routine);
 		AutoTrajectory traj2 = ChoreoTraj.Bad.asAutoTraj(routine);
 
-		routine.active().onTrue(Commands.sequence(
-			new Align().withTimeout(1.5),
-			new Shoot().withTimeout(3),
-			Commands.deadline(traj2.cmd(), new WaitCommand(2).andThen(new ExtendOut())),
-			new Align().withTimeout(1.5),
-			new Shoot().withTimeout(3)
-		));
+		routine.active()
+				.onTrue(Commands.sequence(
+						new Align().withTimeout(1.5),
+						new Shoot().withTimeout(3),
+						Commands.deadline(traj2.cmd(), new WaitCommand(2).andThen(new IntakeDown())),
+						new Align().withTimeout(1.5),
+						new Shoot().withTimeout(3)));
 
 		// routine.active()
 		// 		.onTrue(//Commands.parallel(
@@ -74,7 +73,7 @@ public class Autos {
 		// 						// traj.cmd()
 		// 						//new Align().withTimeout(3.0),
 		// 						//new Shoot().withTimeout(6.0)));
-		// 				//Commands.sequence(new WaitCommand(10), new ExtendOut().withTimeout(3))));
+		// 				//Commands.sequence(new WaitCommand(10), new IntakeDown().withTimeout(3))));
 
 		return routine;
 	}

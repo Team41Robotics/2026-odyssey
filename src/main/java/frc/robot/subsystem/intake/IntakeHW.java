@@ -1,5 +1,7 @@
 package frc.robot.subsystem.intake;
 
+import static java.lang.Math.PI;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -13,25 +15,17 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Robot;
 import org.littletonrobotics.junction.Logger;
-import static java.lang.Math.PI;
-
 
 public class IntakeHW {
 	public static final double INTAKE_VOLTAGE = 6.0; // FIXME
-	public static final double INTAKE_REVERSE_VOLTAGE = -6.0; // FIXME
 
-	public static final double PIVOT_VOLTAGE = 6.0; // FIXME.
-	public static final double PIVOT_REVERSE_VOLTAGE = -6.0; // FIXME
-
-	public static final double PIVOT_GEAR_RATIO = 27.0; // FIXME
-
+	public static final double PIVOT_GEAR_RATIO = 14.0;
 
 	public static final double INTAKE_SUPPLY_CURRENT = 40.0;
 	public static final double INTAKE_STATOR_CURRENT = 100.0;
 
-
-	public static final double PIVOT_SUPPLY_CURRENT = 20.0;
-	public static final double PIVOT_STATOR_CURRENT = 40.0;	
+	public static final double PIVOT_SUPPLY_CURRENT = 40.0;
+	public static final double PIVOT_STATOR_CURRENT = 80.0;
 
 	public TalonFX intakeTalonFX;
 	public TalonFX pivotTalonFX;
@@ -47,7 +41,7 @@ public class IntakeHW {
 	public StatusSignal<Voltage> pivotSupplyVoltage;
 	public StatusSignal<Current> pivotSupplyCurrent;
 
-	// Cached StatusSignals — intake 
+	// Cached StatusSignals — intake
 	public StatusSignal<Voltage> intakeMotorVoltage;
 	public StatusSignal<Current> intakeStatorCurrent;
 
@@ -67,7 +61,6 @@ public class IntakeHW {
 		pivotTalonFX.setNeutralMode(NeutralModeValue.Brake);
 		pivotTalonFX.setPosition(0);
 
-
 		// --- Intake roller ---
 		intakeTalonFX = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
 		TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
@@ -75,6 +68,7 @@ public class IntakeHW {
 		intakeConfig.CurrentLimits.StatorCurrentLimit = INTAKE_STATOR_CURRENT;
 		intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 		intakeConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+		intakeConfig.MotorOutput.Inverted = com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive;
 		intakeTalonFX.getConfigurator().apply(intakeConfig);
 		intakeTalonFX.clearStickyFaults();
 		intakeTalonFX.setNeutralMode(NeutralModeValue.Coast);
@@ -137,5 +131,10 @@ public class IntakeHW {
 
 		pivotTalonFX.setControl(pivotVoltageRequest.withOutput(pivotVoltage));
 		intakeTalonFX.setControl(intakeVoltageRequest.withOutput(intakeVoltage));
+	}
+
+	public void zeroPivot() {
+		if (!Robot.isReal()) return;
+		pivotTalonFX.setPosition(0);
 	}
 }

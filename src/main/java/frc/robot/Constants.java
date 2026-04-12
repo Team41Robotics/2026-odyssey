@@ -9,7 +9,7 @@ public class Constants {
 
 	public static class IntakeConstants {
 		public static final int INTAKE_MOTOR_ID = 31;
-		public static final int PIVOT_MOTOR_ID = 21; //TODO
+		public static final int PIVOT_MOTOR_ID = 21;
 
 		public static final int FEEDER_MOTOR_ID = 60;
 	}

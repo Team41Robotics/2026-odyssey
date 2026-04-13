@@ -9,6 +9,7 @@ public class IntakeUp extends Command {
 	public static final double PIVOT_UP_VOLTAGE = 1.0;
 	public static final double PIVOT_kG = 0.9; // TODO eyeballed
 	public static final double PIVOT_UP_POS = 75.0 / 180 * PI;
+	public static final double INTAKE_UP_VOLTAGE = 5.0;
 
 	public IntakeUp() {
 		addRequirements(intake);
@@ -18,7 +19,7 @@ public class IntakeUp extends Command {
 	public void execute() {
 		intake.targetPivotVoltage = intake.inputs.pivotPosRadians < PIVOT_UP_POS ? PIVOT_UP_VOLTAGE : 0;
 		intake.targetPivotVoltage += PIVOT_kG * cos(intake.inputs.pivotPosRadians);
-		intake.targetIntakeVoltage = 0;
+		intake.targetIntakeVoltage = INTAKE_UP_VOLTAGE;
 	}
 
 	@Override

@@ -15,9 +15,8 @@ import frc.robot.commands.drive.FieldOrientedDrive;
 import frc.robot.commands.intake.IntakeDown;
 import frc.robot.commands.intake.IntakeUp;
 import frc.robot.commands.intake.ZeroPivot;
-import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
-import frc.robot.commands.shooter.Align;
-import frc.robot.commands.shooter.Shoot;
+import frc.robot.commands.shooter.AlignTeleop;
+import frc.robot.commands.shooter.ShootTeleop;
 import frc.robot.commands.shooter.ShooterTrack;
 import frc.robot.subsystem.controls.Controls;
 import frc.robot.subsystem.controls.JoystickControls;
@@ -30,6 +29,7 @@ import frc.robot.subsystem.intake.IntakeSubsystem;
 import frc.robot.subsystem.shooter.ShooterSubsystem;
 import frc.robot.subsystem.vision.Vision;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 public class RobotContainer {
 	public static final double LOOP_PERIOD = 0.020;
@@ -49,8 +49,7 @@ public class RobotContainer {
 	public static IndexerSubsystem indexer = new IndexerSubsystem();
 	public static Vision vision = new Vision();
 
-	public static LoggedNetworkBoolean zeroPivotButton =
-			new LoggedNetworkBoolean("/Intake/zeroPivot", false);
+	public static LoggedNetworkBoolean zeroPivotButton = new LoggedNetworkBoolean("/Intake/zeroPivot", false);
 
 	public static String currentPeriod = "DISABLED";
 	public static double periodTimeRemaining = 0;
@@ -125,8 +124,8 @@ public class RobotContainer {
 		controls.xLock().onFalse(Commands.runOnce(() -> drive.setBrakeMode(false)));
 		controls.xLock().whileTrue(new RunCommand(drive::stopWithX, drive));
 
-		controls.align().whileTrue(new Align()); // button 2: auto-aim heading
-		controls.shoot().whileTrue(new Shoot()); // button 1: flywheel + feeder
+		controls.align().whileTrue(new AlignTeleop());
+		controls.shoot().whileTrue(new ShootTeleop());
 
 		controls.extendOut().whileTrue(new IntakeDown());
 		controls.extendIn().whileTrue(new IntakeUp());

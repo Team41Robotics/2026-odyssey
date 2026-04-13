@@ -15,12 +15,45 @@ public class ShootTeleop extends Command {
 	public static final double JOYSTICK_SCALE = 0.3; // meters per full joystick deflection
 	public static final double TRENCH_Y_OFFSET = 1.7; // meters offset when shooting over trench
 
+	public record TeleopTarget(Translation2d target, String state) {}
+
 	public ShootTeleop() {
 		addRequirements(shooter);
 	}
 
 	@Override
 	public void execute() {
+		TeleopTarget teleopTarget = getTeleopTarget();
+		Translation2d target = teleopTarget.target();
+		String state = teleopTarget.state();
+
+		Translation2d virtualTarget = Targetting.shootOnTheFly(target);
+
+		double distance = Targetting.targetRelative(virtualTarget).getNorm();
+		ShotParameters params = Targetting.shotSpeeds(distance);
+		shooter.targetFlywheelRPM = params.flywheelRPM();
+
+		Logger.recordOutput("/Targetting/state", state);
+		Logger.recordOutput("/Targetting/targetPose", new Pose2d(virtualTarget, new Rotation2d()));
+		Logger.recordOutput("/Targetting/joystickTarget", new Pose2d(target, new Rotation2d()));
+		Logger.recordOutput("/Targetting/distance", distance);
+		Logger.recordOutput("/Targetting/timeOfFlight", params.timeOfFlight());
+
+		// Zone boundary lines
+		double xTrenchMin = FieldConstants.LinesVertical.hubCenter - FieldConstants.LeftBump.width / 2.0;
+		double xTrenchMax = FieldConstants.LinesVertical.hubCenter + FieldConstants.LeftBump.width / 2.0;
+		double fieldW = FieldConstants.fieldWidth;
+		Pose2d[] trenchMinLine = new Pose2d[] {
+			new Pose2d(xTrenchMin, 0, new Rotation2d()), new Pose2d(xTrenchMin, fieldW, new Rotation2d())
+		};
+		Pose2d[] trenchMaxLine = new Pose2d[] {
+			new Pose2d(xTrenchMax, 0, new Rotation2d()), new Pose2d(xTrenchMax, fieldW, new Rotation2d())
+		};
+		Logger.recordOutput("/Targetting/trenchMinLine", trenchMinLine);
+		Logger.recordOutput("/Targetting/trenchMaxLine", trenchMaxLine);
+	}
+
+	public static TeleopTarget getTeleopTarget() {
 		Translation2d hubCenter = FieldConstants.Hub.innerCenterPoint.toTranslation2d();
 
 		// Convert robot position to alliance-relative coordinates (blue perspective)
@@ -51,28 +84,7 @@ public class ShootTeleop extends Command {
 			state = "PASS";
 		}
 
-		Translation2d virtualTarget = Targetting.shootOnTheFly(target);
-
-		double distance = Targetting.targetRelative(virtualTarget).getNorm();
-		ShotParameters params = Targetting.shotSpeeds(distance);
-		shooter.targetFlywheelRPM = params.flywheelRPM();
-
-		Logger.recordOutput("/Targetting/state", state);
-		Logger.recordOutput("/Targetting/targetPose", new Pose2d(virtualTarget, new Rotation2d()));
-		Logger.recordOutput("/Targetting/joystickTarget", new Pose2d(target, new Rotation2d()));
-		Logger.recordOutput("/Targetting/distance", distance);
-		Logger.recordOutput("/Targetting/timeOfFlight", params.timeOfFlight());
-
-		// Zone boundary lines
-		double fieldW = FieldConstants.fieldWidth;
-		Pose2d[] trenchMinLine = new Pose2d[] {
-			new Pose2d(xTrenchMin, 0, new Rotation2d()), new Pose2d(xTrenchMin, fieldW, new Rotation2d())
-		};
-		Pose2d[] trenchMaxLine = new Pose2d[] {
-			new Pose2d(xTrenchMax, 0, new Rotation2d()), new Pose2d(xTrenchMax, fieldW, new Rotation2d())
-		};
-		Logger.recordOutput("/Targetting/trenchMinLine", trenchMinLine);
-		Logger.recordOutput("/Targetting/trenchMaxLine", trenchMaxLine);
+		return new TeleopTarget(target, state);
 	}
 
 	@Override

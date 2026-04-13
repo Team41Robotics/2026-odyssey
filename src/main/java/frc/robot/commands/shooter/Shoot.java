@@ -7,10 +7,10 @@ import org.littletonrobotics.junction.Logger;
 
 @SuppressWarnings("static-access")
 public class Shoot extends Command {
-	public static final double FEEDER_VOLTAGE = 9.6; // FIXME.
+	public static final double FEEDER_VOLTAGE = 12;
 
 	public Shoot() {
-		addRequirements(shooter, indexer);
+		addRequirements(indexer);
 	}
 
 	@Override
@@ -19,9 +19,8 @@ public class Shoot extends Command {
 				.getNorm();
 		Targetting.ShotParameters params = Targetting.shotSpeeds(dist);
 
-		shooter.targetFlywheelRPM = params.flywheelRPM();
 		indexer.targetIndexerVoltage = shooter.onTarget ? FEEDER_VOLTAGE : 0.0;
-		indexer.targetRollerVoltage = shooter.onTarget ? 3 : 0;
+		indexer.targetRollerVoltage = shooter.onTarget ? 3 : 0.0;
 
 		Logger.recordOutput("/Shoot/dist", dist);
 		Logger.recordOutput("/Shoot/targetRPM", params.flywheelRPM());

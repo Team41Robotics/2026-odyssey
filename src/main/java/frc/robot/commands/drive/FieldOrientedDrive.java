@@ -1,6 +1,7 @@
 package frc.robot.commands.drive;
 
 import static frc.robot.RobotContainer.*;
+import static frc.robot.Util.*;
 import static java.lang.Math.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -41,14 +42,5 @@ public class FieldOrientedDrive extends Command {
 	@Override
 	public void end(boolean interrupted) {
 		drive.stop();
-	}
-
-	private static double deadband(double x, double db) {
-		if (abs(x) < db) return 0;
-		return copySign(((abs(x) - db) / (1 - db)), x);
-	}
-
-	private static double squareCurve(double x) {
-		return copySign(x * x, x);
 	}
 }

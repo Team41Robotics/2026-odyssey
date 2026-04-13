@@ -118,7 +118,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 		cancoderConfig.MagnetSensor.SensorDirection = constants.EncoderInverted
 				? SensorDirectionValue.Clockwise_Positive
 				: SensorDirectionValue.CounterClockwise_Positive;
-		cancoder.getConfigurator().apply(cancoderConfig);
+		tryUntilOk(5, () -> cancoder.getConfigurator().apply(cancoderConfig, 0.25));
 
 		timestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
 
@@ -155,9 +155,9 @@ public class ModuleIOTalonFX implements ModuleIO {
 				turnSupplyCurrent);
 		ParentDevice.optimizeBusUtilizationForAll(driveTalon, turnTalon);
 
-		driveTalon.clearStickyFaults();
-		turnTalon.clearStickyFaults();
-		cancoder.clearStickyFaults();
+		tryUntilOk(5, () -> driveTalon.clearStickyFaults(0.25));
+		tryUntilOk(5, () -> turnTalon.clearStickyFaults(0.25));
+		tryUntilOk(5, () -> cancoder.clearStickyFaults(0.25));
 	}
 
 	@Override
@@ -249,6 +249,6 @@ public class ModuleIOTalonFX implements ModuleIO {
 	@Override
 	public void setDriveBrakeMode(boolean enabled) {
 		driveOutputConfigs.NeutralMode = enabled ? NeutralModeValue.Brake : NeutralModeValue.Coast;
-		driveTalon.getConfigurator().apply(driveOutputConfigs);
+		tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveOutputConfigs, 0.25));
 	}
 }

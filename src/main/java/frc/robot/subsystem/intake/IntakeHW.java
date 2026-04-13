@@ -1,5 +1,6 @@
 package frc.robot.subsystem.intake;
 
+import static frc.robot.util.PhoenixUtil.*;
 import static java.lang.Math.PI;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -57,10 +58,10 @@ public class IntakeHW {
 		pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 		pivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 		pivotConfig.Feedback.SensorToMechanismRatio = PIVOT_GEAR_RATIO;
-		pivotTalonFX.getConfigurator().apply(pivotConfig);
-		pivotTalonFX.clearStickyFaults();
-		pivotTalonFX.setNeutralMode(NeutralModeValue.Brake);
-		pivotTalonFX.setPosition(0);
+		tryUntilOk(5, () -> pivotTalonFX.getConfigurator().apply(pivotConfig, 0.25));
+		tryUntilOk(5, () -> pivotTalonFX.clearStickyFaults(0.25));
+		tryUntilOk(5, () -> pivotTalonFX.setNeutralMode(NeutralModeValue.Brake));
+		tryUntilOk(5, () -> pivotTalonFX.setPosition(0, 0.25));
 
 		// --- Intake roller ---
 		intakeTalonFX = new TalonFX(31);
@@ -70,9 +71,9 @@ public class IntakeHW {
 		intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 		intakeConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 		intakeConfig.MotorOutput.Inverted = com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive;
-		intakeTalonFX.getConfigurator().apply(intakeConfig);
-		intakeTalonFX.clearStickyFaults();
-		intakeTalonFX.setNeutralMode(NeutralModeValue.Coast);
+		tryUntilOk(5, () -> intakeTalonFX.getConfigurator().apply(intakeConfig, 0.25));
+		tryUntilOk(5, () -> intakeTalonFX.clearStickyFaults(0.25));
+		tryUntilOk(5, () -> intakeTalonFX.setNeutralMode(NeutralModeValue.Coast));
 
 		// --- Cache StatusSignals ---
 		pivotPosition = pivotTalonFX.getPosition(false);
@@ -145,6 +146,6 @@ public class IntakeHW {
 
 	public void zeroPivot() {
 		if (!Robot.isReal()) return;
-		pivotTalonFX.setPosition(0);
+		tryUntilOk(5, () -> pivotTalonFX.setPosition(0, 0.25));
 	}
 }

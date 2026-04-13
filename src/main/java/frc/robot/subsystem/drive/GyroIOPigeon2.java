@@ -1,5 +1,7 @@
 package frc.robot.subsystem.drive;
 
+import static frc.robot.util.PhoenixUtil.*;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
@@ -22,11 +24,12 @@ public class GyroIOPigeon2 implements GyroIO {
 
 	public GyroIOPigeon2() {
 		if (TunerConstants.DrivetrainConstants.Pigeon2Configs != null) {
-			pigeon.getConfigurator().apply(TunerConstants.DrivetrainConstants.Pigeon2Configs);
+			tryUntilOk(
+					5, () -> pigeon.getConfigurator().apply(TunerConstants.DrivetrainConstants.Pigeon2Configs, 0.25));
 		} else {
-			pigeon.getConfigurator().apply(new Pigeon2Configuration());
+			tryUntilOk(5, () -> pigeon.getConfigurator().apply(new Pigeon2Configuration(), 0.25));
 		}
-		pigeon.getConfigurator().setYaw(0.0);
+		tryUntilOk(5, () -> pigeon.getConfigurator().setYaw(0.0, 0.25));
 		yaw.setUpdateFrequency(Drive.ODOMETRY_FREQUENCY);
 		yawVelocity.setUpdateFrequency(50.0);
 		pitch.setUpdateFrequency(50.0);
@@ -35,7 +38,7 @@ public class GyroIOPigeon2 implements GyroIO {
 
 		yawTimestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
 		yawPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(yaw.clone());
-		pigeon.clearStickyFaults();
+		tryUntilOk(5, () -> pigeon.clearStickyFaults(0.25));
 	}
 
 	@Override

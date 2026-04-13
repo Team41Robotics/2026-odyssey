@@ -1,5 +1,7 @@
 package frc.robot.subsystem.shooter;
 
+import static frc.robot.util.PhoenixUtil.*;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -48,9 +50,9 @@ public class ShooterHW {
 		flywheelConfig.Slot0.kV = FLYWHEEL_kV;
 		flywheelConfig.Slot0.kP = FLYWHEEL_kP;
 		flywheelConfig.Slot0.kD = FLYWHEEL_kD;
-		flywheelTalonFX.getConfigurator().apply(flywheelConfig);
-		flywheelTalonFX.clearStickyFaults();
-		flywheelTalonFX.setNeutralMode(NeutralModeValue.Coast);
+		tryUntilOk(5, () -> flywheelTalonFX.getConfigurator().apply(flywheelConfig, 0.25));
+		tryUntilOk(5, () -> flywheelTalonFX.clearStickyFaults(0.25));
+		tryUntilOk(5, () -> flywheelTalonFX.setNeutralMode(NeutralModeValue.Coast));
 
 		// --- Flywheel follower ---
 		flywheelFollowerTalonFX = new TalonFX(61);
@@ -59,10 +61,10 @@ public class ShooterHW {
 		flywheelFollowerConfig.CurrentLimits.StatorCurrentLimit = FLYWHEEL_STATOR_CURRENT;
 		flywheelFollowerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 		flywheelFollowerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-		flywheelFollowerTalonFX.getConfigurator().apply(flywheelFollowerConfig);
-		flywheelFollowerTalonFX.clearStickyFaults();
-		flywheelFollowerTalonFX.setNeutralMode(NeutralModeValue.Coast);
-		flywheelFollowerTalonFX.setControl(new Follower(62, MotorAlignmentValue.Opposed));
+		tryUntilOk(5, () -> flywheelFollowerTalonFX.getConfigurator().apply(flywheelFollowerConfig, 0.25));
+		tryUntilOk(5, () -> flywheelFollowerTalonFX.clearStickyFaults(0.25));
+		tryUntilOk(5, () -> flywheelFollowerTalonFX.setNeutralMode(NeutralModeValue.Coast));
+		tryUntilOk(5, () -> flywheelFollowerTalonFX.setControl(new Follower(62, MotorAlignmentValue.Opposed)));
 
 		// --- Cache StatusSignals ---
 		flywheelVelocity = flywheelTalonFX.getVelocity(false);

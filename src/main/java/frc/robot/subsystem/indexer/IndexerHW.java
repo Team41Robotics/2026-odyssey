@@ -1,5 +1,7 @@
 package frc.robot.subsystem.indexer;
 
+import static frc.robot.util.PhoenixUtil.*;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -46,9 +48,9 @@ public class IndexerHW {
 		rollerConfig.CurrentLimits.StatorCurrentLimit = ROLLER_STATOR_CURRENT;
 		rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 		rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-		rollerTalonFX.getConfigurator().apply(rollerConfig);
-		rollerTalonFX.clearStickyFaults();
-		rollerTalonFX.setNeutralMode(NeutralModeValue.Coast);
+		tryUntilOk(5, () -> rollerTalonFX.getConfigurator().apply(rollerConfig, 0.25));
+		tryUntilOk(5, () -> rollerTalonFX.clearStickyFaults(0.25));
+		tryUntilOk(5, () -> rollerTalonFX.setNeutralMode(NeutralModeValue.Coast));
 
 		// --- Indexer follows roller ---
 		indexerTalonFX = new TalonFX(32);
@@ -58,9 +60,9 @@ public class IndexerHW {
 		indexerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 		indexerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 		indexerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-		indexerTalonFX.getConfigurator().apply(indexerConfig);
-		indexerTalonFX.clearStickyFaults();
-		indexerTalonFX.setNeutralMode(NeutralModeValue.Coast);
+		tryUntilOk(5, () -> indexerTalonFX.getConfigurator().apply(indexerConfig, 0.25));
+		tryUntilOk(5, () -> indexerTalonFX.clearStickyFaults(0.25));
+		tryUntilOk(5, () -> indexerTalonFX.setNeutralMode(NeutralModeValue.Coast));
 
 		// --- Cache StatusSignals ---
 		rollerMotorVoltage = rollerTalonFX.getMotorVoltage(false);

@@ -1,13 +1,14 @@
 package frc.robot.subsystem.intake;
 
 import static frc.robot.util.PhoenixUtil.*;
-import static java.lang.Math.PI;
+import static java.lang.Math.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -16,15 +17,7 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Robot;
 
 public class IntakeHW {
-	public static final double INTAKE_VOLTAGE = 6.0; // FIXME
-
 	public static final double PIVOT_GEAR_RATIO = 14.0;
-
-	public static final double INTAKE_SUPPLY_CURRENT = 40.0;
-	public static final double INTAKE_STATOR_CURRENT = 100.0;
-
-	public static final double PIVOT_SUPPLY_CURRENT = 40.0;
-	public static final double PIVOT_STATOR_CURRENT = 80.0;
 
 	public TalonFX intakeTalonFX;
 	public TalonFX pivotTalonFX;
@@ -53,8 +46,8 @@ public class IntakeHW {
 		// --- Pivot ---
 		pivotTalonFX = new TalonFX(21);
 		TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
-		pivotConfig.CurrentLimits.SupplyCurrentLimit = PIVOT_SUPPLY_CURRENT;
-		pivotConfig.CurrentLimits.StatorCurrentLimit = PIVOT_STATOR_CURRENT;
+		pivotConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
+		pivotConfig.CurrentLimits.StatorCurrentLimit = 80.0;
 		pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 		pivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 		pivotConfig.Feedback.SensorToMechanismRatio = PIVOT_GEAR_RATIO;
@@ -66,11 +59,11 @@ public class IntakeHW {
 		// --- Intake roller ---
 		intakeTalonFX = new TalonFX(31);
 		TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
-		intakeConfig.CurrentLimits.SupplyCurrentLimit = INTAKE_SUPPLY_CURRENT;
-		intakeConfig.CurrentLimits.StatorCurrentLimit = INTAKE_STATOR_CURRENT;
+		intakeConfig.CurrentLimits.SupplyCurrentLimit = 50.0;
+		intakeConfig.CurrentLimits.StatorCurrentLimit = 120.0;
 		intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 		intakeConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-		intakeConfig.MotorOutput.Inverted = com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive;
+		intakeConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 		tryUntilOk(5, () -> intakeTalonFX.getConfigurator().apply(intakeConfig, 0.25));
 		tryUntilOk(5, () -> intakeTalonFX.clearStickyFaults(0.25));
 		tryUntilOk(5, () -> intakeTalonFX.setNeutralMode(NeutralModeValue.Coast));
@@ -144,7 +137,7 @@ public class IntakeHW {
 		intakeTalonFX.setControl(intakeVoltageRequest.withOutput(intakeVoltage));
 	}
 
-	public void zeroPivot() {
+	public void zeroPivotForced() {
 		if (!Robot.isReal()) return;
 		tryUntilOk(5, () -> pivotTalonFX.setPosition(0, 0.25));
 	}

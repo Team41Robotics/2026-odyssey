@@ -15,9 +15,6 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Robot;
 
 public class IndexerHW {
-	public static final double ROLLER_SUPPLY_CURRENT = 30.0;
-	public static final double ROLLER_STATOR_CURRENT = 80.0;
-
 	public TalonFX rollerTalonFX;
 	public TalonFX indexerTalonFX;
 
@@ -44,8 +41,8 @@ public class IndexerHW {
 		// --- Roller ---
 		rollerTalonFX = new TalonFX(60);
 		TalonFXConfiguration rollerConfig = new TalonFXConfiguration();
-		rollerConfig.CurrentLimits.SupplyCurrentLimit = ROLLER_SUPPLY_CURRENT;
-		rollerConfig.CurrentLimits.StatorCurrentLimit = ROLLER_STATOR_CURRENT;
+		rollerConfig.CurrentLimits.SupplyCurrentLimit = 30.0;
+		rollerConfig.CurrentLimits.StatorCurrentLimit = 80.0;
 		rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 		rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 		tryUntilOk(5, () -> rollerTalonFX.getConfigurator().apply(rollerConfig, 0.25));
@@ -55,8 +52,8 @@ public class IndexerHW {
 		// --- Indexer follows roller ---
 		indexerTalonFX = new TalonFX(32);
 		TalonFXConfiguration indexerConfig = new TalonFXConfiguration();
-		indexerConfig.CurrentLimits.SupplyCurrentLimit = ROLLER_SUPPLY_CURRENT;
-		indexerConfig.CurrentLimits.StatorCurrentLimit = ROLLER_STATOR_CURRENT;
+		indexerConfig.CurrentLimits.SupplyCurrentLimit = 30.0;
+		indexerConfig.CurrentLimits.StatorCurrentLimit = 80.0;
 		indexerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 		indexerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 		indexerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;

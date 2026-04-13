@@ -249,6 +249,6 @@ public class ModuleIOTalonFX implements ModuleIO {
 	@Override
 	public void setDriveBrakeMode(boolean enabled) {
 		driveOutputConfigs.NeutralMode = enabled ? NeutralModeValue.Brake : NeutralModeValue.Coast;
-		tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveOutputConfigs, 0.25));
+		driveTalon.getConfigurator().apply(driveOutputConfigs);
 	}
 }

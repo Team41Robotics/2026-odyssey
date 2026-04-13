@@ -21,8 +21,6 @@ public class ShooterHW {
 	public static final double FLYWHEEL_kV = 0.11494;
 	public static final double FLYWHEEL_kP = 0.17662 * 2;
 	public static final double FLYWHEEL_kD = 0.0;
-	public static final double FLYWHEEL_SUPPLY_CURRENT = 40.0;
-	public static final double FLYWHEEL_STATOR_CURRENT = 100.0;
 
 	public TalonFX flywheelTalonFX;
 	public TalonFX flywheelFollowerTalonFX;
@@ -42,8 +40,8 @@ public class ShooterHW {
 		// --- Flywheel leader ---
 		flywheelTalonFX = new TalonFX(62);
 		TalonFXConfiguration flywheelConfig = new TalonFXConfiguration();
-		flywheelConfig.CurrentLimits.SupplyCurrentLimit = FLYWHEEL_SUPPLY_CURRENT;
-		flywheelConfig.CurrentLimits.StatorCurrentLimit = FLYWHEEL_STATOR_CURRENT;
+		flywheelConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
+		flywheelConfig.CurrentLimits.StatorCurrentLimit = 100.0;
 		flywheelConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 		flywheelConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 		flywheelConfig.Slot0.kS = FLYWHEEL_kS;
@@ -57,8 +55,8 @@ public class ShooterHW {
 		// --- Flywheel follower ---
 		flywheelFollowerTalonFX = new TalonFX(61);
 		TalonFXConfiguration flywheelFollowerConfig = new TalonFXConfiguration();
-		flywheelFollowerConfig.CurrentLimits.SupplyCurrentLimit = FLYWHEEL_SUPPLY_CURRENT;
-		flywheelFollowerConfig.CurrentLimits.StatorCurrentLimit = FLYWHEEL_STATOR_CURRENT;
+		flywheelFollowerConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
+		flywheelFollowerConfig.CurrentLimits.StatorCurrentLimit = 100.0;
 		flywheelFollowerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 		flywheelFollowerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 		tryUntilOk(5, () -> flywheelFollowerTalonFX.getConfigurator().apply(flywheelFollowerConfig, 0.25));

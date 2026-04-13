@@ -7,12 +7,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.MatchAlerts;
 import frc.robot.commands.PreMatchCheck;
 import frc.robot.commands.autos.Autos;
 import frc.robot.commands.drive.FieldOrientedDrive;
 import frc.robot.commands.intake.IntakeDown;
 import frc.robot.commands.intake.IntakeUp;
+import frc.robot.commands.intake.ZeroPivot;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import frc.robot.commands.shooter.Align;
 import frc.robot.commands.shooter.Shoot;
 import frc.robot.commands.shooter.ShooterTrack;
@@ -45,6 +48,9 @@ public class RobotContainer {
 	public static ShooterSubsystem shooter = new ShooterSubsystem();
 	public static IndexerSubsystem indexer = new IndexerSubsystem();
 	public static Vision vision = new Vision();
+
+	public static LoggedNetworkBoolean zeroPivotButton =
+			new LoggedNetworkBoolean("/Intake/zeroPivot", false);
 
 	public static String currentPeriod = "DISABLED";
 	public static double periodTimeRemaining = 0;
@@ -124,6 +130,8 @@ public class RobotContainer {
 
 		controls.extendOut().whileTrue(new IntakeDown());
 		controls.extendIn().whileTrue(new IntakeUp());
+
+		new Trigger(zeroPivotButton::get).onTrue(new ZeroPivot());
 
 		controls.invertToggle().onTrue(Commands.runOnce(() -> {
 			JoystickControls.inverted = !JoystickControls.inverted;

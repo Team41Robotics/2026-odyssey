@@ -11,7 +11,7 @@ public class ZeroPivot extends Command {
 
 	@Override
 	public void initialize() {
-		intake.hw.zeroPivot();
+		intake.hw.zeroPivotForced();
 	}
 
 	@Override

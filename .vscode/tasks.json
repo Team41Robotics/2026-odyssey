@@ -1,0 +1,51 @@
+{
+        "version": "2.0.0",
+        "tasks": [
+                {
+                        "label": "spotlessApply",
+                        "type": "shell",
+                        "command": "./gradlew",
+                        "args": [
+                                "spotlessApply"
+                        ],
+                        "windows": {
+                                "command": "gradlew.bat",
+                                "options": {
+                                        "shell": {
+                                                "executable": "cmd.exe",
+                                                "args": ["/c"]
+                                        }
+                                }
+                        },
+                        "group": "build",
+                        "presentation": {
+                                "reveal": "always",
+                                "panel": "new"
+                        },
+                        "problemMatcher": []
+                },
+                {
+                        "label": "replay",
+                        "type": "shell",
+                        "command": "./gradlew",
+                        "args": [
+                                "simulateJava"
+                        ],
+                        "windows": {
+                                "command": "gradlew.bat",
+                                "options": {
+                                        "shell": {
+                                                "executable": "cmd.exe",
+                                                "args": ["/c"]
+                                        }
+                                }
+                        },
+                        "group": "build",
+                        "presentation": {
+                                "reveal": "always",
+                                "panel": "new"
+                        },
+                        "problemMatcher": []
+                }
+        ]
+}

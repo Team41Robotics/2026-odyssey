@@ -1,5 +1,8 @@
 package frc.robot.subsystem.drive;
 
+import static edu.wpi.first.math.MathUtil.*;
+import static java.lang.Math.*;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
@@ -12,6 +15,8 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
+	private static final double WHEEL_CIRCUMFERENCE_METERS = 2.0 * Math.PI * 0.0508;
+
 	private final ModuleIO io;
 	private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
 	private final int index;
@@ -55,9 +60,17 @@ public class Module {
 	/** Runs the module with the specified setpoint state (mutates the state to optimize). */
 	public void runSetpoint(SwerveModuleState state) {
 		state.optimize(getAngle());
-		state.cosineScale(inputs.turnPosition);
-		io.setDriveVelocity(state.speedMetersPerSecond / constants.WheelRadius);
+
+		// cos² correction: reduce drive speed proportionally when steer is misaligned, preserving sign
+		double targetAng = state.angle.getRadians();
+		double cosErr = cos(angleModulus(inputs.turnPosition.getRadians() - targetAng));
+		double targetVelRPS = (state.speedMetersPerSecond / WHEEL_CIRCUMFERENCE_METERS) * cosErr * abs(cosErr);
+
+		// setDriveVelocityWithFF takes rad/s — convert wheel_rps → rad/s for the interface
+		io.setDriveVelocity(Units.rotationsToRadians(targetVelRPS));
 		io.setTurnPosition(state.angle);
+
+		Logger.recordOutput("Drive/Module" + index + "/targetVelRPS", targetVelRPS);
 	}
 
 	/** Runs the drive open-loop while holding 0° turn (for SysId characterization). */

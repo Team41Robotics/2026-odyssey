@@ -58,6 +58,7 @@ public class Autos {
 
 		routine.active()
 				.onTrue(Commands.sequence(
+						Commands.runOnce(() -> Logger.recordOutput("Auto/activeRoutine", "trenchAuto")),
 						new Align().withTimeout(1.5),
 						new Shoot().withTimeout(3),
 						Commands.deadline(traj2.cmd(), new WaitCommand(2).andThen(new IntakeDown())),
@@ -80,7 +81,11 @@ public class Autos {
 
 	public static AutoRoutine shootAuto() {
 		AutoRoutine rountine = autoFactory.newRoutine("ShootAuto");
-		rountine.active().onTrue(Commands.sequence(new Align().withTimeout(3), new Shoot().withTimeout(6)));
+		rountine.active()
+				.onTrue(Commands.sequence(
+						Commands.runOnce(() -> Logger.recordOutput("Auto/activeRoutine", "shootAuto")),
+						new Align().withTimeout(3),
+						new Shoot().withTimeout(6)));
 		return rountine;
 	}
 }

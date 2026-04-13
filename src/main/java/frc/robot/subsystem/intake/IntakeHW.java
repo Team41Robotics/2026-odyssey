@@ -44,6 +44,9 @@ public class IntakeHW {
 	// Cached StatusSignals — intake
 	public StatusSignal<Voltage> intakeMotorVoltage;
 	public StatusSignal<Current> intakeStatorCurrent;
+	public StatusSignal<AngularVelocity> intakeVelocity;
+	public StatusSignal<Voltage> intakeSupplyVoltage;
+	public StatusSignal<Current> intakeSupplyCurrent;
 
 	public void init() {
 		if (!Robot.isReal()) return;
@@ -83,6 +86,9 @@ public class IntakeHW {
 
 		intakeMotorVoltage = intakeTalonFX.getMotorVoltage(false);
 		intakeStatorCurrent = intakeTalonFX.getStatorCurrent(false);
+		intakeVelocity = intakeTalonFX.getVelocity(false);
+		intakeSupplyVoltage = intakeTalonFX.getSupplyVoltage(false);
+		intakeSupplyCurrent = intakeTalonFX.getSupplyCurrent(false);
 
 		// --- Update frequencies ---
 		pivotPosition.setUpdateFrequency(50);
@@ -94,6 +100,9 @@ public class IntakeHW {
 
 		intakeMotorVoltage.setUpdateFrequency(50);
 		intakeStatorCurrent.setUpdateFrequency(50);
+		intakeVelocity.setUpdateFrequency(50);
+		intakeSupplyVoltage.setUpdateFrequency(50);
+		intakeSupplyCurrent.setUpdateFrequency(50);
 
 		pivotTalonFX.optimizeBusUtilization();
 		intakeTalonFX.optimizeBusUtilization();
@@ -110,7 +119,10 @@ public class IntakeHW {
 				pivotSupplyVoltage,
 				pivotSupplyCurrent,
 				intakeMotorVoltage,
-				intakeStatorCurrent);
+				intakeStatorCurrent,
+				intakeVelocity,
+				intakeSupplyVoltage,
+				intakeSupplyCurrent);
 
 		inputs.pivotPosRadians = pivotPosition.getValueAsDouble() * 2.0 * PI;
 		inputs.pivotVelRadiansPerSec = pivotVelocity.getValueAsDouble() * 2.0 * PI;
@@ -121,6 +133,10 @@ public class IntakeHW {
 
 		inputs.intakeVoltageVolts = intakeMotorVoltage.getValueAsDouble();
 		inputs.intakeCurrentAmps = intakeStatorCurrent.getValueAsDouble();
+		inputs.rollerVelocityRPS = intakeVelocity.getValueAsDouble();
+		inputs.rollerBusVoltageVolts = intakeSupplyVoltage.getValueAsDouble();
+		inputs.rollerBusCurrentAmps = intakeSupplyCurrent.getValueAsDouble();
+		inputs.pivotVelocityRPS = pivotVelocity.getValueAsDouble();
 	}
 
 	public void actuate(IntakeInputs inputs, double pivotVoltage, double intakeVoltage) {

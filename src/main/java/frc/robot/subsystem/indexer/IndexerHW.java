@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.IntakeConstants;
@@ -27,10 +28,16 @@ public class IndexerHW {
 	// Cached StatusSignals — roller
 	public StatusSignal<Voltage> rollerMotorVoltage;
 	public StatusSignal<Current> rollerStatorCurrent;
+	public StatusSignal<AngularVelocity> rollerVelocity;
+	public StatusSignal<Voltage> rollerSupplyVoltage;
+	public StatusSignal<Current> rollerSupplyCurrent;
 
 	// Cached StatusSignals — indexer follower
 	public StatusSignal<Voltage> indexerMotorVoltage;
 	public StatusSignal<Current> indexerStatorCurrent;
+	public StatusSignal<AngularVelocity> indexerVelocity;
+	public StatusSignal<Voltage> indexerSupplyVoltage;
+	public StatusSignal<Current> indexerSupplyCurrent;
 
 	public void init() {
 		if (!Robot.isReal()) return;
@@ -61,14 +68,26 @@ public class IndexerHW {
 		// --- Cache StatusSignals ---
 		rollerMotorVoltage = rollerTalonFX.getMotorVoltage(false);
 		rollerStatorCurrent = rollerTalonFX.getStatorCurrent(false);
+		rollerVelocity = rollerTalonFX.getVelocity(false);
+		rollerSupplyVoltage = rollerTalonFX.getSupplyVoltage(false);
+		rollerSupplyCurrent = rollerTalonFX.getSupplyCurrent(false);
 		indexerMotorVoltage = indexerTalonFX.getMotorVoltage(false);
 		indexerStatorCurrent = indexerTalonFX.getStatorCurrent(false);
+		indexerVelocity = indexerTalonFX.getVelocity(false);
+		indexerSupplyVoltage = indexerTalonFX.getSupplyVoltage(false);
+		indexerSupplyCurrent = indexerTalonFX.getSupplyCurrent(false);
 
 		// --- Update frequencies ---
 		rollerMotorVoltage.setUpdateFrequency(50);
 		rollerStatorCurrent.setUpdateFrequency(50);
+		rollerVelocity.setUpdateFrequency(50);
+		rollerSupplyVoltage.setUpdateFrequency(50);
+		rollerSupplyCurrent.setUpdateFrequency(50);
 		indexerMotorVoltage.setUpdateFrequency(50);
 		indexerStatorCurrent.setUpdateFrequency(50);
+		indexerVelocity.setUpdateFrequency(50);
+		indexerSupplyVoltage.setUpdateFrequency(50);
+		indexerSupplyCurrent.setUpdateFrequency(50);
 
 		rollerTalonFX.optimizeBusUtilization();
 		indexerTalonFX.optimizeBusUtilization();
@@ -77,12 +96,28 @@ public class IndexerHW {
 	public void sense(IndexerInputs inputs) {
 		if (!Robot.isReal()) return;
 
-		BaseStatusSignal.refreshAll(rollerMotorVoltage, rollerStatorCurrent, indexerMotorVoltage, indexerStatorCurrent);
+		BaseStatusSignal.refreshAll(
+				rollerMotorVoltage,
+				rollerStatorCurrent,
+				rollerVelocity,
+				rollerSupplyVoltage,
+				rollerSupplyCurrent,
+				indexerMotorVoltage,
+				indexerStatorCurrent,
+				indexerVelocity,
+				indexerSupplyVoltage,
+				indexerSupplyCurrent);
 
 		inputs.rollerVoltageVolts = rollerMotorVoltage.getValueAsDouble();
 		inputs.rollerCurrentAmps = rollerStatorCurrent.getValueAsDouble();
+		inputs.rollerVelocityRPM = rollerVelocity.getValueAsDouble() * 60.0;
+		inputs.rollerBusVoltageVolts = rollerSupplyVoltage.getValueAsDouble();
+		inputs.rollerBusCurrentAmps = rollerSupplyCurrent.getValueAsDouble();
 		inputs.indexerVoltageVolts = indexerMotorVoltage.getValueAsDouble();
 		inputs.indexerCurrentAmps = indexerStatorCurrent.getValueAsDouble();
+		inputs.indexerVelocityRPM = indexerVelocity.getValueAsDouble() * 60.0;
+		inputs.indexerBusVoltageVolts = indexerSupplyVoltage.getValueAsDouble();
+		inputs.indexerBusCurrentAmps = indexerSupplyCurrent.getValueAsDouble();
 	}
 
 	public void actuate(IndexerInputs inputs, double rollerVoltage, double indexerVoltage) {

@@ -9,7 +9,7 @@ import frc.robot.FieldConstants;
 import frc.robot.Util;
 
 public class Targetting {
-	public record ShotParameters(double flywheelRPM, double elevatorPos, double timeOfFlight, double distance) {}
+	public record ShotParameters(double flywheelRPM, double timeOfFlight, double distance) {}
 
 	// {dist (m), offset (m)} — offset compensates for overshoot at that distance
 	public static final double[][] OFFSET_TABLE = {
@@ -17,18 +17,18 @@ public class Targetting {
 		{6.0, 0.0}, // FIXME.
 	};
 
-	// {dist (m), rpm, elevatorPos (motor rotations), tof (s)} — FIXME. tune all values
+	// {dist (m), rpm, tof (s)} — FIXME. tune all values
 	public static final double[][] SHOT_TABLE = {
-		{1.5, 2050, 0.0, 0.90},
-		{2.0, 2150, 1.0, 1.08},
-		{2.5, 2250, 2.0, 1.23},
-		{3.0, 2400, 3.0, 1.28},
-		{3.5, 2550, 4.5, 1.34},
-		{4.0, 2700, 6.0, 1.36},
-		{4.5, 2950, 7.5, 1.40},
-		{5.0, 3200, 8.5, 1.43},
-		{5.5, 3450, 9.5, 1.46},
-		{6.0, 3700, 10, 1.48},
+		{1.5, 2050, 0.90},
+		{2.0, 2150, 1.08},
+		{2.5, 2250, 1.23},
+		{3.0, 2400, 1.28},
+		{3.5, 2550, 1.34},
+		{4.0, 2700, 1.36},
+		{4.5, 2950, 1.40},
+		{5.0, 3200, 1.43},
+		{5.5, 3450, 1.46},
+		{6.0, 3700, 1.48},
 	};
 
 	public static double lerpOffset(double distance) {
@@ -49,27 +49,21 @@ public class Targetting {
 		if (distance <= SHOT_TABLE[0][0]) {
 			double[] lo = SHOT_TABLE[0], hi = SHOT_TABLE[1];
 			double t = (distance - lo[0]) / (hi[0] - lo[0]);
-			return new ShotParameters(
-					lo[1] + t * (hi[1] - lo[1]), lo[2] + t * (hi[2] - lo[2]), lo[3] + t * (hi[3] - lo[3]), distance);
+			return new ShotParameters(lo[1] + t * (hi[1] - lo[1]), lo[2] + t * (hi[2] - lo[2]), distance);
 		}
 		if (distance >= SHOT_TABLE[SHOT_TABLE.length - 1][0]) {
 			double[] lo = SHOT_TABLE[SHOT_TABLE.length - 2], hi = SHOT_TABLE[SHOT_TABLE.length - 1];
 			double t = (distance - lo[0]) / (hi[0] - lo[0]);
-			return new ShotParameters(
-					lo[1] + t * (hi[1] - lo[1]), lo[2] + t * (hi[2] - lo[2]), lo[3] + t * (hi[3] - lo[3]), distance);
+			return new ShotParameters(lo[1] + t * (hi[1] - lo[1]), lo[2] + t * (hi[2] - lo[2]), distance);
 		}
 		for (int i = 0; i < SHOT_TABLE.length - 1; i++) {
 			double[] lo = SHOT_TABLE[i], hi = SHOT_TABLE[i + 1];
 			if (distance >= lo[0] && distance <= hi[0]) {
 				double t = (distance - lo[0]) / (hi[0] - lo[0]);
-				return new ShotParameters(
-						lo[1] + t * (hi[1] - lo[1]),
-						lo[2] + t * (hi[2] - lo[2]),
-						lo[3] + t * (hi[3] - lo[3]),
-						distance);
+				return new ShotParameters(lo[1] + t * (hi[1] - lo[1]), lo[2] + t * (hi[2] - lo[2]), distance);
 			}
 		}
-		return new ShotParameters(0, 0, 0, distance);
+		return new ShotParameters(0, 0, distance);
 	}
 
 	/** Hub target, flipped for alliance. */

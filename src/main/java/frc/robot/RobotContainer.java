@@ -1,9 +1,9 @@
 package frc.robot;
 
-import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -47,7 +47,7 @@ public class RobotContainer {
 	public static Vision vision = new Vision();
 
 	public static AutoFactory autoFactory;
-	public static AutoChooser autoChooser;
+	public static LoggedAutoChooser autoChooser;
 	public static Command autonomousCommand = null;
 
 	public static String currentPeriod = "DISABLED";
@@ -65,14 +65,12 @@ public class RobotContainer {
 		intake.setDefaultCommand(new IntakeDown());
 
 		Autos.init();
-		autoFactory =
-				new AutoFactory(drive::getPose, drive::setPose, Autos::choreoController, RobotContainer.isRed(), drive);
-		autoChooser = new AutoChooser();
+		autoFactory = new AutoFactory(drive::getPose, drive::setPose, Autos::choreoController, true, drive);
+		autoChooser = new LoggedAutoChooser("AutoChooser");
 		// Register Choreo routines here, e.g.:
 		// autoChooser.addRoutine("MyAuto", () -> autoFactory.newRoutine("myTrajectory"));
 		autoChooser.addRoutine("Bad", Autos::trenchAuto);
 		autoChooser.addRoutine("ShootAuto", Autos::shootAuto);
-		SmartDashboard.putData("Auto Chooser", autoChooser);
 		autonomousCommand = autoChooser.selectedCommandScheduler();
 
 		configureBindings();
@@ -88,16 +86,39 @@ public class RobotContainer {
 		Logger.recordOutput("DSAttached", DriverStation.isDSAttached());
 		Logger.recordOutput("FMSAttached", DriverStation.isFMSAttached());
 
+		long tIntakeSense = RobotController.getFPGATime();
 		intake.sense();
+		Logger.recordOutput("Timing/intake_sense_us", RobotController.getFPGATime() - tIntakeSense);
+
+		long tIndexerSense = RobotController.getFPGATime();
 		indexer.sense();
+		Logger.recordOutput("Timing/indexer_sense_us", RobotController.getFPGATime() - tIndexerSense);
+
+		long tShooterSense = RobotController.getFPGATime();
 		shooter.sense();
+		Logger.recordOutput("Timing/shooter_sense_us", RobotController.getFPGATime() - tShooterSense);
+
+		long tVisionSense = RobotController.getFPGATime();
 		vision.sense();
+		Logger.recordOutput("Timing/vision_sense_us", RobotController.getFPGATime() - tVisionSense);
 
+		long tScheduler = RobotController.getFPGATime();
 		CommandScheduler.getInstance().run();
+		Logger.recordOutput("Timing/scheduler_us", RobotController.getFPGATime() - tScheduler);
 
+		autoChooser.periodic();
+
+		long tIntakeActuate = RobotController.getFPGATime();
 		intake.actuate();
+		Logger.recordOutput("Timing/intake_actuate_us", RobotController.getFPGATime() - tIntakeActuate);
+
+		long tIndexerActuate = RobotController.getFPGATime();
 		indexer.actuate();
+		Logger.recordOutput("Timing/indexer_actuate_us", RobotController.getFPGATime() - tIndexerActuate);
+
+		long tShooterActuate = RobotController.getFPGATime();
 		shooter.actuate();
+		Logger.recordOutput("Timing/shooter_actuate_us", RobotController.getFPGATime() - tShooterActuate);
 	}
 
 	private static void configureBindings() {

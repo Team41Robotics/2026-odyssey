@@ -18,7 +18,7 @@ public class Module {
 	private static final double WHEEL_CIRCUMFERENCE_METERS = 2.0 * Math.PI * 0.0508;
 
 	private final ModuleIO io;
-	private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
+	public final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
 	private final int index;
 	private final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> constants;
 

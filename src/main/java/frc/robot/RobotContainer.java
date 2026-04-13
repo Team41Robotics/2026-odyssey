@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.commands.MatchAlerts;
+import frc.robot.commands.PreMatchCheck;
 import frc.robot.commands.autos.Autos;
 import frc.robot.commands.drive.FieldOrientedDrive;
 import frc.robot.commands.intake.IntakeDown;
@@ -59,6 +61,9 @@ public class RobotContainer {
 		intake.setDefaultCommand(new IntakeDown());
 
 		Autos.init();
+
+		CommandScheduler.getInstance().schedule(new PreMatchCheck());
+		CommandScheduler.getInstance().schedule(new MatchAlerts());
 
 		configureBindings();
 	}

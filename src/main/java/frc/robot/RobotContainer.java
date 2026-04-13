@@ -16,8 +16,8 @@ import frc.robot.commands.intake.IntakeDown;
 import frc.robot.commands.intake.IntakeUp;
 import frc.robot.commands.intake.ZeroPivot;
 import frc.robot.commands.shooter.AlignTeleop;
+import frc.robot.commands.shooter.Shoot;
 import frc.robot.commands.shooter.ShootTeleop;
-import frc.robot.commands.shooter.ShooterTrack;
 import frc.robot.subsystem.controls.Controls;
 import frc.robot.subsystem.controls.JoystickControls;
 import frc.robot.subsystem.drive.Drive;
@@ -63,7 +63,7 @@ public class RobotContainer {
 		vision.init();
 
 		drive.setDefaultCommand(new FieldOrientedDrive());
-		shooter.setDefaultCommand(new ShooterTrack());
+		shooter.setDefaultCommand(new ShootTeleop());
 		intake.setDefaultCommand(new IntakeDown());
 
 		Autos.init();
@@ -126,7 +126,7 @@ public class RobotContainer {
 		controls.xLock().whileTrue(new RunCommand(drive::stopWithX, drive));
 
 		controls.align().whileTrue(new AlignTeleop());
-		controls.shoot().whileTrue(new ShootTeleop());
+		controls.shoot().whileTrue(new Shoot());
 
 		controls.extendOut().whileTrue(new IntakeDown());
 		controls.extendIn().whileTrue(new IntakeUp());

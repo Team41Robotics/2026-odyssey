@@ -12,9 +12,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.Robot;
-import org.littletonrobotics.junction.Logger;
 
 public class IntakeHW {
 	public static final double INTAKE_VOLTAGE = 6.0; // FIXME
@@ -52,7 +50,7 @@ public class IntakeHW {
 		if (!Robot.isReal()) return;
 
 		// --- Pivot ---
-		pivotTalonFX = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID);
+		pivotTalonFX = new TalonFX(21);
 		TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
 		pivotConfig.CurrentLimits.SupplyCurrentLimit = PIVOT_SUPPLY_CURRENT;
 		pivotConfig.CurrentLimits.StatorCurrentLimit = PIVOT_STATOR_CURRENT;
@@ -65,7 +63,7 @@ public class IntakeHW {
 		pivotTalonFX.setPosition(0);
 
 		// --- Intake roller ---
-		intakeTalonFX = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
+		intakeTalonFX = new TalonFX(31);
 		TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
 		intakeConfig.CurrentLimits.SupplyCurrentLimit = INTAKE_SUPPLY_CURRENT;
 		intakeConfig.CurrentLimits.StatorCurrentLimit = INTAKE_STATOR_CURRENT;
@@ -136,13 +134,9 @@ public class IntakeHW {
 		inputs.rollerVelocityRPS = intakeVelocity.getValueAsDouble();
 		inputs.rollerBusVoltageVolts = intakeSupplyVoltage.getValueAsDouble();
 		inputs.rollerBusCurrentAmps = intakeSupplyCurrent.getValueAsDouble();
-		inputs.pivotVelocityRPS = pivotVelocity.getValueAsDouble();
 	}
 
 	public void actuate(IntakeInputs inputs, double pivotVoltage, double intakeVoltage) {
-		Logger.recordOutput("/Intake/targetPivotVoltage", pivotVoltage);
-		Logger.recordOutput("/Intake/targetIntakeVoltage", intakeVoltage);
-
 		if (!Robot.isReal()) return;
 
 		pivotTalonFX.setControl(pivotVoltageRequest.withOutput(pivotVoltage));

@@ -5,6 +5,7 @@ import static java.lang.Math.*;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import org.littletonrobotics.junction.Logger;
 
 public class IntakeDown extends Command {
 	public static final double PIVOT_kP = 4;
@@ -32,6 +33,8 @@ public class IntakeDown extends Command {
 		intake.targetPivotVoltage = -PIVOT_kP * intake.inputs.pivotPosRadians
 				- PIVOT_kD * intake.inputs.pivotVelRadiansPerSec
 				+ PIVOT_kG * cos(intake.inputs.pivotPosRadians);
+
+		Logger.recordOutput("/IntakeDown/reversing", reversing);
 
 		double now = Timer.getTimestamp();
 		if (reversing) {

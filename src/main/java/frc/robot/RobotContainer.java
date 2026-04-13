@@ -1,11 +1,9 @@
 package frc.robot;
 
-import choreo.auto.AutoFactory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -46,10 +44,6 @@ public class RobotContainer {
 	public static IndexerSubsystem indexer = new IndexerSubsystem();
 	public static Vision vision = new Vision();
 
-	public static AutoFactory autoFactory;
-	public static LoggedAutoChooser autoChooser;
-	public static Command autonomousCommand = null;
-
 	public static String currentPeriod = "DISABLED";
 	public static double periodTimeRemaining = 0;
 	public static String allianceHubStatus = "Unknown";
@@ -65,13 +59,6 @@ public class RobotContainer {
 		intake.setDefaultCommand(new IntakeDown());
 
 		Autos.init();
-		autoFactory = new AutoFactory(drive::getPose, drive::setPose, Autos::choreoController, true, drive);
-		autoChooser = new LoggedAutoChooser("AutoChooser");
-		// Register Choreo routines here, e.g.:
-		// autoChooser.addRoutine("MyAuto", () -> autoFactory.newRoutine("myTrajectory"));
-		autoChooser.addRoutine("Bad", Autos::trenchAuto);
-		autoChooser.addRoutine("ShootAuto", Autos::shootAuto);
-		autonomousCommand = autoChooser.selectedCommandScheduler();
 
 		configureBindings();
 	}
@@ -106,7 +93,7 @@ public class RobotContainer {
 		CommandScheduler.getInstance().run();
 		Logger.recordOutput("Timing/scheduler_us", RobotController.getFPGATime() - tScheduler);
 
-		autoChooser.periodic();
+		Autos.autoChooser.periodic();
 
 		long tIntakeActuate = RobotController.getFPGATime();
 		intake.actuate();

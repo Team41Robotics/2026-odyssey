@@ -1,7 +1,5 @@
 package frc.robot.subsystem.shooter;
 
-import static frc.robot.RobotContainer.*;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
@@ -30,6 +28,8 @@ public class ShooterSubsystem extends SubsystemBase {
 		Logger.recordOutput("/Shooter/flywheelRPMError", flywheelRPMError);
 		Logger.recordOutput("/Shooter/onTarget", onTarget);
 		Logger.recordOutput("/Shooter/flywheelSpinningUp", targetFlywheelRPM > 0 && !onTarget);
+		Logger.recordOutput(
+				"/Shooter/flywheelSpinningDown", targetFlywheelRPM == 0 && inputs.flywheelVelocityRPM > 100);
 	}
 
 	public void actuate() {

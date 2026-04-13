@@ -18,11 +18,11 @@ public class IndexerSubsystem extends SubsystemBase {
 	public void sense() {
 		hw.sense(inputs);
 		Logger.processInputs("/Indexer", inputs);
-
-		Logger.recordOutput("/Indexer/targetIndexerVoltage", targetIndexerVoltage);
 	}
 
 	public void actuate() {
+		Logger.recordOutput("/Indexer/targetRollerVoltage", targetRollerVoltage);
+		Logger.recordOutput("/Indexer/targetIndexerVoltage", targetIndexerVoltage);
 		hw.actuate(inputs, targetRollerVoltage, targetIndexerVoltage);
 	}
 }

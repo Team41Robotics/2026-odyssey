@@ -3,14 +3,17 @@ package frc.robot.commands.autos;
 import static frc.robot.RobotContainer.*;
 import static java.lang.Math.*;
 
+import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.LoggedAutoChooser;
 import frc.robot.choreo.ChoreoTraj;
 import frc.robot.commands.intake.IntakeDown;
 import frc.robot.commands.shooter.Align;
@@ -23,8 +26,18 @@ public class Autos {
 	public static PIDController yController = new PIDController(10.0, 0, 0);
 	public static PIDController thetaController = new PIDController(7, 0, 0);
 
+	public static AutoFactory autoFactory;
+	public static LoggedAutoChooser autoChooser;
+	public static Command autonomousCommand;
+
 	public static void init() {
 		thetaController.enableContinuousInput(-PI, PI);
+
+		autoFactory = new AutoFactory(drive::getPose, drive::setPose, Autos::choreoController, true, drive);
+		autoChooser = new LoggedAutoChooser("AutoChooser");
+		autoChooser.addRoutine("Bad", Autos::trenchAuto);
+		autoChooser.addRoutine("ShootAuto", Autos::shootAuto);
+		autonomousCommand = autoChooser.selectedCommandScheduler();
 	}
 
 	public static void choreoController(SwerveSample sample) {

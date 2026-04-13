@@ -12,9 +12,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.Robot;
-import org.littletonrobotics.junction.Logger;
 
 public class ShooterHW {
 	public static final double FLYWHEEL_kS = 0.24333;
@@ -40,7 +38,7 @@ public class ShooterHW {
 		if (!Robot.isReal()) return;
 
 		// --- Flywheel leader ---
-		flywheelTalonFX = new TalonFX(ShooterConstants.FLYWHEEL_MOTOR_ID);
+		flywheelTalonFX = new TalonFX(62);
 		TalonFXConfiguration flywheelConfig = new TalonFXConfiguration();
 		flywheelConfig.CurrentLimits.SupplyCurrentLimit = FLYWHEEL_SUPPLY_CURRENT;
 		flywheelConfig.CurrentLimits.StatorCurrentLimit = FLYWHEEL_STATOR_CURRENT;
@@ -55,7 +53,7 @@ public class ShooterHW {
 		flywheelTalonFX.setNeutralMode(NeutralModeValue.Coast);
 
 		// --- Flywheel follower ---
-		flywheelFollowerTalonFX = new TalonFX(ShooterConstants.FLYWHEEL_FOLLOWER_MOTOR_ID);
+		flywheelFollowerTalonFX = new TalonFX(61);
 		TalonFXConfiguration flywheelFollowerConfig = new TalonFXConfiguration();
 		flywheelFollowerConfig.CurrentLimits.SupplyCurrentLimit = FLYWHEEL_SUPPLY_CURRENT;
 		flywheelFollowerConfig.CurrentLimits.StatorCurrentLimit = FLYWHEEL_STATOR_CURRENT;
@@ -64,8 +62,7 @@ public class ShooterHW {
 		flywheelFollowerTalonFX.getConfigurator().apply(flywheelFollowerConfig);
 		flywheelFollowerTalonFX.clearStickyFaults();
 		flywheelFollowerTalonFX.setNeutralMode(NeutralModeValue.Coast);
-		flywheelFollowerTalonFX.setControl(
-				new Follower(ShooterConstants.FLYWHEEL_MOTOR_ID, MotorAlignmentValue.Opposed));
+		flywheelFollowerTalonFX.setControl(new Follower(62, MotorAlignmentValue.Opposed));
 
 		// --- Cache StatusSignals ---
 		flywheelVelocity = flywheelTalonFX.getVelocity(false);
@@ -104,8 +101,6 @@ public class ShooterHW {
 	}
 
 	public void actuate(ShooterInputs inputs, double flywheelRPM) {
-		Logger.recordOutput("/Shooter/flywheelErrorRPM", inputs.flywheelVelocityRPM - flywheelRPM);
-
 		if (!Robot.isReal()) return;
 
 		if (flywheelRPM > 0) {

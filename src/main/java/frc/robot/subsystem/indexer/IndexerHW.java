@@ -10,10 +10,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.Robot;
-import org.littletonrobotics.junction.Logger;
 
 public class IndexerHW {
 	public static final double ROLLER_SUPPLY_CURRENT = 30.0;
@@ -43,7 +40,7 @@ public class IndexerHW {
 		if (!Robot.isReal()) return;
 
 		// --- Roller ---
-		rollerTalonFX = new TalonFX(IntakeConstants.FEEDER_MOTOR_ID);
+		rollerTalonFX = new TalonFX(60);
 		TalonFXConfiguration rollerConfig = new TalonFXConfiguration();
 		rollerConfig.CurrentLimits.SupplyCurrentLimit = ROLLER_SUPPLY_CURRENT;
 		rollerConfig.CurrentLimits.StatorCurrentLimit = ROLLER_STATOR_CURRENT;
@@ -54,7 +51,7 @@ public class IndexerHW {
 		rollerTalonFX.setNeutralMode(NeutralModeValue.Coast);
 
 		// --- Indexer follows roller ---
-		indexerTalonFX = new TalonFX(ShooterConstants.ELEVATOR_MOTOR_ID);
+		indexerTalonFX = new TalonFX(32);
 		TalonFXConfiguration indexerConfig = new TalonFXConfiguration();
 		indexerConfig.CurrentLimits.SupplyCurrentLimit = ROLLER_SUPPLY_CURRENT;
 		indexerConfig.CurrentLimits.StatorCurrentLimit = ROLLER_STATOR_CURRENT;
@@ -121,9 +118,6 @@ public class IndexerHW {
 	}
 
 	public void actuate(IndexerInputs inputs, double rollerVoltage, double indexerVoltage) {
-		Logger.recordOutput("/Indexer/commandedRollerVoltage", rollerVoltage);
-		Logger.recordOutput("/Indexer/commandedIndexerVoltage", indexerVoltage);
-
 		if (!Robot.isReal()) return;
 
 		rollerTalonFX.setControl(rollerVoltageRequest.withOutput(rollerVoltage));

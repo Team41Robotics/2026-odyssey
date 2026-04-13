@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.autos.Autos;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
@@ -44,6 +45,13 @@ public class Robot extends LoggedRobot {
 		Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
 		Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
 		Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+		Logger.recordMetadata(
+				"GitDirty",
+				switch (BuildConstants.DIRTY) {
+					case 0 -> "Clean";
+					case 1 -> "Dirty";
+					default -> "Unknown";
+				});
 
 		Logger.start();
 
@@ -92,18 +100,22 @@ public class Robot extends LoggedRobot {
 	}
 
 	@Override
-	public void disabledInit() {}
+	public void disabledInit() {
+		System.gc();
+	}
 
 	@Override
 	public void disabledPeriodic() {}
 
 	@Override
-	public void disabledExit() {}
+	public void disabledExit() {
+		System.gc();
+	}
 
 	@Override
 	public void autonomousInit() {
-		if (RobotContainer.autonomousCommand != null) {
-			CommandScheduler.getInstance().schedule(RobotContainer.autonomousCommand);
+		if (Autos.autonomousCommand != null) {
+			CommandScheduler.getInstance().schedule(Autos.autonomousCommand);
 		}
 	}
 
@@ -115,8 +127,8 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void teleopInit() {
-		if (RobotContainer.autonomousCommand != null) {
-			RobotContainer.autonomousCommand.cancel();
+		if (Autos.autonomousCommand != null) {
+			Autos.autonomousCommand.cancel();
 		}
 	}
 

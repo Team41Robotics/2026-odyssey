@@ -71,4 +71,12 @@ public class JoystickControls implements Controls {
 	public double rightY() {
 		return -right.getY();
 	}
+
+	public double thirdX() {
+		return ds.getX();
+	}
+
+	public double thirdY() {
+		return ds.getY();
+	}
 }

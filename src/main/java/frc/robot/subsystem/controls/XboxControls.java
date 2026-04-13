@@ -65,4 +65,12 @@ public class XboxControls implements Controls {
 	public double rightY() {
 		return -xbox.getRightY();
 	}
+
+	public double thirdX() {
+		return 0;
+	}
+
+	public double thirdY() {
+		return 0;
+	}
 }

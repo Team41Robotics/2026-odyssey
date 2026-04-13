@@ -32,4 +32,8 @@ public interface Controls {
 	double rightX();
 
 	double rightY();
+
+	double thirdX();
+
+	double thirdY();
 }

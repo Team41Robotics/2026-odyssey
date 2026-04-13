@@ -4,20 +4,13 @@ import static frc.robot.RobotContainer.*;
 import static java.lang.Math.*;
 
 import choreo.auto.AutoFactory;
-import choreo.auto.AutoRoutine;
-import choreo.auto.AutoTrajectory;
 import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.LoggedAutoChooser;
-import frc.robot.choreo.ChoreoTraj;
-import frc.robot.commands.intake.IntakeDown;
-import frc.robot.commands.shooter.Align;
-import frc.robot.commands.shooter.Shoot;
 import org.littletonrobotics.junction.Logger;
 
 public class Autos {
@@ -35,8 +28,13 @@ public class Autos {
 
 		autoFactory = new AutoFactory(drive::getPose, drive::setPose, Autos::choreoController, true, drive);
 		autoChooser = new LoggedAutoChooser("AutoChooser");
-		autoChooser.addRoutine("Bad", Autos::trenchAuto);
-		autoChooser.addRoutine("ShootAuto", Autos::shootAuto);
+		autoChooser.addCmd("Do Nothing", Commands::none);
+		autoChooser.addCmd(
+				"Drive Forward 1s",
+				() -> Commands.sequence(
+						Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)), drive)
+								.withTimeout(1.0),
+						Commands.runOnce(drive::stop, drive)));
 		autonomousCommand = autoChooser.selectedCommandScheduler();
 	}
 
@@ -62,43 +60,5 @@ public class Autos {
 		Logger.recordOutput("/Auto/yError", sample.y - pose.getY());
 
 		drive.runVelocity(speeds);
-	}
-
-	public static AutoRoutine trenchAuto() {
-		AutoRoutine routine = autoFactory.newRoutine("Bad");
-		// AutoTrajectory traj = ChoreoTraj.TrenchAuto.asAutoTraj(routine);
-		AutoTrajectory traj2 = ChoreoTraj.Bad.asAutoTraj(routine);
-
-		routine.active()
-				.onTrue(Commands.sequence(
-						Commands.runOnce(() -> Logger.recordOutput("Auto/activeRoutine", "trenchAuto")),
-						new Align().withTimeout(1.5),
-						new Shoot().withTimeout(3),
-						Commands.deadline(traj2.cmd(), new WaitCommand(2).andThen(new IntakeDown())),
-						new Align().withTimeout(1.5),
-						new Shoot().withTimeout(3)));
-
-		// routine.active()
-		// 		.onTrue(//Commands.parallel(
-		// 				Commands.sequence(
-		// 					traj.cmd(),traj2.cmd()));
-		// 						// new Align().withTimeout(3.0),
-		// 						// new Shoot().withTimeout(6.0),
-		// 						// traj.cmd()
-		// 						//new Align().withTimeout(3.0),
-		// 						//new Shoot().withTimeout(6.0)));
-		// 				//Commands.sequence(new WaitCommand(10), new IntakeDown().withTimeout(3))));
-
-		return routine;
-	}
-
-	public static AutoRoutine shootAuto() {
-		AutoRoutine rountine = autoFactory.newRoutine("ShootAuto");
-		rountine.active()
-				.onTrue(Commands.sequence(
-						Commands.runOnce(() -> Logger.recordOutput("Auto/activeRoutine", "shootAuto")),
-						new Align().withTimeout(3),
-						new Shoot().withTimeout(6)));
-		return rountine;
 	}
 }

@@ -13,8 +13,8 @@ public class Targetting {
 
 	// {dist (m), offset (m)} — offset compensates for overshoot at that distance
 	public static final double[][] OFFSET_TABLE = {
-		{1.5, 0.0}, // FIXME.
-		{6.0, 0.0}, // FIXME.
+		{1.5, 0.0},
+		{6.0, 0.0},
 	};
 
 	// {dist (m), rpm, tof (s)} — FIXME. tune all values

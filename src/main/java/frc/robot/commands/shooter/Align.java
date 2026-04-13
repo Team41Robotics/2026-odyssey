@@ -46,7 +46,7 @@ public class Align extends Command {
 				v * cos(theta) * FieldOrientedDrive.MAX_SPEED * FieldOrientedDrive.SPEED_MUL,
 				v * sin(theta) * FieldOrientedDrive.MAX_SPEED * FieldOrientedDrive.SPEED_MUL,
 				omega,
-				drive.getRotation()));
+				drive.getRotation().rotateBy(isRed() ? Rotation2d.k180deg : Rotation2d.kZero)));
 
 		Logger.recordOutput("/Align/virtualTarget", new Pose2d(virtualTarget, Rotation2d.kZero));
 		Logger.recordOutput("/Align/targetAngle", targetAngle);

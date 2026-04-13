@@ -54,6 +54,7 @@ public class RobotContainer {
 	public static String currentPeriod = "DISABLED";
 	public static double periodTimeRemaining = 0;
 	public static String allianceHubStatus = "Unknown";
+	public static Boolean lastRedWonAuto = null;
 
 	public static void init() {
 		intake.init();
@@ -152,14 +153,19 @@ public class RobotContainer {
 		if (gameData != null && gameData.length() > 0) {
 			switch (gameData.charAt(0)) {
 				case 'R':
+					lastRedWonAuto = true;
 					return true;
 				case 'B':
+					lastRedWonAuto = false;
 					return false;
 				default:
 					break;
 			}
 		}
-		return false;
+		if (lastRedWonAuto != null) {
+			return lastRedWonAuto;
+		}
+		return isRed();
 	}
 
 	public static boolean isHubActive() {

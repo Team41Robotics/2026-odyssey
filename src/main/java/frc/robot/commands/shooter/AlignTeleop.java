@@ -48,7 +48,7 @@ public class AlignTeleop extends Command {
 				v * cos(theta) * FieldOrientedDrive.MAX_SPEED * FieldOrientedDrive.SPEED_MUL,
 				v * sin(theta) * FieldOrientedDrive.MAX_SPEED * FieldOrientedDrive.SPEED_MUL,
 				omega,
-				drive.getRotation()));
+				drive.getRotation().rotateBy(isRed() ? Rotation2d.k180deg : Rotation2d.kZero)));
 
 		Logger.recordOutput("/AlignTeleop/targetState", teleopTarget.state());
 		Logger.recordOutput("/AlignTeleop/joystickTarget", new Pose2d(target, Rotation2d.kZero));

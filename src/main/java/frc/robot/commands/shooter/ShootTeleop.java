@@ -36,8 +36,8 @@ public class ShootTeleop extends Command {
 		Logger.recordOutput("/Targetting/state", state);
 		Logger.recordOutput("/Targetting/targetPose", new Pose2d(virtualTarget, new Rotation2d()));
 		Logger.recordOutput("/Targetting/joystickTarget", new Pose2d(target, new Rotation2d()));
-		Logger.recordOutput("/Targetting/distance", distance);
-		Logger.recordOutput("/Targetting/timeOfFlight", params.timeOfFlight());
+		Logger.recordOutput("/Targetting/distanceMeters", distance);
+		Logger.recordOutput("/Targetting/timeOfFlightSec", params.timeOfFlight());
 
 		// Zone boundary lines
 		double xTrenchMin = FieldConstants.LinesVertical.hubCenter - FieldConstants.LeftBump.width / 2.0;

@@ -1,14 +1,10 @@
 package frc.robot.commands.intake;
 
 import static frc.robot.RobotContainer.*;
-import static java.lang.Math.*;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class IntakeUp extends Command {
-	public static final double PIVOT_UP_VOLTAGE = 5.0;
-	public static final double PIVOT_kG = 1.5; // TODO eyeballed
-	public static final double PIVOT_UP_POS = 75.0 / 180 * PI;
 	public static final double INTAKE_UP_VOLTAGE = 5.0;
 
 	public IntakeUp() {
@@ -17,13 +13,13 @@ public class IntakeUp extends Command {
 
 	@Override
 	public void execute() {
-		intake.targetPivotVoltage = intake.inputs.pivotPosRadians < PIVOT_UP_POS ? PIVOT_UP_VOLTAGE * (PIVOT_UP_POS - intake.inputs.pivotPosRadians) / PIVOT_UP_POS : 0;
-		intake.targetPivotVoltage += PIVOT_kG * cos(intake.inputs.pivotPosRadians);
+		intake.targetPivotPositionRadians = Math.toRadians(intake.intakeUpDeg.get());
 		intake.targetIntakeVoltage = INTAKE_UP_VOLTAGE;
 	}
 
 	@Override
 	public void end(boolean interrupted) {
+		intake.targetPivotPositionRadians = null;
 		intake.targetPivotVoltage = 0;
 		intake.targetIntakeVoltage = 0;
 	}

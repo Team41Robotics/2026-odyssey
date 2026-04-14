@@ -3,9 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -16,7 +14,9 @@ import frc.robot.commands.PreMatchCheck;
 import frc.robot.commands.autos.Autos;
 import frc.robot.commands.drive.FieldOrientedDrive;
 import frc.robot.commands.intake.IntakeDown;
+import frc.robot.commands.intake.IntakeExperiment;
 import frc.robot.commands.intake.IntakeUp;
+import frc.robot.commands.intake.IntakeZero;
 import frc.robot.commands.intake.ZeroPivot;
 import frc.robot.commands.shooter.AlignTeleop;
 import frc.robot.commands.shooter.Shoot;
@@ -29,6 +29,7 @@ import frc.robot.subsystem.drive.ModuleIOTalonFX;
 import frc.robot.subsystem.drive.TunerConstants;
 import frc.robot.subsystem.indexer.IndexerSubsystem;
 import frc.robot.subsystem.intake.IntakeSubsystem;
+import frc.robot.subsystem.intake.PivotSysID;
 import frc.robot.subsystem.shooter.ShooterSubsystem;
 import frc.robot.subsystem.vision.Vision;
 import org.littletonrobotics.junction.Logger;
@@ -51,8 +52,12 @@ public class RobotContainer {
 	public static ShooterSubsystem shooter = new ShooterSubsystem();
 	public static IndexerSubsystem indexer = new IndexerSubsystem();
 	public static Vision vision = new Vision();
+	public static PivotSysID pivotSysID = new PivotSysID();
 
 	public static LoggedNetworkBoolean zeroPivotButton = new LoggedNetworkBoolean("/Intake/zeroPivot", false);
+	public static LoggedNetworkBoolean intakeExperimentButton =
+			new LoggedNetworkBoolean("/Intake/experimentEnabled", false);
+	public static LoggedNetworkBoolean intakeZeroButton = new LoggedNetworkBoolean("/Intake/runIntakeZero", false);
 
 	public static String currentPeriod = "DISABLED";
 	public static double periodTimeRemaining = 0;
@@ -65,6 +70,8 @@ public class RobotContainer {
 		indexer.init();
 		vision.init();
 
+		pivotSysID.init();
+
 		drive.setDefaultCommand(new FieldOrientedDrive());
 		shooter.setDefaultCommand(new ShootTeleop());
 		intake.setDefaultCommand(new IntakeDown());
@@ -75,13 +82,14 @@ public class RobotContainer {
 		CommandScheduler.getInstance().schedule(new MatchAlerts());
 
 		SmartDashboard.putData(CommandScheduler.getInstance());
+		SmartDashboard.putData("PID", intake.pivotPID);
 
 		configureBindings();
 	}
 
 	public static void periodic() {
 		updateMatchPeriod();
-		Logger.recordOutput("MatchTime", DriverStation.getMatchTime());
+		Logger.recordOutput("MatchTimeSec", DriverStation.getMatchTime());
 		Logger.recordOutput("Enabled", DriverStation.isEnabled());
 		Logger.recordOutput("Autonomous", DriverStation.isAutonomous());
 		Logger.recordOutput("Teleop", DriverStation.isTeleop());
@@ -136,7 +144,41 @@ public class RobotContainer {
 		controls.extendOut().whileTrue(new IntakeDown());
 		controls.extendIn().whileTrue(new IntakeUp());
 
-		new Trigger(zeroPivotButton::get).onTrue(new ZeroPivot().andThen(new InstantCommand(() -> zeroPivotButton.set(false))).ignoringDisable(true));
+		controls.pivotNudgeUp()
+				.whileTrue(new RunCommand(
+						() -> {
+							intake.targetPivotPositionRadians = null;
+							intake.targetPivotExperimentRadians = null;
+							intake.targetPivotFeedforwardBiasVolts = 0;
+							intake.targetPivotVoltage = 1.0;
+						},
+						intake)
+						.finallyDo(interrupted -> intake.targetPivotVoltage = 0));
+		controls.pivotNudgeDown()
+				.whileTrue(new RunCommand(
+						() -> {
+							intake.targetPivotPositionRadians = null;
+							intake.targetPivotExperimentRadians = null;
+							intake.targetPivotFeedforwardBiasVolts = 0;
+							intake.targetPivotVoltage = -1.0;
+						},
+						intake)
+						.finallyDo(interrupted -> intake.targetPivotVoltage = 0));
+
+		new Trigger(zeroPivotButton::get)
+				.onTrue(new ZeroPivot()
+						.andThen(new InstantCommand(() -> zeroPivotButton.set(false)))
+						.ignoringDisable(true));
+
+		new Trigger(intakeZeroButton::get)
+				.onTrue(new IntakeZero()
+						.andThen(new IntakeDown())
+						.beforeStarting(() -> intakeZeroButton.set(false)));
+
+		new Trigger(() -> !IntakeSubsystem.hasZeroed && DriverStation.isTeleopEnabled())
+				.onTrue(new IntakeZero().andThen(new IntakeDown()));
+
+		new Trigger(intakeExperimentButton::get).whileTrue(new IntakeExperiment());
 
 		controls.invertToggle().onTrue(Commands.runOnce(() -> {
 			JoystickControls.inverted = !JoystickControls.inverted;

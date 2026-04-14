@@ -172,7 +172,7 @@ public class Vision extends SubsystemBase {
 								t -> t.getBestCameraToTarget().getTranslation().getNorm())
 						.toArray();
 				Logger.recordOutput(prefix + "/tagIds", tagIds);
-				Logger.recordOutput(prefix + "/tagDists", tagDists);
+				Logger.recordOutput(prefix + "/tagDistsMeters", tagDists);
 
 				// Fuse sane methods into pose estimator independently
 				ArrayList<String> methods = new ArrayList<>();
@@ -187,8 +187,8 @@ public class Vision extends SubsystemBase {
 							pose, result.getTimestampSeconds(), Util.buildCov(xyStd, xyStd, thetaStd));
 					methods.add("pnpDistTrig");
 					Logger.recordOutput(prefix + "/pnpDistTrig/pose", pose);
-					Logger.recordOutput(prefix + "/pnpDistTrig/xyStd", xyStd);
-					Logger.recordOutput(prefix + "/pnpDistTrig/thetaStd", thetaStd);
+					Logger.recordOutput(prefix + "/pnpDistTrig/xyStdMeters", xyStd);
+					Logger.recordOutput(prefix + "/pnpDistTrig/thetaStdRad", thetaStd);
 					Logger.recordOutput(prefix + "/pnpDistTrig/trigCount", trigSuccessCount);
 					Logger.recordOutput(prefix + "/pnpDistTrig/weightSum", fusedTrigWeightSum);
 					camFusionCount++;
@@ -215,8 +215,8 @@ public class Vision extends SubsystemBase {
 							pose, result.getTimestampSeconds(), Util.buildCov(xyStd, xyStd, thetaStd));
 					methods.add("multiTag");
 					Logger.recordOutput(prefix + "/multiTag/pose", pose);
-					Logger.recordOutput(prefix + "/multiTag/xyStd", xyStd);
-					Logger.recordOutput(prefix + "/multiTag/thetaStd", thetaStd);
+					Logger.recordOutput(prefix + "/multiTag/xyStdMeters", xyStd);
+					Logger.recordOutput(prefix + "/multiTag/thetaStdRad", thetaStd);
 					camFusionCount++;
 				} else if (!sane(coprocPnPpose) && result.targets.size() >= 2) {
 					camRejectedCount++;

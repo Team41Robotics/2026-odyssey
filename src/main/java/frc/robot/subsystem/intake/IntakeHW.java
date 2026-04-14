@@ -17,13 +17,15 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Robot;
 
 public class IntakeHW {
-	public static final double PIVOT_GEAR_RATIO = 14.0;
+	public static final double PIVOT_GEAR_RATIO = 14;
 
 	public TalonFX intakeTalonFX;
 	public TalonFX pivotTalonFX;
 
 	public VoltageOut pivotVoltageRequest = new VoltageOut(0);
 	public VoltageOut intakeVoltageRequest = new VoltageOut(0);
+
+	public boolean sysIdPivot = false;
 
 	// Cached StatusSignals — pivot
 	public StatusSignal<Angle> pivotPosition;
@@ -137,12 +139,18 @@ public class IntakeHW {
 	public void actuate(IntakeInputs inputs, double pivotVoltage, double intakeVoltage) {
 		if (!Robot.isReal()) return;
 
-		pivotTalonFX.setControl(pivotVoltageRequest.withOutput(pivotVoltage));
-		intakeTalonFX.setControl(intakeVoltageRequest.withOutput(intakeVoltage));
+		if (!sysIdPivot) pivotTalonFX.setControl(pivotVoltageRequest.withOutput(pivotVoltage));
+		if (!sysIdPivot) intakeTalonFX.setControl(intakeVoltageRequest.withOutput(intakeVoltage));
 	}
 
 	public void zeroPivotForced() {
 		if (!Robot.isReal()) return;
 		tryUntilOk(5, () -> pivotTalonFX.setPosition(0, 0.25));
+	}
+
+	public void seedPivotPosition(double radians) {
+		if (!Robot.isReal()) return;
+		double rotations = radians / (2.0 * PI);
+		tryUntilOk(5, () -> pivotTalonFX.setPosition(rotations, 0.25));
 	}
 }

@@ -24,7 +24,7 @@ public class ShooterTrack extends Command {
 
 		shooter.targetFlywheelRPM = params.flywheelRPM();
 
-		Logger.recordOutput("/ShooterTrack/dist", dist);
+		Logger.recordOutput("/ShooterTrack/distMeters", dist);
 		Logger.recordOutput("/ShooterTrack/targetRPM", params.flywheelRPM());
 	}
 

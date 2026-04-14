@@ -35,8 +35,8 @@ public class ShootOnTheFly extends Command {
 		shooter.targetFlywheelRPM = params.flywheelRPM();
 
 		Logger.recordOutput("/Targetting/targetPose", virtualTarget);
-		Logger.recordOutput("/Targetting/distance", distance);
-		Logger.recordOutput("/Targetting/timeOfFlight", params.timeOfFlight());
+		Logger.recordOutput("/Targetting/distanceMeters", distance);
+		Logger.recordOutput("/Targetting/timeOfFlightSec", params.timeOfFlight());
 	}
 
 	@Override

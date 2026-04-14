@@ -75,7 +75,7 @@ public class PreMatchCheck extends Command {
 	public void execute() {
 		allPassed = true;
 
-		double busV = drive.modules[0].inputs.driveSupplyVoltage;
+		double busV = drive.modules[0].inputs.driveSupplyVoltageVolts;
 		allPassed &= check(batteryOk, batteryFail, "Battery " + String.format("%.1fV", busV), busV > 11.5);
 
 		allPassed &= check(imuConnOk, imuConnFail, "IMU Connected", drive.gyroInputs.connected);

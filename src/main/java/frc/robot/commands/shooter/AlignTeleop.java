@@ -53,7 +53,7 @@ public class AlignTeleop extends Command {
 		Logger.recordOutput("/AlignTeleop/targetState", teleopTarget.state());
 		Logger.recordOutput("/AlignTeleop/joystickTarget", new Pose2d(target, Rotation2d.kZero));
 		Logger.recordOutput("/AlignTeleop/virtualTarget", new Pose2d(virtualTarget, Rotation2d.kZero));
-		Logger.recordOutput("/AlignTeleop/targetAngle", targetAngle);
-		Logger.recordOutput("/AlignTeleop/headingError", headingController.getError());
+		Logger.recordOutput("/AlignTeleop/targetAngleRad", targetAngle);
+		Logger.recordOutput("/AlignTeleop/headingErrorRad", headingController.getError());
 	}
 }

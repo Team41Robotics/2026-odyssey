@@ -42,7 +42,9 @@ public class Autos {
 		autoChooser.addRoutine("Test Path (Loop)", () -> {
 			var routine = autoFactory.newRoutine("Test Path (Loop)");
 			var traj = ChoreoTraj.test.asAutoTraj(routine);
-			Logger.recordOutput("/Auto/Test/trajectory", traj.<SwerveSample>getRawTrajectory().getPoses());
+			Logger.recordOutput(
+					"/Auto/Test/trajectory",
+					traj.<SwerveSample>getRawTrajectory().getPoses());
 			routine.active().onTrue(traj.cmd());
 			traj.done().onTrue(traj.cmd());
 			return routine;
@@ -50,19 +52,24 @@ public class Autos {
 		autoChooser.addRoutine("Trench1", () -> {
 			var routine = autoFactory.newRoutine("Trench1");
 			var traj = ChoreoTraj.Trench1.asAutoTraj(routine);
-			Logger.recordOutput("/Auto/Trench1/trajectory", traj.<SwerveSample>getRawTrajectory().getPoses());
-			routine.active().onTrue(Commands.sequence(
-					Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "started")),
-					Commands.parallel(traj.cmd(), new IntakeUp())));
-			traj.atTime("DeployIntake").onTrue(Commands.sequence(
-					Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "deployIntake")),
-					new IntakeDown()));
-			traj.done().onTrue(Commands.sequence(
-					Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "aligning")),
-					new AlignTeleop().withTimeout(0.5),
-					Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "firing")),
-					new Shoot().withTimeout(3.0),
-					Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "done"))));
+			Logger.recordOutput(
+					"/Auto/Trench1/trajectory",
+					traj.<SwerveSample>getRawTrajectory().getPoses());
+			routine.active()
+					.onTrue(Commands.sequence(
+							Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "started")),
+							Commands.parallel(traj.cmd(), new IntakeUp())));
+			traj.atTime("DeployIntake")
+					.onTrue(Commands.sequence(
+							Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "deployIntake")),
+							new IntakeDown()));
+			traj.done()
+					.onTrue(Commands.sequence(
+							Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "aligning")),
+							new AlignTeleop().withTimeout(0.5),
+							Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "firing")),
+							new Shoot().withTimeout(3.0),
+							Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "done"))));
 			return routine;
 		});
 		autonomousCommand = autoChooser.selectedCommandScheduler();
@@ -84,22 +91,23 @@ public class Autos {
 
 		Logger.recordOutput("/Auto/currentPose", pose);
 		Logger.recordOutput("/Auto/targetPose", sample.getPose());
-		Logger.recordOutput("/Auto/targetVx", sample.vx);
-		Logger.recordOutput("/Auto/targetVy", sample.vy);
-		Logger.recordOutput("/Auto/targetOmega", sample.omega);
-		Logger.recordOutput("/Auto/xError", sample.x - pose.getX());
-		Logger.recordOutput("/Auto/yError", sample.y - pose.getY());
-		Logger.recordOutput("/Auto/headingError", sample.heading - pose.getRotation().getRadians());
-		Logger.recordOutput("/Auto/xFF", xff);
-		Logger.recordOutput("/Auto/yFF", yff);
-		Logger.recordOutput("/Auto/omegaFF", wff);
-		Logger.recordOutput("/Auto/xFB", xfb);
-		Logger.recordOutput("/Auto/yFB", yfb);
-		Logger.recordOutput("/Auto/omegaFB", wfb);
-		Logger.recordOutput("/Auto/commandedVx", xff + xfb);
-		Logger.recordOutput("/Auto/commandedVy", yff + yfb);
-		Logger.recordOutput("/Auto/commandedOmega", wff + wfb);
-		Logger.recordOutput("/Auto/trajectoryTimestamp", sample.t);
+		Logger.recordOutput("/Auto/targetVxMps", sample.vx);
+		Logger.recordOutput("/Auto/targetVyMps", sample.vy);
+		Logger.recordOutput("/Auto/targetOmegaRadPerSec", sample.omega);
+		Logger.recordOutput("/Auto/xErrorMeters", sample.x - pose.getX());
+		Logger.recordOutput("/Auto/yErrorMeters", sample.y - pose.getY());
+		Logger.recordOutput(
+				"/Auto/headingErrorRad", sample.heading - pose.getRotation().getRadians());
+		Logger.recordOutput("/Auto/xFFMps", xff);
+		Logger.recordOutput("/Auto/yFFMps", yff);
+		Logger.recordOutput("/Auto/omegaFFRadPerSec", wff);
+		Logger.recordOutput("/Auto/xFBMps", xfb);
+		Logger.recordOutput("/Auto/yFBMps", yfb);
+		Logger.recordOutput("/Auto/omegaFBRadPerSec", wfb);
+		Logger.recordOutput("/Auto/commandedVxMps", xff + xfb);
+		Logger.recordOutput("/Auto/commandedVyMps", yff + yfb);
+		Logger.recordOutput("/Auto/commandedOmegaRadPerSec", wff + wfb);
+		Logger.recordOutput("/Auto/trajectoryTimestampSec", sample.t);
 
 		drive.runVelocity(speeds);
 	}

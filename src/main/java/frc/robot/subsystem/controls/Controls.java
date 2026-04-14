@@ -25,6 +25,10 @@ public interface Controls {
 
 	Trigger sysidDynaBackward();
 
+	Trigger pivotNudgeUp();
+
+	Trigger pivotNudgeDown();
+
 	double leftX();
 
 	double leftY();

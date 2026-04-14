@@ -21,8 +21,8 @@ public class IndexerSubsystem extends SubsystemBase {
 	}
 
 	public void actuate() {
-		Logger.recordOutput("/Indexer/targetRollerVoltage", targetRollerVoltage);
-		Logger.recordOutput("/Indexer/targetIndexerVoltage", targetIndexerVoltage);
+		Logger.recordOutput("/Indexer/targetRollerVoltageVolts", targetRollerVoltage);
+		Logger.recordOutput("/Indexer/targetIndexerVoltageVolts", targetIndexerVoltage);
 		hw.actuate(inputs, targetRollerVoltage, targetIndexerVoltage);
 	}
 }

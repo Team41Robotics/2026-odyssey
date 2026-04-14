@@ -190,7 +190,7 @@ public class MatchAlerts extends Command {
 					drive.modules[0].inputs.driveAppliedVolts,
 					drive.modules[0].inputs.driveCurrentAmps,
 					drive.modules[0].inputs.driveVelocityRadPerSec,
-					drive.modules[0].inputs.driveSupplyVoltage
+					drive.modules[0].inputs.driveSupplyVoltageVolts
 				},
 				drive.modules[0].inputs.odometryTimestamps);
 		check(
@@ -203,7 +203,7 @@ public class MatchAlerts extends Command {
 					drive.modules[0].inputs.turnAppliedVolts,
 					drive.modules[0].inputs.turnCurrentAmps,
 					drive.modules[0].inputs.turnVelocityRadPerSec,
-					drive.modules[0].inputs.turnSupplyVoltage
+					drive.modules[0].inputs.turnSupplyVoltageVolts
 				},
 				new double[] {drive.modules[0].inputs.turnTsSec});
 		check(
@@ -228,7 +228,7 @@ public class MatchAlerts extends Command {
 					drive.modules[1].inputs.driveAppliedVolts,
 					drive.modules[1].inputs.driveCurrentAmps,
 					drive.modules[1].inputs.driveVelocityRadPerSec,
-					drive.modules[1].inputs.driveSupplyVoltage
+					drive.modules[1].inputs.driveSupplyVoltageVolts
 				},
 				drive.modules[1].inputs.odometryTimestamps);
 		check(
@@ -241,7 +241,7 @@ public class MatchAlerts extends Command {
 					drive.modules[1].inputs.turnAppliedVolts,
 					drive.modules[1].inputs.turnCurrentAmps,
 					drive.modules[1].inputs.turnVelocityRadPerSec,
-					drive.modules[1].inputs.turnSupplyVoltage
+					drive.modules[1].inputs.turnSupplyVoltageVolts
 				},
 				new double[] {drive.modules[1].inputs.turnTsSec});
 		check(
@@ -266,7 +266,7 @@ public class MatchAlerts extends Command {
 					drive.modules[2].inputs.driveAppliedVolts,
 					drive.modules[2].inputs.driveCurrentAmps,
 					drive.modules[2].inputs.driveVelocityRadPerSec,
-					drive.modules[2].inputs.driveSupplyVoltage
+					drive.modules[2].inputs.driveSupplyVoltageVolts
 				},
 				drive.modules[2].inputs.odometryTimestamps);
 		check(
@@ -279,7 +279,7 @@ public class MatchAlerts extends Command {
 					drive.modules[2].inputs.turnAppliedVolts,
 					drive.modules[2].inputs.turnCurrentAmps,
 					drive.modules[2].inputs.turnVelocityRadPerSec,
-					drive.modules[2].inputs.turnSupplyVoltage
+					drive.modules[2].inputs.turnSupplyVoltageVolts
 				},
 				new double[] {drive.modules[2].inputs.turnTsSec});
 		check(
@@ -304,7 +304,7 @@ public class MatchAlerts extends Command {
 					drive.modules[3].inputs.driveAppliedVolts,
 					drive.modules[3].inputs.driveCurrentAmps,
 					drive.modules[3].inputs.driveVelocityRadPerSec,
-					drive.modules[3].inputs.driveSupplyVoltage
+					drive.modules[3].inputs.driveSupplyVoltageVolts
 				},
 				drive.modules[3].inputs.odometryTimestamps);
 		check(
@@ -317,7 +317,7 @@ public class MatchAlerts extends Command {
 					drive.modules[3].inputs.turnAppliedVolts,
 					drive.modules[3].inputs.turnCurrentAmps,
 					drive.modules[3].inputs.turnVelocityRadPerSec,
-					drive.modules[3].inputs.turnSupplyVoltage
+					drive.modules[3].inputs.turnSupplyVoltageVolts
 				},
 				new double[] {drive.modules[3].inputs.turnTsSec});
 		check(
@@ -417,12 +417,8 @@ public class MatchAlerts extends Command {
 				new double[] {shooter.inputs.flywheelTsSec});
 
 		// Shooter flywheel follower (ID 61)
-		check(
-				flywheelFollowerAlert,
-				flywheelFollowerError,
-				"Shooter Flywheel Follower (61)",
-				61,
-				null,
-				new double[] {shooter.inputs.flywheelFollowerTsSec});
+		check(flywheelFollowerAlert, flywheelFollowerError, "Shooter Flywheel Follower (61)", 61, null, new double[] {
+			shooter.inputs.flywheelFollowerTsSec
+		});
 	}
 }

@@ -21,7 +21,7 @@ public class Shoot extends Command {
 				.getNorm();
 		Targetting.ShotParameters params = Targetting.shotSpeeds(dist);
 
-		Logger.recordOutput("/Shoot/dist", dist);
+		Logger.recordOutput("/Shoot/distMeters", dist);
 		Logger.recordOutput("/Shoot/targetRPM", params.flywheelRPM());
 		Logger.recordOutput("/Shoot/onTarget", shooter.onTarget);
 
@@ -33,8 +33,7 @@ public class Shoot extends Command {
 
 		double now = Timer.getTimestamp();
 		indexer.targetIndexerVoltage = FEEDER_VOLTAGE;
-		// indexer.targetRollerVoltage = 12.0 * cbrt((sin(2 * PI * now/2)+ 0.6) / 1.6);
-		indexer.targetRollerVoltage = 12.0 * cbrt(sin(2 * PI * now/2));
+		indexer.targetRollerVoltage = FEEDER_VOLTAGE;
 	}
 
 	@Override

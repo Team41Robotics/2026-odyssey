@@ -35,19 +35,27 @@ public class JoystickControls implements Controls {
 	}
 
 	public Trigger sysidQuasiForward() {
-		return left.button(11).and(right.button(11));
+		return left.button(1);
 	}
 
 	public Trigger sysidQuasiBackward() {
-		return left.button(11).and(right.button(10));
+		return left.button(2);
 	}
 
 	public Trigger sysidDynaForward() {
-		return left.button(10).and(right.button(11));
+		return left.button(3);
 	}
 
 	public Trigger sysidDynaBackward() {
-		return left.button(10).and(right.button(10));
+		return left.button(4);
+	}
+
+	public Trigger pivotNudgeUp() {
+		return ds.button(9);
+	}
+
+	public Trigger pivotNudgeDown() {
+		return ds.button(10);
 	}
 
 	public Trigger invertToggle() {

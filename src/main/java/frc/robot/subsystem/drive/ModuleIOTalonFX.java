@@ -173,8 +173,8 @@ public class ModuleIOTalonFX implements ModuleIO {
 		inputs.driveVelocityRadPerSec = Units.rotationsToRadians(driveVelocity.getValueAsDouble());
 		inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
 		inputs.driveCurrentAmps = driveCurrent.getValueAsDouble();
-		inputs.driveSupplyVoltage = driveSupplyVoltage.getValueAsDouble();
-		inputs.driveSupplyCurrent = driveSupplyCurrent.getValueAsDouble();
+		inputs.driveSupplyVoltageVolts = driveSupplyVoltage.getValueAsDouble();
+		inputs.driveSupplyCurrentAmps = driveSupplyCurrent.getValueAsDouble();
 
 		inputs.turnConnected = turnConnectedDebounce.calculate(turnStatus.isOK());
 		inputs.turnEncoderConnected = turnEncoderConnectedDebounce.calculate(turnEncoderStatus.isOK());
@@ -185,8 +185,8 @@ public class ModuleIOTalonFX implements ModuleIO {
 		inputs.turnVelocityRadPerSec = Units.rotationsToRadians(turnVelocity.getValueAsDouble());
 		inputs.turnAppliedVolts = turnAppliedVolts.getValueAsDouble();
 		inputs.turnCurrentAmps = turnCurrent.getValueAsDouble();
-		inputs.turnSupplyVoltage = turnSupplyVoltage.getValueAsDouble();
-		inputs.turnSupplyCurrent = turnSupplyCurrent.getValueAsDouble();
+		inputs.turnSupplyVoltageVolts = turnSupplyVoltage.getValueAsDouble();
+		inputs.turnSupplyCurrentAmps = turnSupplyCurrent.getValueAsDouble();
 
 		inputs.odometryTimestamps =
 				timestampQueue.stream().mapToDouble(Double::doubleValue).toArray();

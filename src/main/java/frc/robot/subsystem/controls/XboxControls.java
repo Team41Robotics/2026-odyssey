@@ -50,6 +50,14 @@ public class XboxControls implements Controls {
 		return xbox.start().and(xbox.x());
 	}
 
+	public Trigger pivotNudgeUp() {
+		return new Trigger(() -> false);
+	}
+
+	public Trigger pivotNudgeDown() {
+		return new Trigger(() -> false);
+	}
+
 	public double leftX() {
 		return -xbox.getLeftX();
 	}

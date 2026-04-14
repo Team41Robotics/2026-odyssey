@@ -103,7 +103,8 @@ public class ShooterHW {
 		inputs.flywheelBusVoltageVolts = flywheelSupplyVoltage.getValueAsDouble();
 		inputs.flywheelBusCurrentAmps = flywheelSupplyCurrent.getValueAsDouble();
 		inputs.flywheelTsSec = flywheelVelocity.getTimestamp().getTime();
-		inputs.flywheelFollowerTsSec = flywheelFollowerSupplyVoltage.getTimestamp().getTime();
+		inputs.flywheelFollowerTsSec =
+				flywheelFollowerSupplyVoltage.getTimestamp().getTime();
 	}
 
 	public void actuate(ShooterInputs inputs, double flywheelRPM) {

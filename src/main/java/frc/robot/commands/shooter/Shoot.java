@@ -33,7 +33,8 @@ public class Shoot extends Command {
 
 		double now = Timer.getTimestamp();
 		indexer.targetIndexerVoltage = FEEDER_VOLTAGE;
-		indexer.targetRollerVoltage = 12.0 * cbrt((sin(2 * PI * now) + 0.6) / 1.6);
+		// indexer.targetRollerVoltage = 12.0 * cbrt((sin(2 * PI * now/2)+ 0.6) / 1.6);
+		indexer.targetRollerVoltage = 12.0 * cbrt(sin(2 * PI * now/2));
 	}
 
 	@Override

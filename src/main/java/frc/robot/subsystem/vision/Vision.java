@@ -46,7 +46,7 @@ public class Vision extends SubsystemBase {
 	public int nCams = cameras.length;
 	public boolean enabled = true;
 	public LoggedNetworkBoolean enableMultiTag = new LoggedNetworkBoolean("/Vision/enableMultiTag", true);
-	public LoggedNetworkBoolean enablePnpDistTrig = new LoggedNetworkBoolean("/Vision/enablePnpDistTrig", false);
+	public LoggedNetworkBoolean enablePnpDistTrig = new LoggedNetworkBoolean("/Vision/enablePnpDistTrig", true);
 
 	public void init() {
 		try {
@@ -63,7 +63,7 @@ public class Vision extends SubsystemBase {
 		}
 
 		new Trigger(() -> robot.isEnabled()).onTrue(new InstantCommand(() -> {
-			enableMultiTag.set(false);
+			enableMultiTag.set(true);
 			enablePnpDistTrig.set(true);
 		}));
 
@@ -197,7 +197,7 @@ public class Vision extends SubsystemBase {
 				}
 
 				// multiTag: heading correction only — loose XY, tight theta
-				if (sane(coprocPnPpose) && result.targets.size() >= 2 && enableMultiTag.get() && enabled) {
+				if (sane(coprocPnPpose) && result.targets.size() >= 3 && enableMultiTag.get() && enabled) {
 					Pose2d pose = coprocPnPpose.get().estimatedPose.toPose2d();
 					double distScale = result.targets.stream()
 							.mapToDouble(t -> {

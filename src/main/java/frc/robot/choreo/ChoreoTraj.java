@@ -27,30 +27,37 @@ public record ChoreoTraj(
     public static final ChoreoTraj Trench1 = new ChoreoTraj(
 	    "Trench1",
 	    OptionalInt.empty(),
-	    5.30817,
+	    5.60053,
 	    new Pose2d(3.993, 7.27, Rotation2d.fromRadians(-1.386)),
 	    new Pose2d(3.134, 7.17, Rotation2d.fromRadians(-1.187))
 	);
 	public static final ChoreoTraj MV1 = new ChoreoTraj(
 	    "MV1",
 	    OptionalInt.empty(),
-	    2.02045,
+	    2.36221,
 	    new Pose2d(4.324, 7.35, Rotation2d.fromRadians(0)),
 	    new Pose2d(7.372, 4.477, Rotation2d.fromRadians(1.571))
 	);
 	public static final ChoreoTraj GreedyFirstDip = new ChoreoTraj(
 	    "GreedyFirstDip",
 	    OptionalInt.empty(),
-	    4.10327,
+	    4.76269,
 	    new Pose2d(4.327, 7.391, Rotation2d.fromRadians(1.571)),
 	    new Pose2d(3.002, 7.076, Rotation2d.fromRadians(-1.047))
 	);
 	public static final ChoreoTraj seconddip = new ChoreoTraj(
 	    "seconddip",
 	    OptionalInt.empty(),
-	    5.98505,
+	    6.97386,
 	    new Pose2d(3.08, 7.417, Rotation2d.fromRadians(0)),
 	    new Pose2d(2.752, 6.499, Rotation2d.fromRadians(-0.94))
+	);
+	public static final ChoreoTraj test = new ChoreoTraj(
+	    "test",
+	    OptionalInt.empty(),
+	    3.24871,
+	    new Pose2d(6.607, 6.988, Rotation2d.fromRadians(0)),
+	    new Pose2d(6.597, 7.009, Rotation2d.fromRadians(0))
 	);
 
     /**
@@ -61,7 +68,8 @@ public record ChoreoTraj(
     	Map.entry("Trench1", Trench1),
 		Map.entry("MV1", MV1),
 		Map.entry("GreedyFirstDip", GreedyFirstDip),
-		Map.entry("seconddip", seconddip)
+		Map.entry("seconddip", seconddip),
+		Map.entry("test", test)
     );
 
     /**

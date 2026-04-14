@@ -50,6 +50,7 @@ public class IntakeHW {
 		pivotConfig.CurrentLimits.StatorCurrentLimit = 80.0;
 		pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 		pivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+		pivotConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 		pivotConfig.Feedback.SensorToMechanismRatio = PIVOT_GEAR_RATIO;
 		tryUntilOk(5, () -> pivotTalonFX.getConfigurator().apply(pivotConfig, 0.25));
 		tryUntilOk(5, () -> pivotTalonFX.clearStickyFaults(0.25));
@@ -128,6 +129,9 @@ public class IntakeHW {
 		inputs.rollerVelocityRPS = intakeVelocity.getValueAsDouble();
 		inputs.rollerBusVoltageVolts = intakeSupplyVoltage.getValueAsDouble();
 		inputs.rollerBusCurrentAmps = intakeSupplyCurrent.getValueAsDouble();
+
+		inputs.pivotTsSec = pivotSupplyVoltage.getTimestamp().getTime();
+		inputs.rollerTsSec = intakeSupplyVoltage.getTimestamp().getTime();
 	}
 
 	public void actuate(IntakeInputs inputs, double pivotVoltage, double intakeVoltage) {

@@ -24,6 +24,9 @@ public interface ModuleIO {
 		public double turnSupplyVoltage = 0.0;
 		public double turnSupplyCurrent = 0.0;
 
+		public double turnTsSec = 0.0;
+		public double encoderTsSec = 0.0;
+
 		public double[] odometryTimestamps = new double[] {};
 		public double[] odometryDrivePositionsRad = new double[] {};
 		public Rotation2d[] odometryTurnPositions = new Rotation2d[] {};

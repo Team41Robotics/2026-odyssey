@@ -34,6 +34,8 @@ public class ShooterHW {
 	public StatusSignal<Voltage> flywheelSupplyVoltage;
 	public StatusSignal<Current> flywheelSupplyCurrent;
 
+	public StatusSignal<Voltage> flywheelFollowerSupplyVoltage;
+
 	public void init() {
 		if (!Robot.isReal()) return;
 
@@ -70,6 +72,7 @@ public class ShooterHW {
 		flywheelStatorCurrent = flywheelTalonFX.getStatorCurrent(false);
 		flywheelSupplyVoltage = flywheelTalonFX.getSupplyVoltage(false);
 		flywheelSupplyCurrent = flywheelTalonFX.getSupplyCurrent(false);
+		flywheelFollowerSupplyVoltage = flywheelFollowerTalonFX.getSupplyVoltage(false);
 
 		// --- Update frequencies ---
 		flywheelVelocity.setUpdateFrequency(50);
@@ -77,6 +80,7 @@ public class ShooterHW {
 		flywheelStatorCurrent.setUpdateFrequency(50);
 		flywheelSupplyVoltage.setUpdateFrequency(10);
 		flywheelSupplyCurrent.setUpdateFrequency(10);
+		flywheelFollowerSupplyVoltage.setUpdateFrequency(10);
 
 		flywheelTalonFX.optimizeBusUtilization();
 		flywheelFollowerTalonFX.optimizeBusUtilization();
@@ -90,7 +94,8 @@ public class ShooterHW {
 				flywheelMotorVoltage,
 				flywheelStatorCurrent,
 				flywheelSupplyVoltage,
-				flywheelSupplyCurrent);
+				flywheelSupplyCurrent,
+				flywheelFollowerSupplyVoltage);
 
 		inputs.flywheelVelocityRPM = flywheelVelocity.getValueAsDouble() * 60.0;
 		inputs.flywheelVoltageVolts = flywheelMotorVoltage.getValueAsDouble();
@@ -98,6 +103,7 @@ public class ShooterHW {
 		inputs.flywheelBusVoltageVolts = flywheelSupplyVoltage.getValueAsDouble();
 		inputs.flywheelBusCurrentAmps = flywheelSupplyCurrent.getValueAsDouble();
 		inputs.flywheelTsSec = flywheelVelocity.getTimestamp().getTime();
+		inputs.flywheelFollowerTsSec = flywheelFollowerSupplyVoltage.getTimestamp().getTime();
 	}
 
 	public void actuate(ShooterInputs inputs, double flywheelRPM) {

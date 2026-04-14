@@ -17,4 +17,7 @@ public class IntakeInputs {
 	public double rollerVelocityRPS;
 	public double rollerBusVoltageVolts;
 	public double rollerBusCurrentAmps;
+
+	public double pivotTsSec;
+	public double rollerTsSec;
 }

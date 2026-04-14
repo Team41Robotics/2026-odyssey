@@ -31,13 +31,37 @@ public record ChoreoTraj(
 	    new Pose2d(3.993, 7.27, Rotation2d.fromRadians(-1.386)),
 	    new Pose2d(3.134, 7.17, Rotation2d.fromRadians(-1.187))
 	);
+	public static final ChoreoTraj MV1 = new ChoreoTraj(
+	    "MV1",
+	    OptionalInt.empty(),
+	    2.02045,
+	    new Pose2d(4.324, 7.35, Rotation2d.fromRadians(0)),
+	    new Pose2d(7.372, 4.477, Rotation2d.fromRadians(1.571))
+	);
+	public static final ChoreoTraj GreedyFirstDip = new ChoreoTraj(
+	    "GreedyFirstDip",
+	    OptionalInt.empty(),
+	    4.10327,
+	    new Pose2d(4.327, 7.391, Rotation2d.fromRadians(1.571)),
+	    new Pose2d(3.002, 7.076, Rotation2d.fromRadians(-1.047))
+	);
+	public static final ChoreoTraj seconddip = new ChoreoTraj(
+	    "seconddip",
+	    OptionalInt.empty(),
+	    5.98505,
+	    new Pose2d(3.08, 7.417, Rotation2d.fromRadians(0)),
+	    new Pose2d(2.752, 6.499, Rotation2d.fromRadians(-0.94))
+	);
 
     /**
      * A map between trajectory names and their corresponding data.
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-    	Map.entry("Trench1", Trench1)
+    	Map.entry("Trench1", Trench1),
+		Map.entry("MV1", MV1),
+		Map.entry("GreedyFirstDip", GreedyFirstDip),
+		Map.entry("seconddip", seconddip)
     );
 
     /**

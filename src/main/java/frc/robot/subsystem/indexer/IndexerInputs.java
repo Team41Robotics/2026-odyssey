@@ -15,4 +15,7 @@ public class IndexerInputs {
 	public double indexerVelocityRPM;
 	public double indexerBusVoltageVolts;
 	public double indexerBusCurrentAmps;
+
+	public double rollerTsSec;
+	public double indexerTsSec;
 }

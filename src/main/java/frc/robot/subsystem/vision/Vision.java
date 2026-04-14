@@ -33,7 +33,7 @@ public class Vision extends SubsystemBase {
 		new VisionHW(
 				"DuckyN",
 				new Transform3d(new Translation3d(0.30, 0, 0.0508), new Rotation3d(0, -20. / 180. * PI, 0)),
-				"Ducky.json"),
+				"Ducky_raw.json"),
 	};
 	public VisionInputsAutoLogged[] inputs = new VisionInputsAutoLogged[cameras.length];
 	public PhotonPoseEstimator[] poseEsts = new PhotonPoseEstimator[cameras.length];

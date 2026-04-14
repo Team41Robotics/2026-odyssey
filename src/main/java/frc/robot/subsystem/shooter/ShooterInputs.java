@@ -10,4 +10,5 @@ public class ShooterInputs {
 	public double flywheelBusVoltageVolts;
 	public double flywheelBusCurrentAmps;
 	public double flywheelTsSec;
+	public double flywheelFollowerTsSec;
 }

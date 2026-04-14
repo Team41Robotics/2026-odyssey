@@ -3,9 +3,12 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.MatchAlerts;
@@ -71,6 +74,8 @@ public class RobotContainer {
 		CommandScheduler.getInstance().schedule(new PreMatchCheck());
 		CommandScheduler.getInstance().schedule(new MatchAlerts());
 
+		SmartDashboard.putData(CommandScheduler.getInstance());
+
 		configureBindings();
 	}
 
@@ -131,7 +136,7 @@ public class RobotContainer {
 		controls.extendOut().whileTrue(new IntakeDown());
 		controls.extendIn().whileTrue(new IntakeUp());
 
-		new Trigger(zeroPivotButton::get).onTrue(new ZeroPivot());
+		new Trigger(zeroPivotButton::get).onTrue(new ZeroPivot().andThen(new InstantCommand(() -> zeroPivotButton.set(false))).ignoringDisable(true));
 
 		controls.invertToggle().onTrue(Commands.runOnce(() -> {
 			JoystickControls.inverted = !JoystickControls.inverted;

@@ -81,9 +81,11 @@ public class MatchAlerts extends Command {
 	public static Alert indexerFollowerAlert = new Alert("MatchAlerts", "", AlertType.kWarning);
 	public static Alert indexerFollowerError = new Alert("MatchAlerts", "", AlertType.kError);
 
-	// Shooter flywheel leader (ID 62)
+	// Shooter flywheel leader (ID 62), follower (ID 61)
 	public static Alert flywheelAlert = new Alert("MatchAlerts", "", AlertType.kWarning);
 	public static Alert flywheelError = new Alert("MatchAlerts", "", AlertType.kError);
+	public static Alert flywheelFollowerAlert = new Alert("MatchAlerts", "", AlertType.kWarning);
+	public static Alert flywheelFollowerError = new Alert("MatchAlerts", "", AlertType.kError);
 
 	/**
 	 * Unified device disconnect checker.
@@ -203,7 +205,7 @@ public class MatchAlerts extends Command {
 					drive.modules[0].inputs.turnVelocityRadPerSec,
 					drive.modules[0].inputs.turnSupplyVoltage
 				},
-				null);
+				new double[] {drive.modules[0].inputs.turnTsSec});
 		check(
 				swerveFL_Encoder,
 				swerveFL_EncoderError,
@@ -213,7 +215,7 @@ public class MatchAlerts extends Command {
 					drive.modules[0].inputs.turnEncoderConnected ? 1.0 : 0.0,
 					drive.modules[0].inputs.turnAbsolutePosition.getRadians()
 				},
-				null);
+				new double[] {drive.modules[0].inputs.encoderTsSec});
 
 		// FR module (index 1): drive=12, steer=11, encoder=17
 		check(
@@ -241,7 +243,7 @@ public class MatchAlerts extends Command {
 					drive.modules[1].inputs.turnVelocityRadPerSec,
 					drive.modules[1].inputs.turnSupplyVoltage
 				},
-				null);
+				new double[] {drive.modules[1].inputs.turnTsSec});
 		check(
 				swerveFR_Encoder,
 				swerveFR_EncoderError,
@@ -251,7 +253,7 @@ public class MatchAlerts extends Command {
 					drive.modules[1].inputs.turnEncoderConnected ? 1.0 : 0.0,
 					drive.modules[1].inputs.turnAbsolutePosition.getRadians()
 				},
-				null);
+				new double[] {drive.modules[1].inputs.encoderTsSec});
 
 		// BL module (index 2): drive=8, steer=7, encoder=18
 		check(
@@ -279,7 +281,7 @@ public class MatchAlerts extends Command {
 					drive.modules[2].inputs.turnVelocityRadPerSec,
 					drive.modules[2].inputs.turnSupplyVoltage
 				},
-				null);
+				new double[] {drive.modules[2].inputs.turnTsSec});
 		check(
 				swerveBL_Encoder,
 				swerveBL_EncoderError,
@@ -289,7 +291,7 @@ public class MatchAlerts extends Command {
 					drive.modules[2].inputs.turnEncoderConnected ? 1.0 : 0.0,
 					drive.modules[2].inputs.turnAbsolutePosition.getRadians()
 				},
-				null);
+				new double[] {drive.modules[2].inputs.encoderTsSec});
 
 		// BR module (index 3): drive=1, steer=9, encoder=15
 		check(
@@ -317,7 +319,7 @@ public class MatchAlerts extends Command {
 					drive.modules[3].inputs.turnVelocityRadPerSec,
 					drive.modules[3].inputs.turnSupplyVoltage
 				},
-				null);
+				new double[] {drive.modules[3].inputs.turnTsSec});
 		check(
 				swerveBR_Encoder,
 				swerveBR_EncoderError,
@@ -327,7 +329,7 @@ public class MatchAlerts extends Command {
 					drive.modules[3].inputs.turnEncoderConnected ? 1.0 : 0.0,
 					drive.modules[3].inputs.turnAbsolutePosition.getRadians()
 				},
-				null);
+				new double[] {drive.modules[3].inputs.encoderTsSec});
 
 		// Gyro Pigeon2 (ID 2)
 		check(
@@ -356,7 +358,7 @@ public class MatchAlerts extends Command {
 					intake.inputs.pivotPosRadians,
 					intake.inputs.pivotVelRadiansPerSec
 				},
-				null);
+				new double[] {intake.inputs.pivotTsSec});
 
 		// Intake roller (ID 31)
 		check(
@@ -370,7 +372,7 @@ public class MatchAlerts extends Command {
 					intake.inputs.intakeCurrentAmps,
 					intake.inputs.rollerVelocityRPS
 				},
-				null);
+				new double[] {intake.inputs.rollerTsSec});
 
 		// Indexer roller (ID 60)
 		check(
@@ -384,7 +386,7 @@ public class MatchAlerts extends Command {
 					indexer.inputs.rollerCurrentAmps,
 					indexer.inputs.rollerVelocityRPM
 				},
-				null);
+				new double[] {indexer.inputs.rollerTsSec});
 
 		// Indexer follower (ID 32)
 		check(
@@ -398,7 +400,7 @@ public class MatchAlerts extends Command {
 					indexer.inputs.indexerCurrentAmps,
 					indexer.inputs.indexerVelocityRPM
 				},
-				null);
+				new double[] {indexer.inputs.indexerTsSec});
 
 		// Shooter flywheel leader (ID 62)
 		check(
@@ -413,5 +415,14 @@ public class MatchAlerts extends Command {
 					shooter.inputs.flywheelVelocityRPM
 				},
 				new double[] {shooter.inputs.flywheelTsSec});
+
+		// Shooter flywheel follower (ID 61)
+		check(
+				flywheelFollowerAlert,
+				flywheelFollowerError,
+				"Shooter Flywheel Follower (61)",
+				61,
+				null,
+				new double[] {shooter.inputs.flywheelFollowerTsSec});
 	}
 }

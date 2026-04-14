@@ -114,6 +114,9 @@ public class IndexerHW {
 		inputs.indexerVelocityRPM = indexerVelocity.getValueAsDouble() * 60.0;
 		inputs.indexerBusVoltageVolts = indexerSupplyVoltage.getValueAsDouble();
 		inputs.indexerBusCurrentAmps = indexerSupplyCurrent.getValueAsDouble();
+
+		inputs.rollerTsSec = rollerSupplyVoltage.getTimestamp().getTime();
+		inputs.indexerTsSec = indexerSupplyVoltage.getTimestamp().getTime();
 	}
 
 	public void actuate(IndexerInputs inputs, double rollerVoltage, double indexerVoltage) {

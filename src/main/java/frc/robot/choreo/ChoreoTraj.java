@@ -27,8 +27,8 @@ public record ChoreoTraj(
     public static final ChoreoTraj GreedyFirstDip = new ChoreoTraj(
 	    "GreedyFirstDip",
 	    OptionalInt.empty(),
-	    4.76269,
-	    new Pose2d(4.327, 7.391, Rotation2d.fromRadians(1.571)),
+	    4.83569,
+	    new Pose2d(4.327, 7.391, Rotation2d.fromRadians(-1.514)),
 	    new Pose2d(3.002, 7.076, Rotation2d.fromRadians(-1.047))
 	);
 	public static final ChoreoTraj MV1 = new ChoreoTraj(
@@ -55,9 +55,9 @@ public record ChoreoTraj(
 	public static final ChoreoTraj Trench1 = new ChoreoTraj(
 	    "Trench1",
 	    OptionalInt.empty(),
-	    5.60053,
-	    new Pose2d(3.993, 7.27, Rotation2d.fromRadians(-1.386)),
-	    new Pose2d(3.134, 7.17, Rotation2d.fromRadians(-1.187))
+	    9.39149,
+	    new Pose2d(3.972, 7.472, Rotation2d.fromRadians(-1.386)),
+	    new Pose2d(3.064, 6.894, Rotation2d.fromRadians(-1.078))
 	);
 
     /**

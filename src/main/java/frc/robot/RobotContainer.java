@@ -14,7 +14,6 @@ import frc.robot.commands.PreMatchCheck;
 import frc.robot.commands.autos.Autos;
 import frc.robot.commands.drive.FieldOrientedDrive;
 import frc.robot.commands.intake.IntakeDown;
-import frc.robot.commands.intake.IntakeExperiment;
 import frc.robot.commands.intake.IntakeUp;
 import frc.robot.commands.intake.IntakeZero;
 import frc.robot.commands.intake.ZeroPivot;
@@ -55,9 +54,6 @@ public class RobotContainer {
 	public static PivotSysID pivotSysID = new PivotSysID();
 
 	public static LoggedNetworkBoolean zeroPivotButton = new LoggedNetworkBoolean("/Intake/zeroPivot", false);
-	public static LoggedNetworkBoolean intakeExperimentButton =
-			new LoggedNetworkBoolean("/Intake/experimentEnabled", false);
-	public static LoggedNetworkBoolean intakeZeroButton = new LoggedNetworkBoolean("/Intake/runIntakeZero", false);
 
 	public static String currentPeriod = "DISABLED";
 	public static double periodTimeRemaining = 0;
@@ -74,7 +70,8 @@ public class RobotContainer {
 
 		drive.setDefaultCommand(new FieldOrientedDrive());
 		shooter.setDefaultCommand(new ShootTeleop());
-		intake.setDefaultCommand(new IntakeZero().andThen(new IntakeDown()).onlyWhile(()->robot.isTeleopEnabled()));
+		intake.setDefaultCommand(Commands.waitUntil(() -> DriverStation.isTeleopEnabled())
+				.andThen(new IntakeZero().andThen(new IntakeDown())));
 
 		Autos.init();
 
@@ -148,7 +145,6 @@ public class RobotContainer {
 				.whileTrue(new RunCommand(
 						() -> {
 							intake.targetPivotPositionRadians = null;
-							intake.targetPivotExperimentRadians = null;
 							intake.targetPivotFeedforwardBiasVolts = 0;
 							intake.targetPivotVoltage = 1.0;
 						},
@@ -158,7 +154,6 @@ public class RobotContainer {
 				.whileTrue(new RunCommand(
 						() -> {
 							intake.targetPivotPositionRadians = null;
-							intake.targetPivotExperimentRadians = null;
 							intake.targetPivotFeedforwardBiasVolts = 0;
 							intake.targetPivotVoltage = -1.0;
 						},
@@ -170,15 +165,8 @@ public class RobotContainer {
 						.andThen(new InstantCommand(() -> zeroPivotButton.set(false)))
 						.ignoringDisable(true));
 
-		new Trigger(intakeZeroButton::get)
-				.whileTrue(new IntakeZero()
-						.andThen(new IntakeDown())
-						.beforeStarting(() -> intakeZeroButton.set(false)));
-						
 		new Trigger(() -> !IntakeSubsystem.hasZeroed && DriverStation.isTeleopEnabled())
 				.onTrue(new IntakeZero().andThen(new IntakeDown()));
-
-		new Trigger(intakeExperimentButton::get).whileTrue(new IntakeExperiment());
 
 		controls.invertToggle().onTrue(Commands.runOnce(() -> {
 			JoystickControls.inverted = !JoystickControls.inverted;

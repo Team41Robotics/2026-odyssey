@@ -13,15 +13,15 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.LoggedAutoChooser;
 import frc.robot.choreo.ChoreoTraj;
 import frc.robot.commands.intake.IntakeDown;
-import frc.robot.commands.intake.IntakeUp;
+import frc.robot.commands.intake.IntakeZero;
 import frc.robot.commands.shooter.AlignTeleop;
 import frc.robot.commands.shooter.Shoot;
 import org.littletonrobotics.junction.Logger;
 
 public class Autos {
-	public static PIDController xController = new PIDController(15.0, 0, 0);
-	public static PIDController yController = new PIDController(15.0, 0, 0);
-	public static PIDController thetaController = new PIDController(10, 0, 0);
+	public static PIDController xController = new PIDController(7.0, 0, 0);
+	public static PIDController yController = new PIDController(7.0, 0, 0);
+	public static PIDController thetaController = new PIDController(7, 0, 0);
 
 	public static AutoFactory autoFactory;
 	public static LoggedAutoChooser autoChooser;
@@ -62,7 +62,7 @@ public class Autos {
 			traj.atTime("DeployIntake")
 					.onTrue(Commands.sequence(
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "deployIntake")),
-							new IntakeDown()));
+							new IntakeZero().andThen(new IntakeDown())));
 			traj.done()
 					.onTrue(Commands.sequence(
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "aligning")),

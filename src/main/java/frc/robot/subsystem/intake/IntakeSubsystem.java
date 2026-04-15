@@ -17,7 +17,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	public static final double DEFAULT_kV = 1.5;
 	public static final double DEFAULT_G_OFFSET_DEG = 15.0;
 	public static final double DEFAULT_MAX_VEL = 3.0;
-	public static final double DEFAULT_MAX_ACCEL = 6.0;
+	public static final double DEFAULT_MAX_ACCEL = 14.0;
 	public static final double DEFAULT_INTAKE_UP_DEG = 65.0;
 	public static final double DEFAULT_ZERO_GOAL_DEG = 20.0;
 	public static final double DEFAULT_INTAKE_DOWN_BIAS_VOLTS = 1.0;
@@ -40,8 +40,6 @@ public class IntakeSubsystem extends SubsystemBase {
 			new LoggedNetworkNumber("/Intake/tuning/zeroGoalDeg", DEFAULT_ZERO_GOAL_DEG);
 	public LoggedNetworkNumber intakeDownBiasVolts =
 			new LoggedNetworkNumber("/Intake/tuning/intakeDownBiasVolts", DEFAULT_INTAKE_DOWN_BIAS_VOLTS);
-	public LoggedNetworkNumber experimentSetpointDeg =
-			new LoggedNetworkNumber("/Intake/tuning/experimentSetpointDeg", 0.0);
 	public LoggedNetworkNumber fbDisableLoDeg =
 			new LoggedNetworkNumber("/Intake/tuning/fbDisableLoDeg", DEFAULT_FB_DISABLE_LO_DEG);
 	public LoggedNetworkNumber fbDisableHiDeg =
@@ -58,7 +56,6 @@ public class IntakeSubsystem extends SubsystemBase {
 	public double targetPivotVoltage = 0;
 	public double targetIntakeVoltage = 0;
 	public Double targetPivotPositionRadians = null;
-	public Double targetPivotExperimentRadians = null;
 	public double targetPivotFeedforwardBiasVolts = 0;
 
 	public State pivotSetpoint = new State(0, 0);
@@ -90,7 +87,6 @@ public class IntakeSubsystem extends SubsystemBase {
 		if (robot.isDisabled()) {
 			targetPivotVoltage = 0;
 			targetPivotPositionRadians = null;
-			targetPivotExperimentRadians = null;
 			targetPivotFeedforwardBiasVolts = 0;
 			pivotSetpoint = new State(inputs.pivotPosRadians, 0);
 			pivotPID.reset();
@@ -123,20 +119,6 @@ public class IntakeSubsystem extends SubsystemBase {
 		if (robot.isDisabled()) {
 			pivotOutput = 0;
 			mode = "disabled";
-		} else if (targetPivotExperimentRadians != null) {
-			double goal = targetPivotExperimentRadians;
-			double posErr = goal - inputs.pivotPosRadians;
-			double velErr = 0.0 - inputs.pivotVelRadiansPerSec;
-			double pidOut = kP.get() * posErr + kD.get() * velErr;
-			if (isFeedbackDisabled()) pidOut = 0;
-			double ff = gravityFF();
-			pivotOutput = pidOut + ff + targetPivotFeedforwardBiasVolts;
-			pivotSetpoint = new State(inputs.pivotPosRadians, 0);
-
-			Logger.recordOutput("/Intake/pivotGoalRad", goal);
-			Logger.recordOutput("/Intake/pivotPidOutVolts", pidOut);
-			Logger.recordOutput("/Intake/pivotFfVolts", ff);
-			mode = "experiment";
 		} else if (targetPivotPositionRadians != null) {
 			double goal = targetPivotPositionRadians;
 			pivotSetpoint = pivotProfile.calculate(LOOP_PERIOD, pivotSetpoint, new State(goal, 0));

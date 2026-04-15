@@ -8,50 +8,27 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class IntakeSubsystem extends SubsystemBase {
-	public static final double DEFAULT_kP = 15.0;
-	public static final double DEFAULT_kD = 0.04;
-	public static final double DEFAULT_kG = 1.5;
-	public static final double DEFAULT_kV = 1.5;
-	public static final double DEFAULT_G_OFFSET_DEG = 15.0;
-	public static final double DEFAULT_MAX_VEL = 3.0;
-	public static final double DEFAULT_MAX_ACCEL = 14.0;
-	public static final double DEFAULT_INTAKE_UP_DEG = 65.0;
-	public static final double DEFAULT_ZERO_GOAL_DEG = 20.0;
-	public static final double DEFAULT_INTAKE_DOWN_BIAS_VOLTS = 1.0;
-	public static final double DEFAULT_FB_DISABLE_LO_DEG = 10.0;
-	public static final double DEFAULT_FB_DISABLE_HI_DEG = 45.0;
-	public static final double DEFAULT_FB_DISABLE_ABOVE_DEG = 900.0;
-
-	public LoggedNetworkNumber kP = new LoggedNetworkNumber("/Intake/tuning/kP", DEFAULT_kP);
-	public LoggedNetworkNumber kD = new LoggedNetworkNumber("/Intake/tuning/kD", DEFAULT_kD);
-	public LoggedNetworkNumber kG = new LoggedNetworkNumber("/Intake/tuning/kG", DEFAULT_kG);
-	public LoggedNetworkNumber kV = new LoggedNetworkNumber("/Intake/tuning/kV", DEFAULT_kV);
-	public LoggedNetworkNumber gOffsetDeg =
-			new LoggedNetworkNumber("/Intake/tuning/gOffsetDeg", DEFAULT_G_OFFSET_DEG);
-	public LoggedNetworkNumber maxVel = new LoggedNetworkNumber("/Intake/tuning/maxVelRadPerSec", DEFAULT_MAX_VEL);
-	public LoggedNetworkNumber maxAccel =
-			new LoggedNetworkNumber("/Intake/tuning/maxAccelRadPerSec2", DEFAULT_MAX_ACCEL);
-	public LoggedNetworkNumber intakeUpDeg =
-			new LoggedNetworkNumber("/Intake/tuning/intakeUpDeg", DEFAULT_INTAKE_UP_DEG);
-	public LoggedNetworkNumber zeroGoalDeg =
-			new LoggedNetworkNumber("/Intake/tuning/zeroGoalDeg", DEFAULT_ZERO_GOAL_DEG);
-	public LoggedNetworkNumber intakeDownBiasVolts =
-			new LoggedNetworkNumber("/Intake/tuning/intakeDownBiasVolts", DEFAULT_INTAKE_DOWN_BIAS_VOLTS);
-	public LoggedNetworkNumber fbDisableLoDeg =
-			new LoggedNetworkNumber("/Intake/tuning/fbDisableLoDeg", DEFAULT_FB_DISABLE_LO_DEG);
-	public LoggedNetworkNumber fbDisableHiDeg =
-			new LoggedNetworkNumber("/Intake/tuning/fbDisableHiDeg", DEFAULT_FB_DISABLE_HI_DEG);
-	public LoggedNetworkNumber fbDisableAboveDeg =
-			new LoggedNetworkNumber("/Intake/tuning/fbDisableAboveDeg", DEFAULT_FB_DISABLE_ABOVE_DEG);
+	public static final double kP = 15.0;
+	public static final double kD = 0.04;
+	public static final double kG = 1.5;
+	public static final double kV = 1.5;
+	public static final double G_OFFSET_DEG = 15.0;
+	public static final double MAX_VEL = 3.0;
+	public static final double MAX_ACCEL = 14.0;
+	public static final double INTAKE_UP_DEG = 65.0;
+	public static final double ZERO_GOAL_DEG = 20.0;
+	public static final double INTAKE_DOWN_BIAS_VOLTS = 1.0;
+	public static final double FB_DISABLE_LO_DEG = 10.0;
+	public static final double FB_DISABLE_HI_DEG = 45.0;
+	public static final double FB_DISABLE_ABOVE_DEG = 900.0;
 
 	public IntakeHW hw = new IntakeHW();
 	public IntakeInputsAutoLogged inputs = new IntakeInputsAutoLogged();
 
-	public PIDController pivotPID = new PIDController(DEFAULT_kP, 0.0, DEFAULT_kD);
-	public TrapezoidProfile pivotProfile = new TrapezoidProfile(new Constraints(DEFAULT_MAX_VEL, DEFAULT_MAX_ACCEL));
+	public PIDController pivotPID = new PIDController(kP, 0.0, kD);
+	public TrapezoidProfile pivotProfile = new TrapezoidProfile(new Constraints(MAX_VEL, MAX_ACCEL));
 
 	public double targetPivotVoltage = 0;
 	public double targetIntakeVoltage = 0;
@@ -62,9 +39,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
 	public static boolean hasZeroed = false;
 
-	private double lastMaxVel = DEFAULT_MAX_VEL;
-	private double lastMaxAccel = DEFAULT_MAX_ACCEL;
-
 	public void init() {
 		hw.init();
 		sense();
@@ -73,16 +47,6 @@ public class IntakeSubsystem extends SubsystemBase {
 	public void sense() {
 		hw.sense(inputs);
 		Logger.processInputs("/Intake", inputs);
-
-		pivotPID.setPID(kP.get(), 0.0, kD.get());
-
-		double mv = maxVel.get();
-		double ma = maxAccel.get();
-		if (mv != lastMaxVel || ma != lastMaxAccel) {
-			pivotProfile = new TrapezoidProfile(new Constraints(mv, ma));
-			lastMaxVel = mv;
-			lastMaxAccel = ma;
-		}
 
 		if (robot.isDisabled()) {
 			targetPivotVoltage = 0;
@@ -101,13 +65,12 @@ public class IntakeSubsystem extends SubsystemBase {
 	}
 
 	public double gravityFF() {
-		return kG.get() * Math.cos(inputs.pivotPosRadians + Math.toRadians(gOffsetDeg.get()));
+		return kG * Math.cos(inputs.pivotPosRadians + Math.toRadians(G_OFFSET_DEG));
 	}
 
 	public boolean isFeedbackDisabled() {
 		double posDeg = Math.toDegrees(inputs.pivotPosRadians);
-		return (posDeg >= fbDisableLoDeg.get() && posDeg <= fbDisableHiDeg.get())
-				|| posDeg > fbDisableAboveDeg.get();
+		return (posDeg >= FB_DISABLE_LO_DEG && posDeg <= FB_DISABLE_HI_DEG) || posDeg > FB_DISABLE_ABOVE_DEG;
 	}
 
 	public void actuate() {
@@ -125,10 +88,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
 			double posErr = pivotSetpoint.position - inputs.pivotPosRadians;
 			double velErr = pivotSetpoint.velocity - inputs.pivotVelRadiansPerSec;
-			double pidOut = kP.get() * posErr + kD.get() * velErr;
+			double pidOut = kP * posErr + kD * velErr;
 			if (isFeedbackDisabled()) pidOut = 0;
 			double ff = gravityFF();
-			double velFF = kV.get() * pivotSetpoint.velocity;
+			double velFF = kV * pivotSetpoint.velocity;
 			pivotOutput = pidOut + ff + velFF + targetPivotFeedforwardBiasVolts;
 
 			Logger.recordOutput("/Intake/pivotSetpointPosRad", pivotSetpoint.position);

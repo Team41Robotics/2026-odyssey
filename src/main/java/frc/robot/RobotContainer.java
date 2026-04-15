@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -55,6 +56,8 @@ public class RobotContainer {
 
 	public static LoggedNetworkBoolean zeroPivotButton = new LoggedNetworkBoolean("/Intake/zeroPivot", false);
 
+	public static Field2d field = new Field2d();
+
 	public static String currentPeriod = "DISABLED";
 	public static double periodTimeRemaining = 0;
 	public static String allianceHubStatus = "Unknown";
@@ -80,6 +83,7 @@ public class RobotContainer {
 
 		SmartDashboard.putData(CommandScheduler.getInstance());
 		SmartDashboard.putData("PID", intake.pivotPID);
+		SmartDashboard.putData("Field", field);
 
 		configureBindings();
 	}
@@ -115,6 +119,8 @@ public class RobotContainer {
 		Logger.recordOutput("Timing/scheduler_us", RobotController.getFPGATime() - tScheduler);
 
 		Autos.autoChooser.periodic();
+
+		field.setRobotPose(drive.getPose());
 
 		long tIntakeActuate = RobotController.getFPGATime();
 		intake.actuate();

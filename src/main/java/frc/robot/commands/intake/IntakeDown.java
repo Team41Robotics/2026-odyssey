@@ -3,6 +3,7 @@ package frc.robot.commands.intake;
 import static frc.robot.RobotContainer.*;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystem.intake.IntakeSubsystem;
 
 public class IntakeDown extends Command {
 	public static final double HIGH_VOLTAGE = 12.0;
@@ -21,7 +22,7 @@ public class IntakeDown extends Command {
 	@Override
 	public void execute() {
 		intake.targetPivotPositionRadians = 0.0;
-		intake.targetPivotFeedforwardBiasVolts = -intake.intakeDownBiasVolts.get();
+		intake.targetPivotFeedforwardBiasVolts = -IntakeSubsystem.INTAKE_DOWN_BIAS_VOLTS;
 		intake.targetIntakeVoltage = voltage;
 	}
 

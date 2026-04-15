@@ -56,9 +56,9 @@ public class Autos {
 					"/Auto/Trench1/trajectory",
 					traj.<SwerveSample>getRawTrajectory().getPoses());
 			routine.active()
-					.onTrue(Commands.sequence(
-							Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "started")),
-							Commands.parallel(traj.cmd(), new IntakeUp())));
+					.onTrue(Commands.sequence(Commands.runOnce(
+							() -> Logger.recordOutput("/Auto/Trench1/phase", "started")),
+							traj.cmd()));
 			traj.atTime("DeployIntake")
 					.onTrue(Commands.sequence(
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "deployIntake")),

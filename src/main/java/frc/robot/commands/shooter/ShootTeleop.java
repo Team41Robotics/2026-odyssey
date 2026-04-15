@@ -80,7 +80,7 @@ public class ShootTeleop extends Command {
 		} else {
 			// Past trench - pass to own side, not through middle
 			double yOffset = (robotY < centerY) ? -TRENCH_Y_OFFSET : TRENCH_Y_OFFSET;
-			target = Util.flipIfRed(hubCenter.plus(new Translation2d(0, yOffset)));
+			target = Util.flipIfRed(hubCenter.plus(new Translation2d(-1.0, yOffset)));
 			state = "PASS";
 		}
 

@@ -57,7 +57,7 @@ public class IntakeHW {
 		tryUntilOk(5, () -> pivotTalonFX.getConfigurator().apply(pivotConfig, 0.25));
 		tryUntilOk(5, () -> pivotTalonFX.clearStickyFaults(0.25));
 		tryUntilOk(5, () -> pivotTalonFX.setNeutralMode(NeutralModeValue.Brake));
-		tryUntilOk(5, () -> pivotTalonFX.setPosition(0, 0.25));
+		tryUntilOk(5, () -> pivotTalonFX.setPosition(110.0 / 360.0, 0.25));
 
 		// --- Intake roller ---
 		intakeTalonFX = new TalonFX(31);

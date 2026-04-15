@@ -70,11 +70,11 @@ public class RobotContainer {
 		indexer.init();
 		vision.init();
 
-		pivotSysID.init();
+		// pivotSysID.init();
 
 		drive.setDefaultCommand(new FieldOrientedDrive());
 		shooter.setDefaultCommand(new ShootTeleop());
-		intake.setDefaultCommand(new IntakeDown());
+		intake.setDefaultCommand(new IntakeZero().andThen(new IntakeDown()).onlyWhile(()->robot.isTeleopEnabled()));
 
 		Autos.init();
 
@@ -141,7 +141,7 @@ public class RobotContainer {
 		controls.align().whileTrue(new AlignTeleop());
 		controls.shoot().whileTrue(new Shoot());
 
-		controls.extendOut().whileTrue(new IntakeDown());
+		controls.extendOut().whileTrue(new IntakeZero().andThen(new IntakeDown()));
 		controls.extendIn().whileTrue(new IntakeUp());
 
 		controls.pivotNudgeUp()
@@ -171,10 +171,10 @@ public class RobotContainer {
 						.ignoringDisable(true));
 
 		new Trigger(intakeZeroButton::get)
-				.onTrue(new IntakeZero()
+				.whileTrue(new IntakeZero()
 						.andThen(new IntakeDown())
 						.beforeStarting(() -> intakeZeroButton.set(false)));
-
+						
 		new Trigger(() -> !IntakeSubsystem.hasZeroed && DriverStation.isTeleopEnabled())
 				.onTrue(new IntakeZero().andThen(new IntakeDown()));
 

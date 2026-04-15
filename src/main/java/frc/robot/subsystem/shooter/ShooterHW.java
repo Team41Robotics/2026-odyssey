@@ -19,8 +19,8 @@ import frc.robot.Robot;
 public class ShooterHW {
 	public static final double FLYWHEEL_kS = 0.24333;
 	public static final double FLYWHEEL_kV = 0.11494;
-	public static final double FLYWHEEL_kP = 0.17662 * 2;
-	public static final double FLYWHEEL_kD = 0.0;
+	public static final double FLYWHEEL_kP = 0.17662*2;
+	public static final double FLYWHEEL_kD = 0.00;
 
 	public TalonFX flywheelTalonFX;
 	public TalonFX flywheelFollowerTalonFX;

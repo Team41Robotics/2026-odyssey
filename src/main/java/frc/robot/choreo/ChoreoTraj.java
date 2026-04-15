@@ -24,12 +24,12 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
-    public static final ChoreoTraj Trench1 = new ChoreoTraj(
-	    "Trench1",
+    public static final ChoreoTraj GreedyFirstDip = new ChoreoTraj(
+	    "GreedyFirstDip",
 	    OptionalInt.empty(),
-	    5.60053,
-	    new Pose2d(3.993, 7.27, Rotation2d.fromRadians(-1.386)),
-	    new Pose2d(3.134, 7.17, Rotation2d.fromRadians(-1.187))
+	    4.76269,
+	    new Pose2d(4.327, 7.391, Rotation2d.fromRadians(1.571)),
+	    new Pose2d(3.002, 7.076, Rotation2d.fromRadians(-1.047))
 	);
 	public static final ChoreoTraj MV1 = new ChoreoTraj(
 	    "MV1",
@@ -37,13 +37,6 @@ public record ChoreoTraj(
 	    2.36221,
 	    new Pose2d(4.324, 7.35, Rotation2d.fromRadians(0)),
 	    new Pose2d(7.372, 4.477, Rotation2d.fromRadians(1.571))
-	);
-	public static final ChoreoTraj GreedyFirstDip = new ChoreoTraj(
-	    "GreedyFirstDip",
-	    OptionalInt.empty(),
-	    4.76269,
-	    new Pose2d(4.327, 7.391, Rotation2d.fromRadians(1.571)),
-	    new Pose2d(3.002, 7.076, Rotation2d.fromRadians(-1.047))
 	);
 	public static final ChoreoTraj seconddip = new ChoreoTraj(
 	    "seconddip",
@@ -59,17 +52,24 @@ public record ChoreoTraj(
 	    new Pose2d(6.607, 6.988, Rotation2d.fromRadians(0)),
 	    new Pose2d(6.597, 7.009, Rotation2d.fromRadians(0))
 	);
+	public static final ChoreoTraj Trench1 = new ChoreoTraj(
+	    "Trench1",
+	    OptionalInt.empty(),
+	    5.60053,
+	    new Pose2d(3.993, 7.27, Rotation2d.fromRadians(-1.386)),
+	    new Pose2d(3.134, 7.17, Rotation2d.fromRadians(-1.187))
+	);
 
     /**
      * A map between trajectory names and their corresponding data.
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-    	Map.entry("Trench1", Trench1),
+    	Map.entry("GreedyFirstDip", GreedyFirstDip),
 		Map.entry("MV1", MV1),
-		Map.entry("GreedyFirstDip", GreedyFirstDip),
 		Map.entry("seconddip", seconddip),
-		Map.entry("test", test)
+		Map.entry("test", test),
+		Map.entry("Trench1", Trench1)
     );
 
     /**

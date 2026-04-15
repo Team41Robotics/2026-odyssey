@@ -197,7 +197,7 @@ public class Vision extends SubsystemBase {
 				}
 
 				// multiTag: heading correction only — loose XY, tight theta
-				if (sane(coprocPnPpose) && result.targets.size() >= 3 && enableMultiTag.get() && enabled) {
+				if (sane(coprocPnPpose) && (result.targets.size() >= 3 || robot.isDisabled()) && enableMultiTag.get() && enabled) {
 					Pose2d pose = coprocPnPpose.get().estimatedPose.toPose2d();
 					double distScale = result.targets.stream()
 							.mapToDouble(t -> {

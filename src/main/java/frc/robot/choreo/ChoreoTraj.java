@@ -24,33 +24,26 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
-    public static final ChoreoTraj GreedyFirstDip = new ChoreoTraj(
-	    "GreedyFirstDip",
+    public static final ChoreoTraj greedydoubledip = new ChoreoTraj(
+	    "greedydoubledip",
 	    OptionalInt.empty(),
-	    4.83569,
-	    new Pose2d(4.327, 7.391, Rotation2d.fromRadians(-1.514)),
+	    11.99464,
+	    new Pose2d(4.327, 7.391, Rotation2d.fromRadians(0)),
+	    new Pose2d(3.097, 6.916, Rotation2d.fromRadians(-1.086))
+	);
+	public static final ChoreoTraj greedydoubledip$0 = new ChoreoTraj(
+	    "greedydoubledip",
+	    OptionalInt.of(0),
+	    4.87993,
+	    new Pose2d(4.327, 7.391, Rotation2d.fromRadians(0)),
 	    new Pose2d(3.002, 7.076, Rotation2d.fromRadians(-1.047))
 	);
-	public static final ChoreoTraj MV1 = new ChoreoTraj(
-	    "MV1",
-	    OptionalInt.empty(),
-	    2.36221,
-	    new Pose2d(4.324, 7.35, Rotation2d.fromRadians(0)),
-	    new Pose2d(7.372, 4.477, Rotation2d.fromRadians(1.571))
-	);
-	public static final ChoreoTraj seconddip = new ChoreoTraj(
-	    "seconddip",
-	    OptionalInt.empty(),
-	    6.97386,
-	    new Pose2d(3.08, 7.417, Rotation2d.fromRadians(0)),
-	    new Pose2d(2.752, 6.499, Rotation2d.fromRadians(-0.94))
-	);
-	public static final ChoreoTraj test = new ChoreoTraj(
-	    "test",
-	    OptionalInt.empty(),
-	    3.24871,
-	    new Pose2d(6.607, 6.988, Rotation2d.fromRadians(0)),
-	    new Pose2d(6.597, 7.009, Rotation2d.fromRadians(0))
+	public static final ChoreoTraj greedydoubledip$1 = new ChoreoTraj(
+	    "greedydoubledip",
+	    OptionalInt.of(1),
+	    7.1147100000000005,
+	    new Pose2d(3.002, 7.076, Rotation2d.fromRadians(-1.047)),
+	    new Pose2d(3.097, 6.916, Rotation2d.fromRadians(-1.086))
 	);
 	public static final ChoreoTraj Trench1 = new ChoreoTraj(
 	    "Trench1",
@@ -59,17 +52,128 @@ public record ChoreoTraj(
 	    new Pose2d(3.972, 7.472, Rotation2d.fromRadians(-1.386)),
 	    new Pose2d(3.064, 6.894, Rotation2d.fromRadians(-1.078))
 	);
+	public static final ChoreoTraj funnyintaketrench = new ChoreoTraj(
+	    "funnyintaketrench",
+	    OptionalInt.empty(),
+	    8.5824,
+	    new Pose2d(4.327, 7.521, Rotation2d.fromRadians(0)),
+	    new Pose2d(2.916, 6.69, Rotation2d.fromRadians(-1.055))
+	);
+	public static final ChoreoTraj funnyintaketrench$0 = new ChoreoTraj(
+	    "funnyintaketrench",
+	    OptionalInt.of(0),
+	    1.52754,
+	    new Pose2d(4.327, 7.521, Rotation2d.fromRadians(0)),
+	    new Pose2d(8.572, 6.991, Rotation2d.fromRadians(0))
+	);
+	public static final ChoreoTraj funnyintaketrench$1 = new ChoreoTraj(
+	    "funnyintaketrench",
+	    OptionalInt.of(1),
+	    7.05486,
+	    new Pose2d(8.572, 6.991, Rotation2d.fromRadians(0)),
+	    new Pose2d(2.916, 6.69, Rotation2d.fromRadians(-1.055))
+	);
+	public static final ChoreoTraj greedyfunnytench = new ChoreoTraj(
+	    "greedyfunnytench",
+	    OptionalInt.empty(),
+	    6.22739,
+	    new Pose2d(4.327, 7.391, Rotation2d.fromRadians(-1.514)),
+	    new Pose2d(3.002, 7.076, Rotation2d.fromRadians(-1.047))
+	);
+	public static final ChoreoTraj greedyfunnybump = new ChoreoTraj(
+	    "greedyfunnybump",
+	    OptionalInt.empty(),
+	    7.27189,
+	    new Pose2d(4.327, 7.391, Rotation2d.fromRadians(-1.514)),
+	    new Pose2d(2.835, 7.151, Rotation2d.fromRadians(-1.049))
+	);
+	public static final ChoreoTraj greedyfunnybump$0 = new ChoreoTraj(
+	    "greedyfunnybump",
+	    OptionalInt.of(0),
+	    5.29586,
+	    new Pose2d(4.327, 7.391, Rotation2d.fromRadians(-1.514)),
+	    new Pose2d(1.734, 5.909, Rotation2d.fromRadians(-0.568))
+	);
+	public static final ChoreoTraj greedyfunnybump$1 = new ChoreoTraj(
+	    "greedyfunnybump",
+	    OptionalInt.of(1),
+	    1.9760299999999997,
+	    new Pose2d(1.734, 5.909, Rotation2d.fromRadians(-0.568)),
+	    new Pose2d(2.835, 7.151, Rotation2d.fromRadians(-1.049))
+	);
+	public static final ChoreoTraj OtherDoubleTrench = new ChoreoTraj(
+	    "OtherDoubleTrench",
+	    OptionalInt.empty(),
+	    12.60529,
+	    new Pose2d(4.313, 0.647, Rotation2d.fromRadians(0)),
+	    new Pose2d(1.501, 1.603, Rotation2d.fromRadians(0.667))
+	);
+	public static final ChoreoTraj OtherDoubleTrench$0 = new ChoreoTraj(
+	    "OtherDoubleTrench",
+	    OptionalInt.of(0),
+	    5.86766,
+	    new Pose2d(4.313, 0.647, Rotation2d.fromRadians(0)),
+	    new Pose2d(2.595, 1.409, Rotation2d.fromRadians(0.936))
+	);
+	public static final ChoreoTraj OtherDoubleTrench$1 = new ChoreoTraj(
+	    "OtherDoubleTrench",
+	    OptionalInt.of(1),
+	    6.73763,
+	    new Pose2d(2.595, 1.409, Rotation2d.fromRadians(0.936)),
+	    new Pose2d(1.501, 1.603, Rotation2d.fromRadians(0.667))
+	);
+	public static final ChoreoTraj Mid = new ChoreoTraj(
+	    "Mid",
+	    OptionalInt.empty(),
+	    1.70894,
+	    new Pose2d(3.606, 3.985, Rotation2d.fromRadians(3.131)),
+	    new Pose2d(2.027, 3.999, Rotation2d.fromRadians(0))
+	);
+	public static final ChoreoTraj realtoptrenchdouble = new ChoreoTraj(
+	    "realtoptrenchdouble",
+	    OptionalInt.empty(),
+	    12.40539,
+	    new Pose2d(4.964, 7.393, Rotation2d.fromRadians(0)),
+	    new Pose2d(2.443, 6.382, Rotation2d.fromRadians(-0.816))
+	);
+	public static final ChoreoTraj realtoptrenchdouble$0 = new ChoreoTraj(
+	    "realtoptrenchdouble",
+	    OptionalInt.of(0),
+	    5.5886,
+	    new Pose2d(4.964, 7.393, Rotation2d.fromRadians(0)),
+	    new Pose2d(2.914, 6.617, Rotation2d.fromRadians(-0.982))
+	);
+	public static final ChoreoTraj realtoptrenchdouble$1 = new ChoreoTraj(
+	    "realtoptrenchdouble",
+	    OptionalInt.of(1),
+	    6.816790000000001,
+	    new Pose2d(2.914, 6.617, Rotation2d.fromRadians(-0.982)),
+	    new Pose2d(2.443, 6.382, Rotation2d.fromRadians(-0.816))
+	);
 
     /**
      * A map between trajectory names and their corresponding data.
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-    	Map.entry("GreedyFirstDip", GreedyFirstDip),
-		Map.entry("MV1", MV1),
-		Map.entry("seconddip", seconddip),
-		Map.entry("test", test),
-		Map.entry("Trench1", Trench1)
+    	Map.entry("greedydoubledip", greedydoubledip),
+		Map.entry("greedydoubledip$0", greedydoubledip$0),
+		Map.entry("greedydoubledip$1", greedydoubledip$1),
+		Map.entry("Trench1", Trench1),
+		Map.entry("funnyintaketrench", funnyintaketrench),
+		Map.entry("funnyintaketrench$0", funnyintaketrench$0),
+		Map.entry("funnyintaketrench$1", funnyintaketrench$1),
+		Map.entry("greedyfunnytench", greedyfunnytench),
+		Map.entry("greedyfunnybump", greedyfunnybump),
+		Map.entry("greedyfunnybump$0", greedyfunnybump$0),
+		Map.entry("greedyfunnybump$1", greedyfunnybump$1),
+		Map.entry("OtherDoubleTrench", OtherDoubleTrench),
+		Map.entry("OtherDoubleTrench$0", OtherDoubleTrench$0),
+		Map.entry("OtherDoubleTrench$1", OtherDoubleTrench$1),
+		Map.entry("Mid", Mid),
+		Map.entry("realtoptrenchdouble", realtoptrenchdouble),
+		Map.entry("realtoptrenchdouble$0", realtoptrenchdouble$0),
+		Map.entry("realtoptrenchdouble$1", realtoptrenchdouble$1)
     );
 
     /**

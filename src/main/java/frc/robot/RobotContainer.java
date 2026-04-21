@@ -144,6 +144,7 @@ public class RobotContainer {
 
 		controls.align().whileTrue(new AlignTeleop());
 		controls.shoot().whileTrue(new Shoot());
+		controls.shooterStop().whileTrue(Commands.run(() -> shooter.targetFlywheelRPM = 0, shooter));
 
 		controls.extendOut().whileTrue(new IntakeZero().andThen(new IntakeDown()));
 		controls.extendIn().whileTrue(new IntakeUp());

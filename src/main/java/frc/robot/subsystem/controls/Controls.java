@@ -29,6 +29,8 @@ public interface Controls {
 
 	Trigger pivotNudgeDown();
 
+	Trigger shooterStop();
+
 	double leftX();
 
 	double leftY();

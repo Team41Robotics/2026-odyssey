@@ -114,6 +114,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void autonomousInit() {
+		RobotContainer.drive.setBrakeMode(true);
 		if (Autos.autonomousCommand != null) {
 			CommandScheduler.getInstance().schedule(Autos.autonomousCommand);
 		}

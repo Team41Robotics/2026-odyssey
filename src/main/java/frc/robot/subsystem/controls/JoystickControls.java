@@ -62,6 +62,10 @@ public class JoystickControls implements Controls {
 		return ds.button(2);
 	}
 
+	public Trigger shooterStop() {
+		return ds.button(6);
+	}
+
 	public double leftX() {
 		double mul = inverted ? -1 : 1;
 		return mul * left.getX();

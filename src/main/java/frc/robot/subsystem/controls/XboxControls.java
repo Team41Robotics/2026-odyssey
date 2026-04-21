@@ -58,6 +58,10 @@ public class XboxControls implements Controls {
 		return new Trigger(() -> false);
 	}
 
+	public Trigger shooterStop() {
+		return new Trigger(() -> false);
+	}
+
 	public double leftX() {
 		return -xbox.getLeftX();
 	}

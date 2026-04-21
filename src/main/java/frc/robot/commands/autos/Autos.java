@@ -47,51 +47,54 @@ public class Autos {
 					"/Auto/Trench1/trajectory",
 					traj.<SwerveSample>getRawTrajectory().getPoses());
 			routine.active()
-					.onTrue(Commands.sequence(Commands.runOnce(
-							() -> Logger.recordOutput("/Auto/Trench1/phase", "started")),
+					.onTrue(Commands.sequence(
+							traj.resetOdometry(),
+							Commands.runOnce(
+									() -> Logger.recordOutput("/Auto/Trench1/phase", "started")),
 							traj.cmd()));
 			traj.atTime("DeployIntake")
 					.onTrue(Commands.sequence(
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "deployIntake")),
-							new IntakeZero().andThen(new IntakeDown())));
+							new IntakeZero().withTimeout(0.5).andThen(new IntakeDown())));
 			traj.done()
 					.onTrue(Commands.sequence(
-							Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "aligning")),
-							new AlignTeleop().withTimeout(0.5),
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "firing")),
-							new Shoot().withTimeout(3.0),
+							Commands.deadline(new Shoot().withTimeout(3.0), new AlignTeleop()),
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/Trench1/phase", "done"))));
 			return routine;
 		});
 		autoChooser.addRoutine("GreedyDoubleDip", () -> {
 			var routine = autoFactory.newRoutine("GreedyDoubleDip");
-			var traj = ChoreoTraj.greedydoubledip$0.asAutoTraj(routine);
+			var traj0 = ChoreoTraj.greedydoubledip$0.asAutoTraj(routine);
+			var traj1 = ChoreoTraj.greedydoubledip$1.asAutoTraj(routine);
 			Logger.recordOutput(
-					"/Auto/GreedyDoubleDip/trajectory",
-					traj.<SwerveSample>getRawTrajectory().getPoses());
+					"/Auto/GreedyDoubleDip/trajectory0",
+					traj0.<SwerveSample>getRawTrajectory().getPoses());
+			Logger.recordOutput(
+					"/Auto/GreedyDoubleDip/trajectory1",
+					traj1.<SwerveSample>getRawTrajectory().getPoses());
 			routine.active()
-					.onTrue(Commands.sequence(new WaitCommand(0.5), Commands.runOnce(
-							() -> Logger.recordOutput("/Auto/GreedyDoubleDip/phase", "started")),
-							new IntakeZero().andThen(new IntakeDown()),
-							Commands.runOnce(() -> Logger.recordOutput("/Auto/GreedyDoubleDip/phase", "deployIntake")),
-							traj.cmd()));
-			traj.done()
+					.onTrue(Commands.parallel(
+							Commands.sequence(
+									traj0.resetOdometry(),
+									new WaitCommand(0.5),
+									Commands.runOnce(
+											() -> Logger.recordOutput("/Auto/GreedyDoubleDip/phase", "started")),
+									traj0.cmd()),
+							Commands.sequence(
+									Commands.runOnce(() -> Logger.recordOutput("/Auto/GreedyDoubleDip/phase", "deployIntake")),
+									new IntakeZero().withTimeout(0.5),
+									new IntakeDown())));
+			traj0.done()
 					.onTrue(Commands.sequence(
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/GreedyDoubleDip/phase", "firing")),
-							new Shoot().withTimeout(3.0),
-							Commands.runOnce(() -> Logger.recordOutput("/Auto/GreedyDoubleDip/phase", "done"))));
-			traj = ChoreoTraj.greedydoubledip$1.asAutoTraj(routine);
-			Logger.recordOutput(
-					"/Auto/GreedyDoubleDip/trajectory",
-					traj.<SwerveSample>getRawTrajectory().getPoses());
-			routine.active()
-					.onTrue(Commands.sequence(Commands.runOnce(
-							() -> Logger.recordOutput("/Auto/GreedyDoubleDip/phase", "started")),
-							traj.cmd()));
-			traj.done()
+							Commands.deadline(new Shoot().withTimeout(3.0), new AlignTeleop()),
+							Commands.runOnce(() -> Logger.recordOutput("/Auto/GreedyDoubleDip/phase", "driving2")),
+							traj1.cmd()));
+			traj1.done()
 					.onTrue(Commands.sequence(
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/GreedyDoubleDip/phase", "firing")),
-							new Shoot().withTimeout(3.0),
+							Commands.deadline(new Shoot().withTimeout(3.0), new AlignTeleop()),
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/GreedyDoubleDip/phase", "done"))));
 			return routine;
 		});
@@ -102,86 +105,137 @@ public class Autos {
 					"/Auto/Mid/trajectory",
 					traj.<SwerveSample>getRawTrajectory().getPoses());
 			routine.active()
-					.onTrue(Commands.sequence(Commands.runOnce(
-							() -> Logger.recordOutput("/Auto/Mid/phase", "started")),
+					.onTrue(Commands.sequence(
+							traj.resetOdometry(),
+							Commands.runOnce(
+									() -> Logger.recordOutput("/Auto/Mid/phase", "started")),
 							traj.cmd()));
 			traj.done()
 					.onTrue(Commands.sequence(
-							Commands.runOnce(() -> Logger.recordOutput("/Auto/Mid/phase", "aligning")),
-							new AlignTeleop().withTimeout(0.5),
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/Mid/phase", "firing")),
-							new Shoot().withTimeout(3.0),
+							Commands.deadline(new Shoot().withTimeout(3.0), new AlignTeleop()),
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/Mid/phase", "deployIntake")),
-							new IntakeZero().andThen(new IntakeDown()),
+							new IntakeZero().withTimeout(0.5).andThen(new IntakeDown()),
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/Mid/phase", "done"))
 						));
 
 
 		return routine;
 		});
+		autoChooser.addRoutine("OtherSingleTrench", () -> {
+			var routine = autoFactory.newRoutine("OtherSingleTrench");
+			var traj = ChoreoTraj.OtherSingleTrench.asAutoTraj(routine);
+			Logger.recordOutput(
+					"/Auto/OtherSingleTrench/trajectory",
+					traj.<SwerveSample>getRawTrajectory().getPoses());
+			routine.active()
+					.onTrue(Commands.parallel(
+							Commands.sequence(
+									traj.resetOdometry(),
+									new WaitCommand(1),
+									Commands.runOnce(
+											() -> Logger.recordOutput("/Auto/OtherSingleTrench/phase", "started")),
+									traj.cmd()),
+							new IntakeZero().withTimeout(0.5).andThen(new IntakeDown())));
+			traj.done()
+					.onTrue(Commands.sequence(
+							Commands.runOnce(() -> Logger.recordOutput("/Auto/OtherSingleTrench/phase", "firing")),
+							Commands.deadline(new Shoot().withTimeout(3.0), new AlignTeleop()),
+							Commands.runOnce(() -> Logger.recordOutput("/Auto/OtherSingleTrench/phase", "done"))
+						));
+
+
+		return routine;
+		});
+		autoChooser.addRoutine("realtoptrenchsingle", () -> {
+			var routine = autoFactory.newRoutine("realtoptrenchsingle");
+			var traj = ChoreoTraj.realtoptrenchsingle.asAutoTraj(routine);
+			Logger.recordOutput(
+					"/Auto/realtoptrenchsingle/trajectory",
+					traj.<SwerveSample>getRawTrajectory().getPoses());
+			routine.active()
+					.onTrue(Commands.parallel(
+							Commands.sequence(
+									traj.resetOdometry(),
+									Commands.runOnce(
+											() -> Logger.recordOutput("/Auto/realtoptrenchsingle/phase", "started")),
+									traj.cmd()),
+							new IntakeZero().withTimeout(0.5).andThen(new IntakeDown())));
+			traj.done()
+					.onTrue(Commands.sequence(
+							Commands.runOnce(() -> Logger.recordOutput("/Auto/realtoptrenchsingle/phase", "firing")),
+							Commands.deadline(new Shoot().withTimeout(3.0), new AlignTeleop()),
+							Commands.runOnce(() -> Logger.recordOutput("/Auto/realtoptrenchsingle/phase", "done"))
+						));
+
+
+		return routine;
+		});
+		
 		autoChooser.addRoutine("OtherDoubleTrench", () -> {
 			var routine = autoFactory.newRoutine("OtherDoubleTrench");
-			var traj = ChoreoTraj.OtherDoubleTrench$0.asAutoTraj(routine);
+			var traj0 = ChoreoTraj.OtherDoubleTrench$0.asAutoTraj(routine);
+			var traj1 = ChoreoTraj.OtherDoubleTrench$1.asAutoTraj(routine);
 			Logger.recordOutput(
-					"/Auto/OtherDoubleTrench/trajectory",
-					traj.<SwerveSample>getRawTrajectory().getPoses());
+					"/Auto/OtherDoubleTrench/trajectory0",
+					traj0.<SwerveSample>getRawTrajectory().getPoses());
+			Logger.recordOutput(
+					"/Auto/OtherDoubleTrench/trajectory1",
+					traj1.<SwerveSample>getRawTrajectory().getPoses());
 			routine.active()
-					.onTrue(Commands.sequence(new WaitCommand(0.5), Commands.runOnce(
-							() -> Logger.recordOutput("/Auto/OtherDoubleTrench/phase", "started")),
-							new IntakeZero().andThen(new IntakeDown()),
-							Commands.runOnce(() -> Logger.recordOutput("/Auto/OtherDoubleTrench/phase", "deployIntake")),
-							traj.cmd()));
-							
-			traj.done()
+					.onTrue(Commands.parallel(
+							Commands.sequence(
+									traj0.resetOdometry(),
+									Commands.runOnce(
+											() -> Logger.recordOutput("/Auto/OtherDoubleTrench/phase", "started")),
+									traj0.cmd()),
+							Commands.sequence(
+									Commands.runOnce(() -> Logger.recordOutput("/Auto/OtherDoubleTrench/phase", "deployIntake")),
+									new IntakeZero().withTimeout(0.5),
+									new IntakeDown())));
+			traj0.done()
 					.onTrue(Commands.sequence(
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/OtherDoubleTrench/phase", "firing")),
-							new Shoot().withTimeout(3.5),
-							Commands.runOnce(() -> Logger.recordOutput("/Auto/OtherDoubleTrench/phase", "done"))));
-			traj = ChoreoTraj.OtherDoubleTrench$1.asAutoTraj(routine);
-			Logger.recordOutput(
-					"/Auto/OtherDoubleTrench/trajectory",
-					traj.<SwerveSample>getRawTrajectory().getPoses());
-			routine.active()
-					.onTrue(Commands.sequence(Commands.runOnce(
-							() -> Logger.recordOutput("/Auto/OtherDoubleTrench/phase", "started")),
-							traj.cmd()));
-			traj.done()
+							Commands.deadline(new Shoot().withTimeout(3.5), new AlignTeleop()),
+							Commands.runOnce(() -> Logger.recordOutput("/Auto/OtherDoubleTrench/phase", "driving2")),
+							traj1.cmd()));
+			traj1.done()
 					.onTrue(Commands.sequence(
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/OtherDoubleTrench/phase", "firing")),
-							new Shoot().withTimeout(3.5),
+							Commands.deadline(new Shoot().withTimeout(3.5), new AlignTeleop()),
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/OtherDoubleTrench/phase", "done"))));
 			return routine;
 		});
 		autoChooser.addRoutine("realtoptrenchdouble", () -> {
 			var routine = autoFactory.newRoutine("realtoptrenchdouble");
-			var traj = ChoreoTraj.realtoptrenchdouble$0.asAutoTraj(routine);
+			var trajA = ChoreoTraj.realtoptrenchdouble$0.asAutoTraj(routine);
+			var trajB = ChoreoTraj.realtoptrenchdouble$1.asAutoTraj(routine);
 			Logger.recordOutput(
-					"/Auto/realtoptrenchdouble/trajectory",
-					traj.<SwerveSample>getRawTrajectory().getPoses());
+					"/Auto/realtoptrenchdouble/trajectoryA",
+					trajA.<SwerveSample>getRawTrajectory().getPoses());
+			Logger.recordOutput(
+					"/Auto/realtoptrenchdouble/trajectoryB",
+					trajB.<SwerveSample>getRawTrajectory().getPoses());
 			routine.active()
-					.onTrue(Commands.sequence(
-							new WaitCommand(0.5),
-							Commands.runOnce(() -> Logger.recordOutput("/Auto/realtoptrenchdouble/phase", "deployIntake")),
-							new IntakeZero().andThen(new IntakeDown()),
-							Commands.runOnce(() -> Logger.recordOutput("/Auto/realtoptrenchdouble/phase", "started")),
-							traj.cmd()));
-			traj.done()
+					.onTrue(Commands.parallel(
+							Commands.sequence(
+									trajA.resetOdometry(),
+									Commands.runOnce(() -> Logger.recordOutput("/Auto/realtoptrenchdouble/phase", "started")),
+									trajA.cmd()),
+							Commands.sequence(
+									Commands.runOnce(() -> Logger.recordOutput("/Auto/realtoptrenchdouble/phase", "deployIntake")),
+									new IntakeZero().withTimeout(0.5),
+									new IntakeDown())));
+			trajA.done()
 					.onTrue(Commands.sequence(
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/realtoptrenchdouble/phase", "firing")),
-							new Shoot().withTimeout(3.0),
-							Commands.runOnce(() -> Logger.recordOutput("/Auto/realtoptrenchdouble/phase", "done"))));
-			traj = ChoreoTraj.realtoptrenchdouble$1.asAutoTraj(routine);
-			Logger.recordOutput(
-					"/Auto/realtoptrenchdouble/trajectory",
-					traj.<SwerveSample>getRawTrajectory().getPoses());
-			routine.active()
-					.onTrue(Commands.sequence(Commands.runOnce(
-							() -> Logger.recordOutput("/Auto/realtoptrenchdouble/phase", "started")),
-							traj.cmd()));
-			traj.done()
+							Commands.deadline(new Shoot().withTimeout(3.0), new AlignTeleop()),
+							Commands.runOnce(() -> Logger.recordOutput("/Auto/realtoptrenchdouble/phase", "driving2")),
+							trajB.cmd()));
+			trajB.done()
 					.onTrue(Commands.sequence(
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/realtoptrenchdouble/phase", "firing")),
-							new Shoot().withTimeout(3.0),
+							Commands.deadline(new Shoot().withTimeout(3.0), new AlignTeleop()),
 							Commands.runOnce(() -> Logger.recordOutput("/Auto/realtoptrenchdouble/phase", "done"))));
 			return routine;
 		});

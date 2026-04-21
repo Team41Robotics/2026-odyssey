@@ -143,12 +143,13 @@ public class Drive extends SubsystemBase {
 
 	/** Points all modules inward to resist pushing (X-lock). */
 	public void stopWithX() {
-		Rotation2d[] headings = new Rotation2d[4];
+		SwerveModuleState[] xStates = new SwerveModuleState[4];
 		for (int i = 0; i < 4; i++) {
-			headings[i] = getModuleTranslations()[i].getAngle();
+			xStates[i] = new SwerveModuleState(0.0, getModuleTranslations()[i].getAngle());
 		}
-		kinematics.resetHeadings(headings);
-		stop();
+		for (int i = 0; i < 4; i++) {
+			modules[i].runSetpoint(xStates[i]);
+		}
 	}
 
 	public void setBrakeMode(boolean brake) {
